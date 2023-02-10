@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS products(
     id BIGINT PRIMARY KEY,
     uuid UUID UNIQUE,
     name VARCHAR(255) NOT NULL,
-    price DOUBLE NOT NULL,
+    price DOUBLE PRECISION NOT NULL,
     available BOOL NOT NULL,
     description VARCHAR(255) NOT NULL,
     url VARCHAR(255) NOT NULL,
