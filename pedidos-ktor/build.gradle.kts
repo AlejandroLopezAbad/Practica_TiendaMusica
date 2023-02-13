@@ -28,6 +28,13 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
 
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation("ch.qos.logback:logback-classic:1.4.5")
+
+    //Kmongo
+    implementation("org.litote.kmongo:kmongo-async:4.7.2")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.7.2")
+
     //Content negotiation
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     //Serializacion

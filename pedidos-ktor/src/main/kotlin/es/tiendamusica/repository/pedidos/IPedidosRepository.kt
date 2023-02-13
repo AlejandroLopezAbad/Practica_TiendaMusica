@@ -1,4 +1,8 @@
 package es.tiendamusica.repository.pedidos
 
-interface IPedidosRepository {
+import es.tiendamusica.models.Pedido
+import es.tiendamusica.repository.ICRUD
+import org.litote.kmongo.Id
+
+interface IPedidosRepository : ICRUD<Pedido, Id<Pedido>> {
 }
