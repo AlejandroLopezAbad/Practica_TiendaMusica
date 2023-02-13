@@ -1,9 +1,10 @@
 package com.example.microserviciousuarios.models
 
-import com.example.microserviciousuarios.models.enums.TypeRol
+
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.time.LocalDateTime
 import java.util.*
 
 @Table("users")
@@ -21,12 +22,22 @@ data class Users(
     @Column("telephone")
     val telephone:Int,
     @Column("rol")
-    val rol : TypeRol,
+    val rol : String= TypeRol.USER.name,
     @Column("avaliable")
     val avaliable:Boolean,
     @Column("url")
     val url:String,
+    @Column("created_at")
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column("updated_at")
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+    val deleted: Boolean = false, // Para el borrado lógico si es necesario
     )/*:UserDetails*/ {
+
+    enum class TypeRol() {
+        USER,EMPLOYE,ADMIN,SUPERADMIN
+
+    }
 }
 //TODO añadir userDetails cuando metamos la parte de seguridad
 /*
