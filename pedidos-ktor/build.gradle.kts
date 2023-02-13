@@ -28,6 +28,10 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
 
+    //Kmongo
+    implementation("org.litote.kmongo:kmongo-async:4.7.2")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.7.2")
+
     //Content negotiation
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     //Serializacion

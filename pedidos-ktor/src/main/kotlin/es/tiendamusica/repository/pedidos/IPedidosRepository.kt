@@ -1,4 +1,6 @@
 package es.tiendamusica.repository.pedidos
 
-interface IPedidosRepository {
+import es.tiendamusica.repository.ICRUD
+
+interface IPedidosRepository : ICRUD {
 }
