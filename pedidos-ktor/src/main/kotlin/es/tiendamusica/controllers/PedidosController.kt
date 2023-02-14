@@ -11,6 +11,8 @@ class PedidosController(private val repository : PedidosRepository) {
     suspend fun createOrder(pedido: Pedido): Pedido {
         logger.debug("Trying to find User...")
         try {
+                // Aqui iría el metodo con el repositorio de usuario
+            //aqui busca en el repositorio de usuario por el pedido.usuario -> id referenciado
             logger.debug("Creating Order:  ${pedido.uuid}")
             return repository.save(pedido)
         } catch (e: Exception) {
