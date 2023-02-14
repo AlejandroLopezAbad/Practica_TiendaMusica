@@ -1,11 +1,16 @@
 package es.tiendamusica.routes
 
+import es.tiendamusica.dtos.PedidoCreateDto
+import es.tiendamusica.exceptions.PedidoDuplicated
 import es.tiendamusica.exceptions.PedidoNotFoundException
+import es.tiendamusica.exceptions.PedidoUnauthorized
 import es.tiendamusica.mappers.toDto
 import es.tiendamusica.mappers.toUUID
+import es.tiendamusica.models.toModel
 import es.tiendamusica.repository.pedidos.PedidosRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
@@ -53,6 +58,19 @@ fun Application.pedidosRoutes() {
                 }
             }
             //---------------------------
+            //-------- POST -------------
+            post {
+                logger.debug { "POST PEDIDO : $ENDPOINT" }
+                try {
+                    val dto = call.receive<PedidoCreateDto>()
+                    val pedido = pedidosService.save(dto.toModel())
+                    call.respond(HttpStatusCode.Created, pedido.toDto())
+                } catch (e: PedidoUnauthorized) {
+                    call.respond(HttpStatusCode.Unauthorized, e.message.toString())
+                } catch (e: PedidoDuplicated) {
+                    call.respond(HttpStatusCode.Conflict, e.message.toString())
+                }
+            }
         }
     }
 }
