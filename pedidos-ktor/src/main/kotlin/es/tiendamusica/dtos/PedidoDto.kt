@@ -19,7 +19,7 @@ data class PedidoDto(
     @Serializable(LocalDateSerializer::class)
     val createdAt: LocalDate,
     @Serializable(LocalDateSerializer::class)
-    val deliveredAt: LocalDate
+    val deliveredAt: LocalDate?
 )
 
 @Serializable

@@ -12,8 +12,7 @@ import io.ktor.server.netty.*
 import java.time.LocalDate
 
 suspend fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+
 
     val user = User("Jeremy")
 
@@ -25,11 +24,21 @@ suspend fun main() {
         deliveredAt = LocalDate.now(),
         userId = user.name
     )
-
+    val order2 = Pedido(
+        price = 50.0,
+        status = Pedido.Status.PROCESS,
+        createdAt = LocalDate.now(),
+        deliveredAt = LocalDate.now(),
+        userId = user.name
+    )
+    println("hola")
     val controller = PedidosController(PedidosRepository())
 
-    controller.createOrder(order)
+    //controller.createOrder(order)
+    //controller.createOrder(order2)
 
+    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+        .start(wait = true)
 
 }
 
