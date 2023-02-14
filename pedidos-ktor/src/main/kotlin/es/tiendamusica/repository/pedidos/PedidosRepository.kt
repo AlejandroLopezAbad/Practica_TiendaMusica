@@ -8,11 +8,6 @@ import service.mongo.MongoDbManager
 import java.util.*
 
 class PedidosRepository : IPedidosRepository {
-    //TODO(yo diría que esta puede ser util 🤙)
-    /*override suspend fun findByUserId(id: UUID): User? {
-        return MongoDbManager.mongoDatabase.getCollection<Pedido>().find()
-    }*/
-
     override suspend fun findAll(): Flow<Pedido> {
         return MongoDbManager.mongoDatabase.getCollection<Pedido>()
             .find().publisher.asFlow()
