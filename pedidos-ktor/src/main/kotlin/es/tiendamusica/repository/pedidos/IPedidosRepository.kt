@@ -2,7 +2,8 @@ package es.tiendamusica.repository.pedidos
 
 import es.tiendamusica.models.Pedido
 import es.tiendamusica.repository.ICRUD
-import java.util.*
+import org.litote.kmongo.Id
 
-interface IPedidosRepository : ICRUD<Pedido, UUID> {
+interface IPedidosRepository : ICRUD<Pedido, Id<Pedido>> {
+    //suspend fun findByUserId(id : UUID) : User?
 }
