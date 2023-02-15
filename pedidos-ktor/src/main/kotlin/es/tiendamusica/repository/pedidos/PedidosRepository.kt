@@ -3,9 +3,11 @@ package es.tiendamusica.repository.pedidos
 import es.tiendamusica.models.Pedido
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
+import org.koin.core.annotation.Single
 import org.litote.kmongo.Id
 import service.mongo.MongoDbManager
 
+@Single
 class PedidosRepository : IPedidosRepository {
     override suspend fun findAll(): Flow<Pedido> {
         return MongoDbManager.mongoDatabase.getCollection<Pedido>()
