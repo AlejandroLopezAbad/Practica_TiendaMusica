@@ -31,12 +31,7 @@ suspend fun main() {
         deliveredAt = LocalDate.now(),
         userId = user.name
     )
-    println("hola")
     val controller = PedidosController(PedidosRepository())
-
-    //controller.createOrder(order)
-    //controller.createOrder(order2)
-
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 
