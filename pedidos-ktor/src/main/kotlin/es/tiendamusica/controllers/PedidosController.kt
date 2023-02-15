@@ -53,6 +53,11 @@ class PedidosController(private val repository: PedidosRepository) {
         return repository.findById(id.toId())
     }
 
+    suspend fun getByUserId(id: String): Flow<Pedido> {
+        logger.debug { "Getting all orders from user : $id" }
+        return repository.findByUser(id)
+    }
+
     suspend fun deleteOrder(order: Pedido): Boolean {
         logger.debug("Deleting Order ${order.id}")
         return repository.delete(order)

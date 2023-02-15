@@ -29,7 +29,7 @@ fun Application.pedidosRoutes() {
             //--------- GETS -------------
             get {
                 logger.debug { "GET ALL $ENDPOINT" }
-                val res = pedidosService.getAllOrders().toList().let { res -> call.respond(HttpStatusCode.OK, res) }
+                pedidosService.getAllOrders().toList().let { res -> call.respond(HttpStatusCode.OK, res) }
             }
 
             //GET BY ID
@@ -51,13 +51,15 @@ fun Application.pedidosRoutes() {
             }
 
             //GET BY USER
-            get("{user_id}") {
+            get("/user/{user_id}") {
                 logger.debug { "GET BY USER ID : $ENDPOINT/{user_id}" }
                 try {
-                    val id = call.parameters["id"]
-                    //TODO(cambiar el id de pedido por id de usuario)
-                    val pedido = pedidosService.getById(id!!)
-                    call.respond(HttpStatusCode.OK, pedido!!.toDto())
+                    val id = call.parameters["user_id"]
+                    val res =
+                        pedidosService.getByUserId(id!!).toList().let { res ->
+                            println("------------ $res---------")
+                            call.respond(HttpStatusCode.OK, res)
+                        }
                 } catch (e: PedidoNotFoundException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
