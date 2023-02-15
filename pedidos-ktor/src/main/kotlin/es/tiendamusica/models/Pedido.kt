@@ -4,7 +4,6 @@ import es.tiendamusica.dtos.PedidoCreateDto
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
-import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import serializer.LocalDateSerializer
 import java.time.LocalDate
@@ -13,7 +12,7 @@ import java.util.*
 @Serializable
 data class Pedido(
     @BsonId @Contextual
-    val id: Id<Pedido> = newId(),
+    val id: String = newId<Pedido>().toString(),
     val uuid: String = UUID.randomUUID().toString(),
     var price: Double,
     var userId: String,
