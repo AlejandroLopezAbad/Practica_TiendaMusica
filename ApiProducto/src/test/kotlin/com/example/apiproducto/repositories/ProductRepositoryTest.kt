@@ -12,84 +12,150 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.*
 
 @ExperimentalCoroutinesApi
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ProductRepositoryTest {
     @Autowired
     lateinit var repository: ProductRepository
 
-    private val product =Product(name="Test", price = 2.50, available=true,
-        description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
-        brand = "marca", model = "model")
+//    private val product =Product(name="Test", price = 2.50, available=true,
+//        description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+//        brand = "marca", model = "model")
 
-
-    @Test
-    fun save() = runTest{
-        val save = repository.save(product)
-        assertAll(
-            {assertEquals(save.name, product.name)},
-            {assertEquals(save.price, product.price)},
-            {assertEquals(save.available, product.available)},
-            {assertEquals(save.description, product.description)},
-            {assertEquals(save.url, product.url)},
-            {assertEquals(save.category, product.category)},
-            {assertEquals(save.brand, product.brand)},
-            {assertEquals(save.model, product.model)}
-        )
-    }
 
     @Test
     fun findAll() = runTest {
-        repository.save(product)
-        val all = repository.findAll().toList()
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val delete = repository.save(product)
+        val result = repository.findAll().toList()
 
         assertAll(
-            { assertTrue(all.isNotEmpty()) },
-            {assertEquals(all[0].name, product.name)},
-            {assertEquals(all[0].price, product.price)},
-            {assertEquals(all[0].available, product.available)},
-            {assertEquals(all[0].description, product.description)},
-            {assertEquals(all[0].url, product.url)},
-            {assertEquals(all[0].category, product.category)},
-            {assertEquals(all[0].brand, product.brand)},
-            {assertEquals(all[0].model, product.model)}
+            { assertNotNull(result) },
+            { assertEquals(product.name, result[0].name) },
+            { assertEquals(product.price, result[0].price) },
+            { assertEquals(product.available, result[0].available) },
+            { assertEquals(product.description, result[0].description) },
+            { assertEquals(product.url, result[0].url) },
+            { assertEquals(product.category, result[0].category) },
+            { assertEquals(product.stock, result[0].stock) },
+            { assertEquals(product.brand, result[0].brand) },
+            { assertEquals(product.model, result[0].model) }
         )
+
+        repository.delete(delete)
     }
 
     @Test
     fun findByUuid() = runTest {
-        repository.save(product)
-        val find = repository.findProductByUuid(product.uuid)
-        val block = withContext(Dispatchers.IO) {
-            find.block()
-        }
-
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val result = repository.save(product)
+        val block = withContext(Dispatchers.IO) { repository.findProductByUuid(result.uuid).block() }
+        // Comprobamos que el resultado es correcto
         assertAll(
-            {assertTrue(block!=null)},
-            {assertEquals(block?.name, product.name)},
-            {assertEquals(block?.price, product.price)},
-            {assertEquals(block?.available, product.available)},
-            {assertEquals(block?.description, product.description)},
-            {assertEquals(block?.url, product.url)},
-            {assertEquals(block?.category, product.category)},
-            {assertEquals(block?.brand, product.brand)},
-            {assertEquals(block?.model, product.model)}
+            { assertNotNull(block) },
+            { assertEquals(product.name, block?.name) },
+            { assertEquals(product.price, block?.price) },
+            { assertEquals(product.available, block?.available) },
+            { assertEquals(product.description, block?.description) },
+            { assertEquals(product.url, block?.url) },
+            { assertEquals(product.category, block?.category) },
+            { assertEquals(product.stock, block?.stock) },
+            { assertEquals(product.brand, block?.brand) },
+            { assertEquals(product.model, block?.model) }
         )
+
+        repository.delete(result)
     }
 
-//    @Test
-//    fun delete() = runTest {
-//        repository.save(product)
-//        val block = withContext(Dispatchers.IO) {
-//            val find = repository.findProductByUuid(product.uuid)
-//            find.block()
-//        }
-//        repository.delete(block!!)
-//
-//    }
+    @Test
+    fun findByUuidNotExist() = runTest {
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val block = withContext(Dispatchers.IO) { repository.findProductByUuid(product.uuid).block() }
+        assertNull(block)
+    }
+
+    @Test
+    fun save() = runTest {
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val result = repository.save(product)
+
+        assertAll(
+            { assertEquals(product.name, result.name) },
+            { assertEquals(product.price, result.price) },
+            { assertEquals(product.available, result.available) },
+            { assertEquals(product.description, result.description) },
+            { assertEquals(product.url, result.url) },
+            { assertEquals(product.category, result.category) },
+            { assertEquals(product.stock, result.stock) },
+            { assertEquals(product.brand, result.brand) },
+            { assertEquals(product.model, result.model) },
+        )
+
+        repository.delete(result)
+    }
+
+    @Test
+    fun update() = runTest {
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val result = repository.save(product)
+
+        // Comprobamos que el resultado es correcto
+        assertAll(
+            { assertEquals(product.name, result.name) },
+            { assertEquals(product.price, result.price) },
+            { assertEquals(product.available, result.available) },
+            { assertEquals(product.description, result.description) },
+            { assertEquals(product.url, result.url) },
+            { assertEquals(product.category, result.category) },
+            { assertEquals(product.stock, result.stock) },
+            { assertEquals(product.brand, result.brand) },
+            { assertEquals(product.model, result.model) },
+        )
+        repository.delete(result)
+    }
+
+    @Test
+    fun findById() = runTest {
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val save = repository.save(product)
+        val find = repository.findById(save.id!!)
+
+        assertAll(
+            { assertEquals(product.name, find?.name) },
+            { assertEquals(product.price, find?.price) },
+            { assertEquals(product.available, find?.available) },
+            { assertEquals(product.description, find?.description) },
+            { assertEquals(product.url, find?.url) },
+            { assertEquals(product.category, find?.category) },
+            { assertEquals(product.stock, find?.stock) },
+            { assertEquals(product.brand, find?.brand) },
+            { assertEquals(product.model, find?.model) },
+        )
+        repository.delete(save)
+    }
+
+    @Test
+    fun delete() = runTest {
+        val product =Product(name="Test", price = 2.50, available=true,
+            description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
+            brand = "marca", model = "model")
+        val result = repository.save(product)
+        repository.delete(result)
+    }
 }
