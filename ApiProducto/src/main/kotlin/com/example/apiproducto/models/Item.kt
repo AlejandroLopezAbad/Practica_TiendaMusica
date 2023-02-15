@@ -1,7 +1,7 @@
 package com.example.apiproducto.models
-
 import org.springframework.data.annotation.Id
 import java.util.UUID
+
  abstract class Item(
     @Id
     open var id: Long,
