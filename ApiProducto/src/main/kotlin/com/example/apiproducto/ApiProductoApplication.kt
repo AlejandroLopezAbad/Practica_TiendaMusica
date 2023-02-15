@@ -2,7 +2,6 @@ package com.example.apiproducto
 
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.models.ProductCategory
-import com.example.apiproducto.models.Service
 import com.example.apiproducto.repositories.ProductRepository
 import com.example.apiproducto.repositories.ServiceRepository
 import kotlinx.coroutines.runBlocking
@@ -28,8 +27,17 @@ class ApiProductoApplication
 //        )
 //        val add = repo.save(product)
 //        println(add)
-        var product = Product(name="Prueba2", price = 2.20, available= true, description = "Esto es una descripcion"
-            , url="ff", category = ProductCategory.BOOSTER, stock = 10, brand = "Marca", model = "modelo")
+        var product = Product(
+            name = "Prueba2",
+            price = 2.20,
+            available = true,
+            description = "Esto es una descripcion",
+            url = "ff",
+            category = ProductCategory.BOOSTER,
+            stock = 10,
+            brand = "Marca",
+            model = "modelo"
+        )
         var add = products.save(product)
         println(add)
     }

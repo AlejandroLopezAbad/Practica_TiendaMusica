@@ -5,8 +5,8 @@ import java.util.*
 
 @Table(name = "products")
 data class Product(
-    override var id:Long? =null,
-    override var uuid: UUID = UUID.randomUUID(),
+    override var id:Int? =null,
+    override var uuid: String = UUID.randomUUID().toString(),
     override var name: String,
     override var price: Double,
     override var available: Boolean,
