@@ -24,11 +24,8 @@ data class PedidoDto(
 
 @Serializable
 data class PedidoCreateDto(
-    @Serializable(UUIDSerializer::class)
-    val uuid: UUID,
     val price: Double,
-    val userId: String,
-    @Serializable(LocalDateSerializer::class)
-    val createdAt: LocalDate
+    val productos: List<LineaVenta>,
+    val userId: String
 )
 
