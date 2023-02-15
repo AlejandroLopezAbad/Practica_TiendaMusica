@@ -28,4 +28,8 @@ class PedidosRepository : IPedidosRepository {
     override suspend fun delete(entity: Pedido): Boolean {
         return MongoDbManager.mongoDatabase.getCollection<Pedido>().deleteOneById(entity.id).let { true }
     }
+
+    override suspend fun findByUser(id: String): Flow<Pedido> {
+        return MongoDbManager.mongoDatabase.getCollection<Pedido>().find("{userId: '$id'}").publisher.asFlow()
+    }
 }
