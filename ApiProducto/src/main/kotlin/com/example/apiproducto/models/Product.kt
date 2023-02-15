@@ -1,10 +1,12 @@
 package com.example.apiproducto.models
 
+import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.util.*
 
 @Table(name = "products")
 data class Product(
+    @Id
     override var id:Int? =null,
     override var uuid: String = UUID.randomUUID().toString(),
     override var name: String,

@@ -6,6 +6,7 @@ import java.util.*
 
 @Table(name = "services")
 data class Service(
+    @Id
     override var id: Int? = null,
     override var uuid: String = UUID.randomUUID().toString(),
     override var name: String,
@@ -14,9 +15,7 @@ data class Service(
     override var description: String,
     override var url: String,
     var category: ServiceCategory,
-) : Item(id, uuid, name, price, available, description, url) {
-
-    enum class ServiceCategory {
-        GUITAR_REPAIR, AMPLIFIER_REPAIR, CHANGE_OF_STRINGS
-    }
+) : Item(id, uuid, name, price, available, description, url)
+enum class ServiceCategory {
+    GUITAR_REPAIR, AMPLIFIER_REPAIR, CHANGE_OF_STRINGS
 }

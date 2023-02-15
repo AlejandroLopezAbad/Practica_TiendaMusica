@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
 @Repository
-interface ProductRepository: CoroutineCrudRepository<Product, Long> {
+interface ProductRepository: CoroutineCrudRepository<Product, Int> {
     fun findProductsByCategory(category: String): Flow<Product>
     fun findProductByUuid(uuid: String): Mono<Product?>
 }
