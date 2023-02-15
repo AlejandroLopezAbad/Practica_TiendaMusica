@@ -29,9 +29,7 @@ fun Application.pedidosRoutes() {
             //--------- GETS -------------
             get {
                 logger.debug { "GET ALL $ENDPOINT" }
-                val res = pedidosService.findAll()
-                    .toList()
-                    .let { res -> call.respond(HttpStatusCode.OK, res) }
+                val res = pedidosService.findAll().toList().let { res -> call.respond(HttpStatusCode.OK, res) }
             }
 
             //GET BY ID
@@ -76,6 +74,28 @@ fun Application.pedidosRoutes() {
                     call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 } catch (e: PedidoDuplicated) {
                     call.respond(HttpStatusCode.Conflict, e.message.toString())
+                }
+            }
+
+            delete("{id}") {
+                logger.debug { "DELETE PEDIDO : $ENDPOINT/{id}" }
+                try {
+                    val id = call.parameters["id"]
+                    val pedido = pedidosService.findById(id!!.toId())
+                    pedido?.let {
+                        val res = pedidosService.delete(pedido)
+                        if (res) {
+                            call.respond(HttpStatusCode.NoContent)
+                        } else {
+                            call.respond(HttpStatusCode.Unauthorized)
+                        }
+
+                    } ?: run {
+                        call.respond(HttpStatusCode.NotFound, "Not found")
+
+                    }
+                } catch (e: PedidoUnauthorized) {
+                    call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 }
             }
         }

@@ -1,5 +1,6 @@
 package es.tiendamusica.models
 
+import es.tiendamusica.dtos.LineaVenta
 import es.tiendamusica.dtos.PedidoCreateDto
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -20,7 +21,8 @@ data class Pedido(
     @Serializable(LocalDateSerializer::class)
     var createdAt: LocalDate, // no cambia
     @Serializable(LocalDateSerializer::class)
-    var deliveredAt: LocalDate? // si cambia
+    var deliveredAt: LocalDate?, // si cambia
+    val productos: MutableList<LineaVenta>
 ) {
     enum class Status(val status: String) {
         RECEIVED("Received"),
@@ -41,9 +43,11 @@ data class Pedido(
 }
 
 fun PedidoCreateDto.toModel() = Pedido(
-    price = this.price,
+    price = this.productos.sumOf { it.precio * it.cantidad },
+    uuid = UUID.randomUUID().toString(),
     userId = this.userId,
     status = Pedido.Status.RECEIVED,
     createdAt = LocalDate.now(),
-    deliveredAt = null
+    deliveredAt = null,
+    productos = this.productos as MutableList<LineaVenta>
 )
