@@ -4,7 +4,7 @@ import org.springframework.data.relational.core.mapping.Table
 import java.util.*
 
 @Table(name = "products")
-data class Product(
+class Product(
     override var id: Long,
     override var uuid: UUID = UUID.randomUUID(),
     override var name: String,

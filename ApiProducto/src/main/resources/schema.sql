@@ -1,5 +1,6 @@
-CREATE TABLE IF NOT EXISTS products(
-    id BIGINT PRIMARY KEY,
+create table if not exists products
+(
+    id BIGSERIAL PRIMARY KEY,
     uuid UUID UNIQUE,
     name VARCHAR(255) NOT NULL,
     price DOUBLE PRECISION NOT NULL,
@@ -10,4 +11,6 @@ CREATE TABLE IF NOT EXISTS products(
     stock INTEGER NOT NULL,
     brand VARCHAR(255) NOT NULL,
     model VARCHAR(255) NOT NULL
-)
+);
+
+
