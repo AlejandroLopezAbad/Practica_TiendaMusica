@@ -39,7 +39,7 @@ fun Application.pedidosRoutes() {
                 logger.debug { "GET BY ID : $ENDPOINT/{id}" }
                 try {
                     val id = call.parameters["id"]
-                    val pedido = pedidosService.findById(id!!.toId<Pedido>())
+                    val pedido = pedidosService.findById(id!!.toId())
                     pedido?.let {
                         call.respond(HttpStatusCode.OK, pedido.toDto())
 

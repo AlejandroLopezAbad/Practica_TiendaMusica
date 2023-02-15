@@ -12,15 +12,15 @@ import java.util.*
 @Serializable
 data class Pedido(
     @BsonId @Contextual
-    val id: String = newId<Pedido>().toString(),
-    val uuid: String = UUID.randomUUID().toString(),
-    var price: Double,
-    var userId: String,
-    var status: Status,
+    val id: String = newId<Pedido>().toString(), // no cambia
+    val uuid: String = UUID.randomUUID().toString(), // no cambia
+    var price: Double, // si cambia
+    var userId: String, // no cambia
+    var status: Status, // si cambia
     @Serializable(LocalDateSerializer::class)
-    var createdAt: LocalDate,
+    var createdAt: LocalDate, // no cambia
     @Serializable(LocalDateSerializer::class)
-    var deliveredAt: LocalDate?
+    var deliveredAt: LocalDate? // si cambia
 ) {
     enum class Status(val status: String) {
         RECEIVED("Received"),
