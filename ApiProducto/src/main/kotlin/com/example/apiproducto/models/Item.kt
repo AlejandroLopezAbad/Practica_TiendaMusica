@@ -1,14 +1,15 @@
 package com.example.apiproducto.models
 
-import java.util.UUID
+import org.springframework.data.annotation.Id
+import java.util.*
 
-data class Item(
-    var id: Long,
-    var uuid: UUID,
-    var name: String,
-    var price: Double,
-    var available: Boolean,
-    var description: String,
-    var url: String
-){
-}
+abstract class Item(
+    @Id
+    open var id: Long?,
+    open var uuid: UUID,
+    open var name: String,
+    open var price: Double,
+    open var available: Boolean,
+    open var description: String,
+    open var url: String,
+)
