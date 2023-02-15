@@ -3,7 +3,6 @@ import org.springframework.data.annotation.Id
 import java.util.*
 
 abstract class Item(
-    @Id
     open var id: Int?,
     open var uuid: String,
     open var name: String,
