@@ -1,5 +1,4 @@
 package es.tiendamusica.controllers
-
 import es.tiendamusica.dtos.UpdatePedidoDto
 import es.tiendamusica.models.Pedido
 import es.tiendamusica.repository.pedidos.PedidosRepository
@@ -61,6 +60,11 @@ class PedidosController(private val repository: PedidosRepository) {
     suspend fun deleteOrder(order: Pedido): Boolean {
         logger.debug("Deleting Order ${order.id}")
         return repository.delete(order)
+    }
+
+    suspend fun getOrderByUser(uuid: String): Flow<PedidoDto> {
+        logger.debug("Obtaining users by uuid: $uuid")
+        return repository.findPedidoByUser(uuid)
     }
 
 
