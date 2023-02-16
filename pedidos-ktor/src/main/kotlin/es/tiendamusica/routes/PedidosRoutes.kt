@@ -16,6 +16,7 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 import org.koin.ktor.ext.inject
+import org.litote.kmongo.toId
 
 private const val ENDPOINT = "/pedidos"
 private val logger = KotlinLogging.logger { }
