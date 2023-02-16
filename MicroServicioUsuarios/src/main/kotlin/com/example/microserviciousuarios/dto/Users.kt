@@ -28,6 +28,7 @@ data class UsersCreateDto(
     val email: String,
     val rol:String,
     val password: String
+    //TODO meter los campos del user
 )
 
 data class UsersWithTokenDto(
@@ -35,5 +36,5 @@ data class UsersWithTokenDto(
     val token: String
 )
 
-}
+
 

@@ -18,7 +18,8 @@ data class Users(
     @Column("name")
     val name:String,
     @Column("password")
-    val password:ByteArray,
+    val password:String,
+
     @Column("telephone")
     val telephone:Int,
     @Column("rol")

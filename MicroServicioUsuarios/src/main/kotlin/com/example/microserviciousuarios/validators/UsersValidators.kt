@@ -9,7 +9,8 @@ fun UsersCreateDto.validate(): UsersCreateDto {
         throw Exception("El email no puede estar vacío o no tiene el formato correcto")
     else if (this.password.isBlank() || this.password.length < 5)
         throw Exception("El password no puede estar vacío o ser menor de 5 caracteres")
-
+    else if (this.rol.isBlank())
+        throw Exception("No puedeno tener rol")
     return this
 }
 //TODO ver si queremos obligar que compruebe que tenga un rol
