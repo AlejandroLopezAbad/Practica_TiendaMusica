@@ -33,14 +33,13 @@ sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
 }
 dependencies {
-    testImplementation(kotlin("test"))
+    //testImplementation(kotlin("test"))
     //Ktor core
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("ch.qos.logback:logback-classic:1.4.5")
-
 
 
     // Para testear métodos suspendidos o corrutinas
@@ -62,11 +61,17 @@ dependencies {
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version")
 
 
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    //MockK
+    testImplementation("io.mockk:mockk:1.12.0")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-}
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 
+
+    implementation("ch.qos.logback:logback-classic:$logback_version")
+
+}
 tasks.test {
     useJUnitPlatform()
 }
