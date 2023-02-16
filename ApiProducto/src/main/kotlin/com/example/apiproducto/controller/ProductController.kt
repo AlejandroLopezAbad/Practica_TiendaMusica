@@ -73,7 +73,7 @@ class ProductController
         return ResponseEntity.status(HttpStatus.CREATED).body(created)
     }
 
-    //TODO No funciona salta un 500
+
     @PutMapping("/{id}")
     suspend fun updateProduct(
         @RequestBody dto: ProductDto,
@@ -82,9 +82,7 @@ class ProductController
         val find = service.findProductById(id)
         find?.let {
             val dtoProduct = dto.toProduct()
-            dtoProduct.id = it.id
-            dtoProduct.uuid = it.uuid
-            val updated = service.saveProduct(dtoProduct)
+            val updated = service.updateProduct(it, dtoProduct)
             return ResponseEntity.ok(updated)
         }?: run{
             return ResponseEntity.notFound().build()
