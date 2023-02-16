@@ -1,8 +1,8 @@
 package es.tiendamusica.pedido
 
 import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
-import es.tiendamusica.models.Pedido
-import es.tiendamusica.repository.pedidos.PedidosRepository
+import es.tiendamusica.models.Order
+import es.tiendamusica.repository.pedidos.OrderRepository
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.*
@@ -13,13 +13,13 @@ import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
-class PedidoRepositoryTest {
-    private val repo = PedidosRepository()
+class OrderRepositoryTest {
+    private val repo = OrderRepository()
     private val user = UUID.randomUUID().toString()
-    private val pedidoTest = Pedido(
+    private val orderTest = Order(
         userId = user,
         price = 4.93,
-        status = Pedido.Status.FINISHED,
+        status = Order.Status.FINISHED,
         createdAt = LocalDate.now(),
         deliveredAt = LocalDate.now(),
         productos = mutableListOf()
@@ -27,12 +27,12 @@ class PedidoRepositoryTest {
 
     @BeforeEach
     fun setup() = runTest {
-        repo.save(pedidoTest)
+        repo.save(orderTest)
     }
 
     @AfterEach
     fun tearDown() = runTest {
-        repo.delete(pedidoTest)
+        repo.delete(orderTest)
     }
 
 
@@ -46,12 +46,12 @@ class PedidoRepositoryTest {
 
     @Test
     fun findById() = runTest {
-        val res = repo.findById(pedidoTest.id.toId())
+        val res = repo.findById(orderTest.id.toId())
 
         assertAll(
             {
-                assertEquals(res!!.createdAt, pedidoTest.createdAt)
-                assertEquals(res.price, pedidoTest.price)
+                assertEquals(res!!.createdAt, orderTest.createdAt)
+                assertEquals(res.price, orderTest.price)
             }
         )
 
@@ -60,21 +60,21 @@ class PedidoRepositoryTest {
     @Test
     fun save() = runTest {
 
-        val pedido = Pedido(
+        val order = Order(
             userId = user,
             price = 4.95,
-            status = Pedido.Status.FINISHED,
+            status = Order.Status.FINISHED,
             createdAt = LocalDate.now(),
             deliveredAt = LocalDate.now(),
             productos = mutableListOf()
         )
 
-        val res = repo.save(pedido)
+        val res = repo.save(order)
 
         assertAll(
             {
-                assertEquals(res.createdAt, pedido.createdAt)
-                assertEquals(res.price, pedido.price)
+                assertEquals(res.createdAt, order.createdAt)
+                assertEquals(res.price, order.price)
             }
         )
 
@@ -82,7 +82,7 @@ class PedidoRepositoryTest {
 
     @Test
     fun delete() = runTest {
-        val res = repo.delete(pedidoTest)
+        val res = repo.delete(orderTest)
         assertTrue(res)
     }
 
