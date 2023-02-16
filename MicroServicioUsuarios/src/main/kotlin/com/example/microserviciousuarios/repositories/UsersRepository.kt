@@ -1,12 +1,16 @@
 package com.example.microserviciousuarios.repositories
 
 import com.example.microserviciousuarios.models.Users
-import org.springframework.data.r2dbc.repository.R2dbcRepository
+import kotlinx.coroutines.flow.Flow
+
+import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 import org.springframework.stereotype.Repository
-import reactor.core.publisher.Mono
 import java.util.*
 
 @Repository
-interface UsersRepository: R2dbcRepository<Users, Long> {
-    fun findUsersByUuid(uuid: UUID): Mono<Users>
+interface UsersRepository : CoroutineCrudRepository<Users, Long> {
+    fun findByUuid(uuid: String): Flow<Users>
+    fun findByName(name: String): Flow<Users>
+    fun findByEmail(email:String):Flow<Users>
+
 }
