@@ -33,9 +33,21 @@ class ProductService
         return repository.save(product)
     }
 
-    suspend fun updateProduct(product: Product): Product{
+    suspend fun updateProduct(product: Product, updateData:Product): Product{
+        product.apply {
+            name = updateData.name
+            price = updateData.price
+            available = updateData.available
+            description = updateData.description
+            url = updateData.url
+            category = updateData.category
+            stock = updateData.stock
+            brand = updateData.brand
+            model = updateData.model
+        }
         return repository.save(product)
     }
+
 
     suspend fun deleteProduct(product: Product){
         repository.delete(product)

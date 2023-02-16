@@ -6,6 +6,7 @@ import com.example.apiproducto.models.*
 import com.example.apiproducto.services.ProductService
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 //TODO Hacer --> Dependiendo de si es admin o no se muestran los productos no disponibles también
+// TODO Cuando esté la seguridad dependiendo de si es user o admin devolver un dto
 @RestController
 @RequestMapping("/api/product")
 class ProductController
@@ -68,17 +70,19 @@ class ProductController
     suspend fun saveProduct(@RequestBody dto: ProductDto):ResponseEntity<Product>{
         val product = dto.toProduct()
         val created = service.saveProduct(product)
-        return ResponseEntity.ok(created)
+        return ResponseEntity.status(HttpStatus.CREATED).body(created)
     }
 
+
     @PutMapping("/{id}")
-    suspend fun updateProduct(@PathVariable id:Int, @RequestBody dto: ProductDto): ResponseEntity<Product>{
+    suspend fun updateProduct(
+        @RequestBody dto: ProductDto,
+        @PathVariable id: Int
+    ): ResponseEntity<Product>{
         val find = service.findProductById(id)
         find?.let {
             val dtoProduct = dto.toProduct()
-            dtoProduct.id = it.id
-            dtoProduct.uuid = it.uuid
-            val updated = service.updateProduct(dtoProduct)
+            val updated = service.updateProduct(it, dtoProduct)
             return ResponseEntity.ok(updated)
         }?: run{
             return ResponseEntity.notFound().build()
