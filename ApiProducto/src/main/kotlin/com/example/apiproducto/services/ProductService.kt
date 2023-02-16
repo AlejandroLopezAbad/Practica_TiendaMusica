@@ -33,9 +33,6 @@ class ProductService
         return repository.save(product)
     }
 
-    suspend fun updateProduct(product: Product): Product{
-        return repository.save(product)
-    }
 
     suspend fun deleteProduct(product: Product){
         repository.delete(product)

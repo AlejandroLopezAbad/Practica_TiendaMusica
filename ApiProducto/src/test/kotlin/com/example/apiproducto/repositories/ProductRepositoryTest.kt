@@ -21,17 +21,12 @@ internal class ProductRepositoryTest {
     @Autowired
     lateinit var repository: ProductRepository
 
-//    private val product =Product(name="Test", price = 2.50, available=true,
-//        description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
-//        brand = "marca", model = "model")
-
-
     @Test
     fun findAll() = runTest {
         val product =Product(name="Test", price = 2.50, available=true,
             description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
             brand = "marca", model = "model")
-        val delete = repository.save(product)
+        val save = repository.save(product)
         val result = repository.findAll().toList()
 
         assertAll(
@@ -47,7 +42,7 @@ internal class ProductRepositoryTest {
             { assertEquals(product.model, result[0].model) }
         )
 
-        repository.delete(delete)
+        repository.delete(save)
     }
 
     @Test
@@ -60,6 +55,8 @@ internal class ProductRepositoryTest {
 
         assertAll(
             { assertNotNull(find) },
+            { assertEquals(result.id, find?.id) },
+            { assertEquals(product.uuid, find?.uuid) },
             { assertEquals(product.name, find?.name) },
             { assertEquals(product.price, find?.price) },
             { assertEquals(product.available, find?.available) },
@@ -91,6 +88,7 @@ internal class ProductRepositoryTest {
         val result = repository.save(product)
 
         assertAll(
+            { assertEquals(product.uuid, result.uuid) },
             { assertEquals(product.name, result.name) },
             { assertEquals(product.price, result.price) },
             { assertEquals(product.available, result.available) },
@@ -114,6 +112,8 @@ internal class ProductRepositoryTest {
 
         // Comprobamos que el resultado es correcto
         assertAll(
+            { assertEquals(result.id, result.id) },
+            { assertEquals(product.uuid, result.uuid) },
             { assertEquals(product.name, result.name) },
             { assertEquals(product.price, result.price) },
             { assertEquals(product.available, result.available) },
@@ -136,6 +136,8 @@ internal class ProductRepositoryTest {
         val find = repository.findById(save.id!!)
 
         assertAll(
+            { assertEquals(save.id, find?.id) },
+            { assertEquals(product.uuid, find?.uuid) },
             { assertEquals(product.name, find?.name) },
             { assertEquals(product.price, find?.price) },
             { assertEquals(product.available, find?.available) },
