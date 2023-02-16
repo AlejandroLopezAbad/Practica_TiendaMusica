@@ -4,7 +4,9 @@ import com.example.microserviciousuarios.models.Users
 import java.time.LocalDateTime
 
 data class UsersDto(
+
     val id: Int? = null,
+
     val uuid:String,
     val email: String,
     val name: String,
@@ -18,6 +20,7 @@ data class UsersDto(
         val updatedAt: LocalDateTime? = LocalDateTime.now(),
         val deleted: Boolean = false
     )
+
 }
 
 data class UsersCreateDto(
@@ -31,3 +34,6 @@ data class UsersWithTokenDto(
     val user: UsersDto,
     val token: String
 )
+
+}
+

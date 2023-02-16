@@ -1,6 +1,8 @@
 package com.example.microserviciousuarios.mappers
 
+
 import com.example.microserviciousuarios.dto.UsersCreateDto
+
 import com.example.microserviciousuarios.dto.UsersDto
 import com.example.microserviciousuarios.models.Users
 
@@ -19,6 +21,7 @@ fun Users.toDto(): UsersDto {
             deleted = this.deleted
         )
     )
+
 }
 
 //TODO MAPPER DEL CREATE A USERS
@@ -27,4 +30,8 @@ fun Users.toDto(): UsersDto {
 
 
 
+
+
+
+}
 

@@ -22,7 +22,9 @@ data class Users(
     @Column("telephone")
     val telephone:Int,
     @Column("rol")
+
     val rol :TypeRol, //TODO creo que hay que cambiarlo a como lo tiene el profe
+
     @Column("avaliable")
     val avaliable:Boolean,
     @Column("url")

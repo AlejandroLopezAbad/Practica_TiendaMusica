@@ -31,11 +31,14 @@ class UsersServices
 
         logger.info { "Guardando usuario: $user" }
         /*
+
                if(repository.findByName(user.name).firstOrNull() !=null){
+
                     logger.info { "El usuario ya existe" }
                     throw Exception("EL nom")
                 }
                 //TODO Restriciciones
+
         */
         logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
@@ -64,6 +67,11 @@ class UsersServices
 
 
         //TODO probar funciones
+
+
+
+
+
         var userDB = repository.findByName(user.name)
             .firstOrNull()
 
