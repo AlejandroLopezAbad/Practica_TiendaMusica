@@ -2,11 +2,10 @@ package com.example.apiproducto.repositories
 
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.models.ProductCategory
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -57,19 +56,19 @@ internal class ProductRepositoryTest {
             description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
             brand = "marca", model = "model")
         val result = repository.save(product)
-        val block = withContext(Dispatchers.IO) { repository.findProductByUuid(result.uuid).block() }
-        // Comprobamos que el resultado es correcto
+        val find = repository.findProductByUuid(result.uuid).firstOrNull()
+
         assertAll(
-            { assertNotNull(block) },
-            { assertEquals(product.name, block?.name) },
-            { assertEquals(product.price, block?.price) },
-            { assertEquals(product.available, block?.available) },
-            { assertEquals(product.description, block?.description) },
-            { assertEquals(product.url, block?.url) },
-            { assertEquals(product.category, block?.category) },
-            { assertEquals(product.stock, block?.stock) },
-            { assertEquals(product.brand, block?.brand) },
-            { assertEquals(product.model, block?.model) }
+            { assertNotNull(find) },
+            { assertEquals(product.name, find?.name) },
+            { assertEquals(product.price, find?.price) },
+            { assertEquals(product.available, find?.available) },
+            { assertEquals(product.description, find?.description) },
+            { assertEquals(product.url, find?.url) },
+            { assertEquals(product.category, find?.category) },
+            { assertEquals(product.stock, find?.stock) },
+            { assertEquals(product.brand, find?.brand) },
+            { assertEquals(product.model, find?.model) }
         )
 
         repository.delete(result)
@@ -80,7 +79,7 @@ internal class ProductRepositoryTest {
         val product =Product(name="Test", price = 2.50, available=true,
             description = "Prueba descripcion", url = "url", category = ProductCategory.BOOSTER, stock = 10,
             brand = "marca", model = "model")
-        val block = withContext(Dispatchers.IO) { repository.findProductByUuid(product.uuid).block() }
+        val block = repository.findProductByUuid(product.uuid).firstOrNull()
         assertNull(block)
     }
 
