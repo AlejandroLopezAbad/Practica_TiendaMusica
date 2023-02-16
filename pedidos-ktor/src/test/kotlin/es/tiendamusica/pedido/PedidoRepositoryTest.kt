@@ -1,4 +1,4 @@
-package repositories.pedido
+package es.tiendamusica.pedido
 
 import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import es.tiendamusica.models.Pedido
@@ -122,14 +122,3 @@ class PedidoRepositoryTest {
 
 
 
-
-
-//
-//    @Test
-//    fun findPedidoByUser() = runTest {
-//        val res = repo.findPedidoByUser(userTest.uuid).toList()
-//
-//        assertTrue(res == listOf(pedidoTest.toPedidoDto()))
-//
-//    }
-//}
