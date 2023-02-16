@@ -1,25 +1,28 @@
 package es.tiendamusica.models
 
+import es.tiendamusica.dtos.LineaVenta
+import es.tiendamusica.dtos.PedidoCreateDto
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
-import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import serializer.LocalDateSerializer
 import java.time.LocalDate
 import java.util.*
+
 @Serializable
 data class Pedido(
     @BsonId @Contextual
-    val id : Id<Pedido> = newId(),
-    val uuid : String = UUID.randomUUID().toString(),
-    var price : Double,
-    var usuario :User,
-    var status: Status,
+    val id: String = newId<Pedido>().toString(), // no cambia
+    val uuid: String = UUID.randomUUID().toString(), // no cambia
+    var price: Double, // si cambia
+    var userId: String, // no cambia
+    var status: Status, // si cambia
     @Serializable(LocalDateSerializer::class)
-    var createdAt: LocalDate,
+    var createdAt: LocalDate, // no cambia
     @Serializable(LocalDateSerializer::class)
-    var deliveredAt: LocalDate
+    var deliveredAt: LocalDate?, // si cambia
+    val productos: MutableList<LineaVenta>
 ) {
     enum class Status(val status: String) {
         RECEIVED("Received"),
@@ -38,3 +41,13 @@ data class Pedido(
         }
     }
 }
+
+fun PedidoCreateDto.toModel() = Pedido(
+    price = this.productos.sumOf { it.precio * it.cantidad },
+    uuid = UUID.randomUUID().toString(),
+    userId = this.userId,
+    status = Pedido.Status.RECEIVED,
+    createdAt = LocalDate.now(),
+    deliveredAt = null,
+    productos = this.productos as MutableList<LineaVenta>
+)

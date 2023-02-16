@@ -1,5 +1,11 @@
 package es.tiendamusica.dtos
 
-class UserDto {
+import kotlinx.serialization.Serializable
+import serializer.UUIDSerializer
+import java.util.*
 
-}
+@Serializable
+data class UserDto(
+    @Serializable(UUIDSerializer::class)
+    val uuid: UUID
+)

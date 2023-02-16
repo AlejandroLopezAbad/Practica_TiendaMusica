@@ -6,7 +6,7 @@ import es.tiendamusica.repository.ICRUD
 import kotlinx.coroutines.flow.Flow
 import org.litote.kmongo.Id
 import java.util.*
-
 interface IPedidosRepository : ICRUD<Pedido, Id<Pedido>> {
-    suspend fun findPedidoByUser(uuid: String): Flow<PedidoDto>
+    suspend fun findByUser(id: String): Flow<Pedido>
+
 }
