@@ -31,11 +31,14 @@ class UsersServices
 
         logger.info { "Guardando usuario: $user" }
         /*
+
                if(repository.findByName(user.name).firstOrNull() !=null){
+
                     logger.info { "El usuario ya existe" }
                     throw Exception("EL nom")
                 }
                 //TODO Restriciciones
+
         */
         logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
@@ -62,6 +65,22 @@ class UsersServices
     suspend fun update(user: Users) = withContext(Dispatchers.IO) {
         logger.info { "Actualizando usuario: $user" }
 
+
+            )
+      /*  if (isAdmin) {
+            newUser = newUser.copy(
+                rol = Users.TypeRol.ADMIN
+            )
+        }*/
+
+        println(newUser)
+        try {
+            return@withContext repository.save(newUser)
+        } catch (e: Exception) {
+            throw Exception("Error al crear el usuario: Nombre de usuario o email ya existen")
+        }
+
+    }
 
         var userDB = repository.findByName(user.name)
             .firstOrNull()
