@@ -29,3 +29,9 @@ data class PedidoCreateDto(
     val userId: String
 )
 
+@Serializable
+data class UpdatePedidoDto(
+    val precio: Double? = null,
+    val status: Pedido.Status? = null
+)
+
