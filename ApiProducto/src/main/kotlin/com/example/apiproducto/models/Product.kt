@@ -9,7 +9,7 @@ data class Product(
     @Id
     override var id:Int? =null,
     override var uuid: String = UUID.randomUUID().toString(),
-    override var name: String,
+    var name: String,
     override var price: Double,
     override var available: Boolean,
     override var description: String,
@@ -18,7 +18,7 @@ data class Product(
     var stock: Int,
     var brand: String,
     var model: String
-): Item(id, uuid, name, price, available, description, url)
+): Item(id, uuid, price, available, description, url)
 
 enum class ProductCategory{
     GUITAR, BASS_GUITAR, BOOSTER, ACCESSORY
