@@ -1,5 +1,8 @@
 package com.example.apiproducto.controller
 
+import com.example.apiproducto.dto.ServiceCreateDto
+import com.example.apiproducto.exceptions.ServiceException
+import com.example.apiproducto.mappers.toService
 import com.example.apiproducto.models.Service
 import com.example.apiproducto.services.ServicesService
 import kotlinx.coroutines.flow.toList
@@ -7,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/service")
@@ -21,8 +25,8 @@ class ServiceController
     }
 
     @PostMapping("")
-    suspend fun create(@RequestBody service: Service): ResponseEntity<Service> {
-        val res = this.service.saveService(service)
+    suspend fun create(@RequestBody service: ServiceCreateDto): ResponseEntity<Service> {
+        val res = this.service.saveService(service.toService())
         return ResponseEntity.status(HttpStatus.CREATED).body(res)
     }
 
@@ -38,8 +42,12 @@ class ServiceController
 
     @DeleteMapping("/{id}")
     suspend fun delete(@PathVariable id: Int): ResponseEntity<Service> {
-        this.service.deleteService(id)
-        return ResponseEntity.noContent().build()
+        try {
+            this.service.deleteService(id)
+            return ResponseEntity.noContent().build()
+        } catch (e: ServiceException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        }
     }
 
     @PutMapping("/{id}")

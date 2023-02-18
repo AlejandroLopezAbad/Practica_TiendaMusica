@@ -1,5 +1,6 @@
 package com.example.apiproducto.services
 
+import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.repositories.ServiceRepository
 import kotlinx.coroutines.flow.Flow
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,6 +39,9 @@ class ServicesService
     }
 
     suspend fun deleteService(id: Int): Boolean {
-        return repository.deleteById(id).let { true }
+        val exist = repository.findById(id)
+        exist?.let {
+            return repository.deleteById(id).let { true }
+        } ?: throw ServiceNotFoundException("No existe el servicio con id: $id")
     }
 }
