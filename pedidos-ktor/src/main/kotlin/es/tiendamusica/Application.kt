@@ -1,6 +1,7 @@
 package es.tiendamusica
 
 import es.tiendamusica.models.User
+import es.tiendamusica.plugins.configureCors
 import es.tiendamusica.plugins.configureRouting
 import es.tiendamusica.plugins.configureSerialization
 import io.ktor.server.application.*
@@ -66,4 +67,5 @@ suspend fun main() {
 fun Application.module() {
     configureSerialization()
     configureRouting()
+    configureCors()
 }
