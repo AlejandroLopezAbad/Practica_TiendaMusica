@@ -1,11 +1,12 @@
 package es.tiendamusica.routes
 
-import es.tiendamusica.controllers.PedidosController
-import es.tiendamusica.dtos.PedidoCreateDto
-import es.tiendamusica.dtos.UpdatePedidoDto
-import es.tiendamusica.exceptions.PedidoDuplicated
-import es.tiendamusica.exceptions.PedidoNotFoundException
-import es.tiendamusica.exceptions.PedidoUnauthorized
+import es.tiendamusica.controllers.OrderController
+import es.tiendamusica.dtos.OrderCreateDto
+import es.tiendamusica.dtos.OrderPageDto
+import es.tiendamusica.dtos.OrderUpdateDto
+import es.tiendamusica.exceptions.OrderDuplicated
+import es.tiendamusica.exceptions.OrderNotFoundException
+import es.tiendamusica.exceptions.OrderUnauthorized
 import es.tiendamusica.mappers.toDto
 import es.tiendamusica.models.toModel
 import io.ktor.http.*
@@ -19,9 +20,9 @@ import org.koin.ktor.ext.inject
 
 private const val ENDPOINT = "/pedidos"
 private val logger = KotlinLogging.logger { }
-fun Application.pedidosRoutes() {
+fun Application.ordersRoutes() {
 
-    val pedidosService: PedidosController by inject()
+    val ordersService: OrderController by inject()
 
     routing {
         route(ENDPOINT) {
@@ -29,7 +30,16 @@ fun Application.pedidosRoutes() {
             //--------- GETS -------------
             get {
                 logger.debug { "GET ALL $ENDPOINT" }
-                pedidosService.getAllOrders().toList().let { res -> call.respond(HttpStatusCode.OK, res) }
+                val page = call.request.queryParameters["page"]?.toIntOrNull()
+                val perPage = call.request.queryParameters["perPage"]?.toIntOrNull() ?: 10
+                if (page != null && page > 0) {
+                    val res = ordersService.getAllOrders(page - 1, perPage)
+                        .toList()
+                        .map { it.toDto() }
+                        .let { res -> call.respond(HttpStatusCode.OK, OrderPageDto(page, perPage, res)) }
+                }
+
+                ordersService.getAllOrders().toList().let { res -> call.respond(HttpStatusCode.OK, res) }
             }
 
             //GET BY ID
@@ -37,7 +47,7 @@ fun Application.pedidosRoutes() {
                 logger.debug { "GET BY ID : $ENDPOINT/{id}" }
                 try {
                     val id = call.parameters["id"]
-                    val pedido = pedidosService.getById(id!!)
+                    val pedido = ordersService.getById(id!!)
                     pedido?.let {
                         call.respond(HttpStatusCode.OK, pedido.toDto())
 
@@ -45,7 +55,7 @@ fun Application.pedidosRoutes() {
                         call.respond(HttpStatusCode.NotFound, "Not found")
 
                     }
-                } catch (e: PedidoNotFoundException) {
+                } catch (e: OrderNotFoundException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
@@ -56,56 +66,53 @@ fun Application.pedidosRoutes() {
                 try {
                     val id = call.parameters["user_id"]
                     val res =
-                        pedidosService.getByUserId(id!!).toList().let { res ->
+                        ordersService.getByUserId(id!!).toList().let { res ->
                             println("------------ $res---------")
                             call.respond(HttpStatusCode.OK, res)
                         }
-                } catch (e: PedidoNotFoundException) {
+                } catch (e: OrderNotFoundException) {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
             //---------------------------
             //-------- POST -------------
             post {
-                logger.debug { "POST PEDIDO : $ENDPOINT" }
+                logger.debug { "POST ORDER : $ENDPOINT" }
                 try {
-                    val dto = call.receive<PedidoCreateDto>()
-                    val pedido = pedidosService.createOrder(dto.toModel())
+                    val dto = call.receive<OrderCreateDto>()
+                    val pedido = ordersService.createOrder(dto.toModel())
                     call.respond(HttpStatusCode.Created, pedido.toDto())
-                } catch (e: PedidoUnauthorized) {
+                } catch (e: OrderUnauthorized) {
                     call.respond(HttpStatusCode.Unauthorized, e.message.toString())
-                } catch (e: PedidoDuplicated) {
+                } catch (e: OrderDuplicated) {
                     call.respond(HttpStatusCode.Conflict, e.message.toString())
                 }
             }
             patch("{id}") {
-                logger.debug { "PATCH EPDIDO : $ENDPOINT/{id}" }
+                logger.debug { "PATCH ORDER : $ENDPOINT/{id}" }
                 try {
-                    val dto = call.receive<UpdatePedidoDto>()
+                    val dto = call.receive<OrderUpdateDto>()
                     val id = call.parameters["id"]
-                    val pedido = pedidosService.getById(id!!)
+                    val pedido = ordersService.getById(id!!)
                     pedido?.let {
-                        println("PEDIDO ENCONTRADO----------------------------")
-                        pedidosService.patchPedido(pedido, dto)
+                        ordersService.patchOrder(pedido, dto)
                         call.respond(HttpStatusCode.OK)
                     } ?: run {
-                        println("PEDIDO NO ENCONTRADO----------------------------")
-
                         call.respond(HttpStatusCode.NotFound, "Not found")
                     }
-                } catch (e: PedidoUnauthorized) {
+                } catch (e: OrderUnauthorized) {
                     call.respond(HttpStatusCode.Unauthorized, e.message.toString())
-                } catch (e: PedidoDuplicated) {
+                } catch (e: OrderDuplicated) {
                     call.respond(HttpStatusCode.Conflict, e.message.toString())
                 }
             }
             delete("{id}") {
-                logger.debug { "DELETE PEDIDO : $ENDPOINT/{id}" }
+                logger.debug { "DELETE ORDER : $ENDPOINT/{id}" }
                 try {
                     val id = call.parameters["id"]
-                    val pedido = pedidosService.getById(id!!)
+                    val pedido = ordersService.getById(id!!)
                     pedido?.let {
-                        val res = pedidosService.deleteOrder(pedido)
+                        val res = ordersService.deleteOrder(pedido)
                         if (res) {
                             call.respond(HttpStatusCode.NoContent)
                         } else {
@@ -116,10 +123,11 @@ fun Application.pedidosRoutes() {
                         call.respond(HttpStatusCode.NotFound, "Not found")
 
                     }
-                } catch (e: PedidoUnauthorized) {
+                } catch (e: OrderUnauthorized) {
                     call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 }
             }
         }
     }
 }
+

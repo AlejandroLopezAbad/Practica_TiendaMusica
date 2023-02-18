@@ -1,11 +1,11 @@
 package es.tiendamusica.mappers
 
-import es.tiendamusica.dtos.PedidoDto
+import es.tiendamusica.dtos.OrderDto
 import es.tiendamusica.dtos.UserDto
-import es.tiendamusica.models.Pedido
+import es.tiendamusica.models.Order
 import java.util.*
 
-fun Pedido.toDto() = PedidoDto(
+fun Order.toDto() = OrderDto(
     id = this.id.toString(),
     uuid = UUID.fromString(this.uuid),
     price = this.price,
