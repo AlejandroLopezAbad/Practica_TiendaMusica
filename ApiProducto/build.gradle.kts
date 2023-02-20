@@ -27,7 +27,7 @@ dependencies {
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-
+    
     testImplementation("io.projectreactor:reactor-test")
     // Mockk
     testImplementation("com.ninja-squad:springmockk:4.0.0")

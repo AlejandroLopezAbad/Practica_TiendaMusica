@@ -5,10 +5,10 @@ val kotlin_version: String by project
 val logback_version: String by project
 
 //KOIN
-val koin_ktor_version : String by project
-val ksp_version : String by project
-val koin_ksp_version : String by project
-val koin_version : String by project
+val koin_ktor_version: String by project
+val ksp_version: String by project
+val koin_ksp_version: String by project
+val koin_version: String by project
 
 plugins {
     kotlin("jvm") version "1.8.0"
@@ -29,7 +29,9 @@ application {
 repositories {
     mavenCentral()
 }
-
+sourceSets.main {
+    java.srcDirs("build/generated/ksp/main/kotlin")
+}
 dependencies {
     //Ktor core
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
@@ -66,3 +68,4 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
+
