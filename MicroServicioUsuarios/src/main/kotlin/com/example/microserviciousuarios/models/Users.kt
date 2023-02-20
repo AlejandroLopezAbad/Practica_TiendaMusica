@@ -10,19 +10,22 @@ import java.util.*
 @Table("users")
 data class Users(
     @Id
-    val id :Long,
+    val id :Int?=null,
     @Column("uuid")
-    val uuid:UUID= UUID.randomUUID(),
+    val uuid:String= UUID.randomUUID().toString(),
     @Column("email")
     val email:String,
     @Column("name")
     val name:String,
     @Column("password")
-    val password:ByteArray,
+    val password:String,
+
     @Column("telephone")
     val telephone:Int,
     @Column("rol")
-    val rol : String= TypeRol.USER.name,
+
+    val rol :TypeRol, //TODO creo que hay que cambiarlo a como lo tiene el profe
+
     @Column("avaliable")
     val avaliable:Boolean,
     @Column("url")
@@ -34,18 +37,15 @@ data class Users(
     val deleted: Boolean = false, // Para el borrado lógico si es necesario
     )/*:UserDetails*/ {
 
+
     enum class TypeRol() {
         USER,EMPLOYE,ADMIN,SUPERADMIN
 
     }
 }
 //TODO añadir userDetails cuando metamos la parte de seguridad
-/*
-// transformamos el conjunto de roles en una lista de GrantedAuthority
-override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-    //val ga = SimpleGrantedAuthority("ROLE_" + rol.name)
-    // return mutableListOf<GrantedAuthority>(ga)
-    return rol.split(",").map { SimpleGrantedAuthority("ROLE_${it.trim()}") }.toMutableList()}*/
+
+
 
 
 
