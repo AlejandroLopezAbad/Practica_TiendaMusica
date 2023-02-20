@@ -1,6 +1,7 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ProductDto
+import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.mappers.toProduct
 import com.example.apiproducto.models.*
 import com.example.apiproducto.services.ProductService
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 //TODO Hacer --> Dependiendo de si es admin o no se muestran los productos no disponibles también
 // TODO Cuando esté la seguridad dependiendo de si es user o admin devolver un dto
@@ -58,11 +60,11 @@ class ProductController
 
     @GetMapping("/{id}")
     suspend fun findProductById(@PathVariable id: Int): ResponseEntity<Product>{
-        val find = service.findProductById(id)
-        find?.let {
-            return ResponseEntity.ok(it)
-        }?:run{
-            return ResponseEntity.notFound().build()
+        try {
+            val find = service.findProductById(id)
+            return ResponseEntity.ok(find)
+        } catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message!!)
         }
     }
 
@@ -79,24 +81,24 @@ class ProductController
         @RequestBody dto: ProductDto,
         @PathVariable id: Int
     ): ResponseEntity<Product>{
-        val find = service.findProductById(id)
-        find?.let {
+        try {
+            val find = service.findProductById(id)
             val dtoProduct = dto.toProduct()
-            val updated = service.updateProduct(it, dtoProduct)
+            val updated = service.updateProduct(find!!, dtoProduct)
             return ResponseEntity.ok(updated)
-        }?: run{
-            return ResponseEntity.notFound().build()
+        }catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@PathVariable id:Int): ResponseEntity<Product> {
-        val find = service.findProductById(id)
-        find?.let {
-            service.deleteProduct(it)
+        try {
+            val find = service.findProductById(id)
+            service.deleteProduct(find!!)
             return ResponseEntity.noContent().build()
-        }?: run{
-            return ResponseEntity.notFound().build()
+        }catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 }

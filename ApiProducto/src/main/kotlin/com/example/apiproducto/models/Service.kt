@@ -15,6 +15,7 @@ data class Service(
     override var url: String,
     var category: ServiceCategory,
 ) : Item(id, uuid, price, available, description, url)
+
 enum class ServiceCategory {
     GUITAR_REPAIR, AMPLIFIER_REPAIR, CHANGE_OF_STRINGS
 }
