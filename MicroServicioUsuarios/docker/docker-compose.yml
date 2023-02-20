@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  mariaDb:
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: admin
+      MARIADB_PASSWORD: 12345
+      MARIADB_DATABASE : tiendausers
+    ports:
+      - "3307:3307"
+    expose:
+      - "3307"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
