@@ -1,5 +1,6 @@
 package com.example.apiproducto.services
 
+import com.example.apiproducto.exceptions.*
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.repositories.ProductRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -23,10 +24,12 @@ class ProductService
 
     suspend fun findProductById(id:Int):Product?{
         return repository.findById(id)
+            ?: throw ProductNotFoundException("No se ha encontrado un producto con el id: $id")
     }
 
     suspend fun findProductByUuid(uuid:String): Product?{
         return repository.findProductByUuid(uuid).firstOrNull()
+            ?: throw ProductNotFoundException("No se ha encontrado un producto con el uuid: $uuid")
     }
 
     suspend fun saveProduct(product: Product): Product{
@@ -34,18 +37,19 @@ class ProductService
     }
 
     suspend fun updateProduct(product: Product, updateData:Product): Product{
-        product.apply {
-            name = updateData.name
-            price = updateData.price
-            available = updateData.available
-            description = updateData.description
-            url = updateData.url
-            category = updateData.category
-            stock = updateData.stock
-            brand = updateData.brand
-            model = updateData.model
-        }
-        return repository.save(product)
+        return repository.save(Product(
+                id = product.id,
+                uuid = product.uuid,
+                name = updateData.name,
+                price = updateData.price,
+                available = updateData.available,
+                description = updateData.description,
+                url = updateData.url,
+                category = updateData.category,
+                stock = updateData.stock,
+                brand = updateData.brand,
+                model = updateData.model
+        ))
     }
 
 
