@@ -41,7 +41,8 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("io.ktor:ktor-server-cors-jvm:2.2.2")
-
+//Validators Ktor
+    implementation("io.ktor:ktor-server-request-validation:$ktor_version")
 
     // Para testear métodos suspendidos o corrutinas
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")

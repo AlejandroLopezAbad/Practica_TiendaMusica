@@ -1,53 +1,60 @@
 package es.tiendamusica
 
+import es.tiendamusica.controllers.OrderController
+import es.tiendamusica.dtos.SellLine
+import es.tiendamusica.models.Order
 import es.tiendamusica.models.User
 import es.tiendamusica.plugins.configureCors
 import es.tiendamusica.plugins.configureRouting
 import es.tiendamusica.plugins.configureSerialization
+import es.tiendamusica.plugins.configuteValidations
+import es.tiendamusica.repository.pedidos.OrderRepository
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
 import org.koin.ksp.generated.defaultModule
+import java.time.LocalDate
+import java.util.*
 
 
 class KoinApp : KoinComponent {
-    fun run() {
-        val user = User("Jeremy")
+    suspend fun run() {
+        val user = User(UUID.randomUUID().toString())
 
 
-        /*val productos1 = mutableListOf<LineaVenta>()
+        val productos1 = mutableListOf<SellLine>()
         repeat(3) {
             productos1.add(
-                LineaVenta(UUID.randomUUID().toString(), (1..100).random().toDouble(), (1..15).random())
+                SellLine(UUID.randomUUID().toString(), (1..100).random().toDouble(), (1..15).random())
             )
         }
-        val productos2 = mutableListOf<LineaVenta>()
+        val productos2 = mutableListOf<SellLine>()
         repeat(3) {
             productos2.add(
-                LineaVenta(UUID.randomUUID().toString(), (1..100).random().toDouble(), (1..15).random())
+                SellLine(UUID.randomUUID().toString(), (1..100).random().toDouble(), (1..15).random())
             )
         }
-        val order = Pedido(
-            price = productos1.sumOf { it.precio },
-            status = Pedido.Status.PROCESS,
+        val order = Order(
+            price = productos1.sumOf { it.price * it.quantity },
+            status = Order.Status.PROCESSING,
             createdAt = LocalDate.now(),
             deliveredAt = LocalDate.now(),
             userId = user.name,
             productos = productos1
         )
-        val order2 = Pedido(
-            price = productos2.sumOf { it.precio },
-            status = Pedido.Status.PROCESS,
+        val order2 = Order(
+            price = productos2.sumOf { it.price * it.quantity },
+            status = Order.Status.PROCESSING,
             createdAt = LocalDate.now(),
             deliveredAt = LocalDate.now(),
             userId = user.name,
             productos = productos2
-        )*/
-        //  val controller = PedidosController(PedidosRepository())
-        // controller.createOrder(order)
-        //controller.createOrder(order2)
+        )
+          val controller = OrderController(OrderRepository())
+         controller.createOrder(order)
+        controller.createOrder(order2)
 
         embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
             .start(wait = true)
@@ -58,7 +65,7 @@ class KoinApp : KoinComponent {
 suspend fun main() {
 
     startKoin {
-        defaultModule()
+defaultModule()
     }
 
     KoinApp().run()
@@ -68,4 +75,5 @@ fun Application.module() {
     configureSerialization()
     configureRouting()
     configureCors()
+    configuteValidations()
 }
