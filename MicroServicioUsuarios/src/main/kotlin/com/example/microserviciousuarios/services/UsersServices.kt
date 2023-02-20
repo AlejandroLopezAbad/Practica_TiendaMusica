@@ -31,7 +31,9 @@ class UsersServices
 
         logger.info { "Guardando usuario: $user" }
         /*
-                if(repository.findByName(user.name).firstOrNull() !=null){
+
+               if(repository.findByName(user.name).firstOrNull() !=null){
+
                     logger.info { "El usuario ya existe" }
                     throw Exception("EL nom")
                 }
@@ -40,16 +42,16 @@ class UsersServices
         */
         logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
-            uuid = UUID.randomUUID(),
+            uuid = UUID.randomUUID().toString(),
             password = user.password,
             rol = Users.TypeRol.USER,
 
             )
-      /*  if (isAdmin) {
+        if (isAdmin) { //TODO comprobar que funciona
             newUser = newUser.copy(
                 rol = Users.TypeRol.ADMIN
             )
-        }*/
+        }
 
         println(newUser)
         try {
@@ -60,5 +62,41 @@ class UsersServices
 
     }
 
+    suspend fun update(user: Users) = withContext(Dispatchers.IO) {
+        logger.info { "Actualizando usuario: $user" }
 
+
+        //TODO probar funciones
+
+
+
+
+
+        var userDB = repository.findByName(user.name)
+            .firstOrNull()
+
+        if (userDB != null && userDB.id != user.id) {
+            throw Exception("El Id ya existe")//TODO cambiar excepciones
+        }
+
+        userDB = repository.findByEmail(user.email)
+            .firstOrNull()
+
+        if (userDB != null && userDB.id != user.id) {
+            throw Exception("El email ya existe")
+        }
+
+        logger.info { "El usuario no existe, lo actualizamos" }
+
+        val updtatedUser = user.copy(
+            updatedAt = LocalDateTime.now()
+        )
+
+        try {
+            return@withContext repository.save(updtatedUser)
+        } catch (e: Exception) {
+            throw Exception("Error al actualizar el usuario: Nombre de usuario o email ya existen")
+        }
+
+    }
 }

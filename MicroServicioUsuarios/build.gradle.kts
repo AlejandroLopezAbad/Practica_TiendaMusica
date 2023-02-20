@@ -34,10 +34,11 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.5")
     // JWT
     implementation("com.auth0:java-jwt:4.2.1")
-    // Para mis logs
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
-    runtimeOnly("org.postgresql:postgresql")
+
+  //  runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.mariadb:r2dbc-mariadb:1.1.3")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
