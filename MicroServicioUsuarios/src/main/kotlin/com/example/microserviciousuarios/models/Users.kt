@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.*
 
-@Table("users")
+@Table(name = "users")
 data class Users(
     @Id
     val id :Int?=null,
@@ -23,9 +23,7 @@ data class Users(
     @Column("telephone")
     val telephone:Int,
     @Column("rol")
-
     val rol :TypeRol, //TODO creo que hay que cambiarlo a como lo tiene el profe
-
     @Column("avaliable")
     val avaliable:Boolean,
     @Column("url")
