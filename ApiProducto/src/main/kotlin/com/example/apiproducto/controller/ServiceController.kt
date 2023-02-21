@@ -1,6 +1,7 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ServiceCreateDto
+import com.example.apiproducto.dto.ServiceUpdateDto
 import com.example.apiproducto.exceptions.ServiceException
 import com.example.apiproducto.mappers.toService
 import com.example.apiproducto.models.Service
@@ -51,7 +52,8 @@ class ServiceController
     }
 
     @PutMapping("/{id}")
-    suspend fun update(@PathVariable id: Int, @RequestBody service: Service): ResponseEntity<Service> {
+    suspend fun update(@PathVariable id: Int, @RequestBody service: ServiceUpdateDto): ResponseEntity<Service> {
+        println("empiezo")
         val find = this.service.findById(id)
         find?.let {
             val res = this.service.updateService(it, service)

@@ -1,5 +1,6 @@
 package com.example.apiproducto.services
 
+import com.example.apiproducto.dto.ServiceUpdateDto
 import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.repositories.ServiceRepository
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ class ServicesService
         return repository.save(service)
     }
 
-    suspend fun updateService(find: Services, service: Services): Services {
+    suspend fun updateService(find: Services, service: ServiceUpdateDto): Services {
         return repository.save(
             Services(
                 find.id,
@@ -33,7 +34,7 @@ class ServicesService
                 service.available,
                 service.description,
                 service.url,
-                service.category
+                find.category
             )
         )
     }
