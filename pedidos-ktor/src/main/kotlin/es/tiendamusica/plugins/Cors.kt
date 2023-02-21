@@ -17,6 +17,6 @@ fun Application.configureCors() {
         allowMethod(HttpMethod.Delete)
         allowHeader(HttpHeaders.Authorization)
         allowHeader("MyCustomHeader")
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        //anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 }

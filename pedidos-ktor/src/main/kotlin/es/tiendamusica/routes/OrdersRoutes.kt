@@ -4,6 +4,7 @@ import es.tiendamusica.controllers.OrderController
 import es.tiendamusica.dtos.OrderCreateDto
 import es.tiendamusica.dtos.OrderPageDto
 import es.tiendamusica.dtos.OrderUpdateDto
+import es.tiendamusica.exceptions.OrderBadRequest
 import es.tiendamusica.exceptions.OrderDuplicated
 import es.tiendamusica.exceptions.OrderNotFoundException
 import es.tiendamusica.exceptions.OrderUnauthorized
@@ -86,6 +87,8 @@ fun Application.ordersRoutes() {
                     call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 } catch (e: OrderDuplicated) {
                     call.respond(HttpStatusCode.Conflict, e.message.toString())
+                }catch (e: OrderBadRequest){
+                    call.respond(HttpStatusCode.BadRequest, e.message.toString())
                 }
             }
             patch("{id}") {
