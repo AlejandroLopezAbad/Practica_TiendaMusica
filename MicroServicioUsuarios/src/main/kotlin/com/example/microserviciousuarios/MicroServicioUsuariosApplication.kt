@@ -30,6 +30,14 @@ class MicroServicioUsuariosApplication(
             url = "url")
         service.save(user)
 
+
+
+        println(user)
+
+        var ayuda = service.findAll().toList()
+        println(ayuda)
+
+
 //        val prueba = service.findAll().collect{
 //            println(it)
 //        }

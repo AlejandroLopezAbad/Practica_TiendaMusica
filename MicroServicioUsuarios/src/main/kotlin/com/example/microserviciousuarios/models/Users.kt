@@ -21,13 +21,13 @@ data class Users(
     val password:String,
 
     @Column("telephone")
-    val telephone:Int,
+    val telephone:Int?,
     @Column("rol")
-    val rol :TypeRol, //TODO creo que hay que cambiarlo a como lo tiene el profe
+    val rol :TypeRol=TypeRol.USER, //TODO creo que hay que cambiarlo a como lo tiene el profe
     @Column("avaliable")
-    val avaliable:Boolean,
+    val avaliable:Boolean=true,
     @Column("url")
-    val url:String,
+    val url:String="",
     @Column("created_at")
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
@@ -38,7 +38,6 @@ data class Users(
 
     enum class TypeRol() {
         USER,EMPLOYE,ADMIN,SUPERADMIN
-
     }
 }
 //TODO añadir userDetails cuando metamos la parte de seguridad

@@ -1,6 +1,7 @@
 package com.example.microserviciousuarios.validators
 
 import com.example.microserviciousuarios.dto.UsersCreateDto
+import com.example.microserviciousuarios.dto.UsersUpdateDto
 
 fun UsersCreateDto.validate(): UsersCreateDto {
     if (this.name.isBlank()) {
@@ -14,3 +15,16 @@ fun UsersCreateDto.validate(): UsersCreateDto {
     return this
 }
 //TODO ver si queremos obligar que compruebe que tenga un rol
+
+
+fun UsersUpdateDto.validate(): UsersUpdateDto {
+    if (this.telephone.isBlank()) {
+        throw Exception("El telephone no puede estar vacío")
+    } else if (this.email.isBlank() || !this.email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$")))
+        throw Exception("El email no puede estar vacío o no tiene el formato correcto")
+    else if (this.url.isBlank())
+        throw Exception("El url no puede estar vacío")
+    else if (this.password.isBlank())
+        throw Exception("El password no puede estar vacio")
+    return this
+}
