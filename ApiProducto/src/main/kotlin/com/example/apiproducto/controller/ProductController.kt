@@ -1,10 +1,12 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ProductDto
+import com.example.apiproducto.exceptions.ProductBadRequestException
 import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.mappers.toProduct
 import com.example.apiproducto.models.*
 import com.example.apiproducto.services.ProductService
+import com.example.apiproducto.validators.validate
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -64,15 +66,19 @@ class ProductController
             val find = service.findProductById(id)
             return ResponseEntity.ok(find)
         } catch (e: ProductNotFoundException){
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message!!)
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
     @PostMapping("")
     suspend fun saveProduct(@RequestBody dto: ProductDto):ResponseEntity<Product>{
-        val product = dto.toProduct()
-        val created = service.saveProduct(product)
-        return ResponseEntity.status(HttpStatus.CREATED).body(created)
+        try{
+            val product = dto.validate().toProduct()
+            val created = service.saveProduct(product)
+            return ResponseEntity.status(HttpStatus.CREATED).body(created)
+        }catch (e: ProductBadRequestException){
+            throw  ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        }
     }
 
 
@@ -83,11 +89,13 @@ class ProductController
     ): ResponseEntity<Product>{
         try {
             val find = service.findProductById(id)
-            val dtoProduct = dto.toProduct()
+            val dtoProduct = dto.validate().toProduct()
             val updated = service.updateProduct(find!!, dtoProduct)
             return ResponseEntity.ok(updated)
         }catch (e: ProductNotFoundException){
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        }catch (e: ProductBadRequestException){
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
