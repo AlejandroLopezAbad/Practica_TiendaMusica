@@ -28,7 +28,7 @@ fun Application.ordersRoutes() {
     routing {
         route(ENDPOINT) {
 
-            //--------- GETS -------------
+            //Recupera todos los pedidos guardados.
             get {
                 logger.debug { "GET ALL $ENDPOINT" }
                 val page = call.request.queryParameters["page"]?.toIntOrNull()
@@ -43,7 +43,8 @@ fun Application.ordersRoutes() {
                 ordersService.getAllOrders().toList().let { res -> call.respond(HttpStatusCode.OK, res) }
             }
 
-            //GET BY ID
+            //Busca un pedido por su ID
+            //En caso de no encontrarlo envía un Not Found
             get("{id}") {
                 logger.debug { "GET BY ID : $ENDPOINT/{id}" }
                 try {
@@ -61,7 +62,8 @@ fun Application.ordersRoutes() {
                 }
             }
 
-            //GET BY USER
+            //Busca los pedidos asociados al id de un usuario
+            // Si ese usuario no existe envía un Not Found
             get("/user/{user_id}") {
                 logger.debug { "GET BY USER ID : $ENDPOINT/{user_id}" }
                 try {
@@ -75,8 +77,8 @@ fun Application.ordersRoutes() {
                     call.respond(HttpStatusCode.NotFound, e.message.toString())
                 }
             }
-            //---------------------------
-            //-------- POST -------------
+            //Cre un pedido nuevo. Si lo consigue crear nos envía un Created
+            //Fracasa si el pedido ya existe con ese ID o si no tiene autorización
             post {
                 logger.debug { "POST ORDER : $ENDPOINT" }
                 try {
@@ -87,10 +89,13 @@ fun Application.ordersRoutes() {
                     call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 } catch (e: OrderDuplicated) {
                     call.respond(HttpStatusCode.Conflict, e.message.toString())
-                }catch (e: OrderBadRequest){
+                } catch (e: OrderBadRequest) {
                     call.respond(HttpStatusCode.BadRequest, e.message.toString())
                 }
             }
+
+            //Modifica un pedido buscado por su ID. Si el pedido no existe devuelve un Not Found
+            //Se puede modificar el precio del pedido y el estado.
             patch("{id}") {
                 logger.debug { "PATCH ORDER : $ENDPOINT/{id}" }
                 try {
@@ -109,6 +114,8 @@ fun Application.ordersRoutes() {
                     call.respond(HttpStatusCode.Conflict, e.message.toString())
                 }
             }
+
+            //Elimina un pedido buscado por su ID
             delete("{id}") {
                 logger.debug { "DELETE ORDER : $ENDPOINT/{id}" }
                 try {
