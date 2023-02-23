@@ -21,10 +21,10 @@ class MicroServicioUsuariosApplication(
 ) : CommandLineRunner {
     override fun run(vararg args: String?): Unit = runBlocking {
         val user = Users(
-            email= "prueba",
-            name= "Prueba Nombre",
+            email= "prueba@prueba.com",
+            name= "Profe",
             password = "1234",
-            telephone = 2135,
+            telephone = 787744552,
             rol = Users.TypeRol.USER,
             avaliable = true,
             url = "url")

@@ -50,8 +50,8 @@ class UsuarioController
 
        }*/
 
-    @GetMapping("/list")
-    suspend fun list(user: Users): ResponseEntity<List<UsersDto>> {
+    @GetMapping("/list") ///TODO METER user dentro del parametro para seguridad
+    suspend fun list(): ResponseEntity<List<UsersDto>> {
 
         logger.info { "Obteniendo lista de usuarios" }
 
@@ -60,8 +60,8 @@ class UsuarioController
     }
 
     //Poner los permisos de preAuthorize
-    @GetMapping("/me")
-    fun meInfo(user: Users): ResponseEntity<UsersDto> {
+    @GetMapping("/me") ///TODO METER EL USUARIO
+    fun meInfo(user:Users): ResponseEntity<UsersDto> {
 
         logger.info { "Obteniendo usuario: ${user.name}" }
 
@@ -71,7 +71,7 @@ class UsuarioController
 
     @PutMapping("/me")
     suspend fun updateMe(
-        user: Users,
+        user: Users, //todo SEGURIDAD
         @Valid @RequestBody usersDto: UsersUpdateDto
     ): ResponseEntity<UsersDto> {
         // No hay que buscar porque el usuario ya está autenticado y lo tenemos en el contexto
