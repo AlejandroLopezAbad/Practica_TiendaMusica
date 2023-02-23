@@ -4,17 +4,11 @@ import es.tiendamusica.controllers.OrderController
 import es.tiendamusica.dtos.SellLine
 import es.tiendamusica.models.Order
 import es.tiendamusica.models.User
-import es.tiendamusica.plugins.configureCors
-import es.tiendamusica.plugins.configureRouting
-import es.tiendamusica.plugins.configureSerialization
-import es.tiendamusica.plugins.configuteValidations
+import es.tiendamusica.plugins.*
 import es.tiendamusica.repository.pedidos.OrderRepository
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.core.component.KoinComponent
-import org.koin.core.context.startKoin
-import org.koin.ksp.generated.defaultModule
 import java.time.LocalDate
 import java.util.*
 
@@ -56,22 +50,15 @@ class KoinApp : KoinComponent {
          controller.createOrder(order)
         controller.createOrder(order2)
 
-        embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-            .start(wait = true)
 
     }
+
 }
 
-suspend fun main() {
-
-    startKoin {
-defaultModule()
-    }
-
-    KoinApp().run()
-}
+fun main(args: Array<String>): Unit = EngineMain.main(args)
 
 fun Application.module() {
+    configureKoin()
     configureSerialization()
     configureRouting()
     configureCors()
