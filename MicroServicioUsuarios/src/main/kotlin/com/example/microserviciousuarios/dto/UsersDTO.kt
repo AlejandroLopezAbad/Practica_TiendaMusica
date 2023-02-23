@@ -1,12 +1,10 @@
 package com.example.microserviciousuarios.dto
 
-import com.example.microserviciousuarios.models.Users
 import java.time.LocalDateTime
 
 data class UsersDto(
 
-    val id: Int? = null,
-
+   // val id: Int? = null,
     val uuid:String,
     val email: String,
     val name: String,
@@ -24,12 +22,20 @@ data class UsersDto(
 }
 
 data class UsersCreateDto(
-    val name: String,
     val email: String,
+    val name: String,
+    val password: String,
+    val telephone:String,
     val rol:String,
-    val password: String
-    //TODO meter los campos del user
 )
+
+data class UsersUpdateDto(
+    val email:String,
+    val password:String,
+    val telephone:String,
+    val url:String,
+)
+
 
 data class UsersWithTokenDto(
     val user: UsersDto,
