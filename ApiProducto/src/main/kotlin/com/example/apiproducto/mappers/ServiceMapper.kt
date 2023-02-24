@@ -7,29 +7,19 @@ import com.example.apiproducto.models.ServiceCategory
 
 fun Service.toServiceDto(): ServiceDto {
     return ServiceDto(
-        price = this.price,
+        category = this.category,
         description = this.description,
-        url = this.url,
-        category = this.category.name
-    )
-}
-
-fun ServiceDto.toService(): Service {
-    return Service(
         price = this.price,
-        available = true,
-        description = this.description,
-        url = this.url,
-        category = ServiceCategory.valueOf(this.category.uppercase())
+        url = this.url
     )
 }
 
 fun ServiceCreateDto.toService(): Service {
     return Service(
         price = this.price,
-        available = this.available,
+        category = ServiceCategory.valueOf(this.category.uppercase()),
         description = this.description,
         url = this.url,
-        category = ServiceCategory.valueOf(this.category.uppercase())
+        available = true
     )
 }

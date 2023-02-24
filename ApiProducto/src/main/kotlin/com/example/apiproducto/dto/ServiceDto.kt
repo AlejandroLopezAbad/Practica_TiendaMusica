@@ -1,18 +1,33 @@
 package com.example.apiproducto.dto
 
-data class ServiceCreateDto(
-    var price: Double,
-    var available: Boolean,
+import com.example.apiproducto.models.ServiceCategory
+
+/**
+ * Modelo del servicio que ve el cliente.
+ */
+data class ServiceDto(
+    var category: ServiceCategory,
     var description: String,
+    var price: Double,
     var url: String,
-    var category: String,
 )
 
-// Dto para cuando el cliente busque el servicio no vea ni la id, uuid
-// y si esta disponible o no
-data class ServiceDto(
-    var price: Double,
-    var description: String,
-    var url: String,
+/**
+ * Modelo de servicio para el post
+ */
+data class ServiceCreateDto(
     var category: String,
+    var description: String,
+    var price: Double,
+    var url: String,
+)
+
+/**
+ * Modelo de servicio para el put
+ */
+data class ServiceUpdateDto(
+    var description: String,
+    var price: Double,
+    var url: String,
+    var available: Boolean,
 )
