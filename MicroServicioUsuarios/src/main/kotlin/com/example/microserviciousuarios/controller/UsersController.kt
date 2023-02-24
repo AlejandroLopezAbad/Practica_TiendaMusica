@@ -2,11 +2,8 @@ package com.example.microserviciousuarios.controller
 
 import com.example.microserviciousuarios.config.APIConfig
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
+import com.example.microserviciousuarios.dto.*
 
-import com.example.microserviciousuarios.dto.UsersCreateDto
-import com.example.microserviciousuarios.dto.UsersDto
-import com.example.microserviciousuarios.dto.UsersUpdateDto
-import com.example.microserviciousuarios.dto.UsersWithTokenDto
 import com.example.microserviciousuarios.mappers.toDto
 import com.example.microserviciousuarios.models.Users
 import com.example.microserviciousuarios.services.UsersServices
@@ -20,7 +17,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.context.SecurityContextHolder
 
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -38,7 +38,39 @@ class UsuarioController
 
 ) {
 
-    // @PostMapping("/login") seguridad y jwt
+
+    @PostMapping("/login")
+    fun login(@Valid @RequestBody logingDto: UsersLoginDto): ResponseEntity<UsersWithTokenDto> {
+        //  logger.info { "Login de usuario: ${logingDto.username}" }
+
+        // podríamos hacerlo preguntándole al servicio si existe el usuario
+        // pero mejor lo hacemos con el AuthenticationManager que es el que se encarga de ello
+        // y nos devuelve el usuario autenticado o null
+
+        val authentication: Authentication = authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken(
+                logingDto.email,
+                logingDto.password
+            )
+        )
+        // Autenticamos al usuario, si lo es nos lo devuelve
+        SecurityContextHolder.getContext().authentication = authentication
+
+        // Devolvemos al usuario autenticado
+        val user = authentication.principal as Users
+        println(user)
+
+        // Generamos el token
+        val jwtToken: String = jwtTokenUtil.generateToken(user)
+        // logger.info { "Token de usuario: ${jwtToken}" }
+
+        // Devolvemos el usuario con el token
+        val userWithToken = UsersWithTokenDto(user.toDto(), jwtToken)
+
+        // La respuesta que queremos
+
+        return ResponseEntity.ok(userWithToken)
+    }
 
     /*  @PostMapping("/register")
        suspend fun register(@RequestBody usersCreateDto: UsersCreateDto):ResponseEntity<UsersWithTokenDto>{
@@ -57,6 +89,7 @@ class UsuarioController
 
        }*/
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list") ///TODO METER user dentro del parametro para seguridad
     suspend fun list(): ResponseEntity<List<UsersDto>> {
 

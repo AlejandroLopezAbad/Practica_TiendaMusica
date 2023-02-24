@@ -26,9 +26,9 @@ class UsersServices
 ):UserDetailsService {
 
 
-    override fun loadUserByUsername(username: String): UserDetails= runBlocking {
-        return@runBlocking repository.findByName(username).firstOrNull()
-            ?: throw UsersNotFoundException("Usuario no encontrado con username: $username")
+    override fun loadUserByUsername(email: String): UserDetails= runBlocking {
+        return@runBlocking repository.findByEmail(email).firstOrNull()
+            ?: throw UsersNotFoundException("Usuario no encontrado con username: $email")
     }
 
 

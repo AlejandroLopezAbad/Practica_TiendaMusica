@@ -68,7 +68,7 @@ class JwtTokenUtil {
         logger.info { "Obteniendo el nombre de usuario del token: ${token}" }
 
         val claims = getClaimsFromJwt(token)
-        return claims!!["username"]!!.asString()
+        return claims!!["email"]!!.asString()
     }
 
     fun getRolesFromJwt(token: String): String {

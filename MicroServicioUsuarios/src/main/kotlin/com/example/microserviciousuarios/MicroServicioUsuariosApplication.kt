@@ -21,11 +21,11 @@ class MicroServicioUsuariosApplication(
 ) : CommandLineRunner {
     override fun run(vararg args: String?): Unit = runBlocking {
         val user = Users(
-            email= "prueba@prueba.com",
-            name= "Profe",
-            password = "1234",
+            email= "Alex@prueba.com",
+            name= "Pepe",
+            password = "\$2a\$12\$249dkPGBT6dH46f4Dbu7ouEuO8eZ7joonzWGefPJbHH8eDpJy0oCq",
             telephone = 787744552,
-            rol = Users.TypeRol.USER.name,
+            rol = Users.TypeRol.ADMIN.name,
             avaliable = true,
             url = "url")
         service.save(user)
@@ -41,6 +41,7 @@ class MicroServicioUsuariosApplication(
 //        val prueba = service.findAll().collect{
 //            println(it)
 //        }
+        //TODO CAMBIAR EL METER USUARIOS Y USAR EL SCRIP, funciona el login y el list ocn permisos de admin
     }
 }
 

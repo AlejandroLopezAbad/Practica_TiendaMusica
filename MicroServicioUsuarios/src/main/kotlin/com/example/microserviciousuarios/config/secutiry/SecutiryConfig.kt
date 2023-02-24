@@ -53,6 +53,7 @@ class SecurityConfig
             .authorizeHttpRequests()
             // Permiso para errores y mostrarlos
             .requestMatchers("/error/**").permitAll()
+            .requestMatchers("/api/**").permitAll()
             .requestMatchers("users/list").permitAll()
             .and()
             .addFilter(JwtAuthenticationFilter(jwtTokenUtil, authenticationManager))
