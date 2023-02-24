@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.nio.file.Files
 
 //TODO Hacer --> Dependiendo de si es admin o no se muestran los productos no disponibles también
 // TODO Cuando esté la seguridad dependiendo de si es user o admin devolver un dto
@@ -98,6 +99,7 @@ class ProductController
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
+
 
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@PathVariable id:Int): ResponseEntity<Product> {

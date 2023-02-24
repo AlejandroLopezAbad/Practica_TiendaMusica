@@ -30,21 +30,27 @@ class UsersServices
     suspend fun save(user: Users, isAdmin: Boolean = false): Users = withContext(Dispatchers.IO) {
 
         logger.info { "Guardando usuario: $user" }
-        /*
 
-               if(repository.findByName(user.name).firstOrNull() !=null){
+       /* if (repository.findByEmail(user.email).firstOrNull() != null) {
 
-                    logger.info { "El usuario ya existe" }
-                    throw Exception("EL nom")
-                }
-                //TODO Restriciciones
+            logger.info { "El usuario ya existe con este email" }
+            throw Exception("EL nom")
+        }*/
+      /*  if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
 
-        */
+            logger.info { "El usuario ya existe con este numero de telefono " }
+            throw Exception("EL nom")
+        }*/
+
+
+        //TODO Restriciciones
         logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
             uuid = UUID.randomUUID().toString(),
             password = user.password,
             rol = Users.TypeRol.USER,
+            createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now()
 
             )
         if (isAdmin) { //TODO comprobar que funciona
@@ -65,13 +71,6 @@ class UsersServices
     suspend fun update(user: Users) = withContext(Dispatchers.IO) {
         logger.info { "Actualizando usuario: $user" }
 
-
-        //TODO probar funciones
-
-
-
-
-
         var userDB = repository.findByName(user.name)
             .firstOrNull()
 
@@ -79,7 +78,7 @@ class UsersServices
             throw Exception("El Id ya existe")//TODO cambiar excepciones
         }
 
-        userDB = repository.findByEmail(user.email)
+        userDB = repository.findByEmail(user.email!!)
             .firstOrNull()
 
         if (userDB != null && userDB.id != user.id) {
