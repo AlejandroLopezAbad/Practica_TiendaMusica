@@ -7,6 +7,8 @@ import com.example.apiproducto.repositories.ProductRepository
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
@@ -36,12 +38,12 @@ class ProductService
             ?: throw ProductNotFoundException("No se ha encontrado un producto con el uuid: $uuid")
     }
 
-    @Cacheable("products")
+    @CachePut("products")
     suspend fun saveProduct(product: Product): Product{
         return repository.save(product)
     }
 
-    @Cacheable("products")
+    @CachePut("products")
     suspend fun updateProduct(product: Product, updateData:Product): Product{
         return repository.save(Product(
                 id = product.id,
@@ -59,6 +61,7 @@ class ProductService
     }
 
 
+    @CacheEvict("products")
     suspend fun deleteProduct(product: Product){
         repository.delete(product)
     }
