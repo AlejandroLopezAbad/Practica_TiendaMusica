@@ -1,6 +1,7 @@
 package com.example.microserviciousuarios.controller
 
 import com.example.microserviciousuarios.config.APIConfig
+import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
 
 import com.example.microserviciousuarios.dto.UsersCreateDto
 import com.example.microserviciousuarios.dto.UsersDto
@@ -17,6 +18,9 @@ import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -29,6 +33,9 @@ private val logger = KotlinLogging.logger {}
 class UsuarioController
 @Autowired constructor(
     private val usersService: UsersServices,
+    private val authenticationManager: AuthenticationManager,
+    private val jwtTokenUtil: JwtTokenUtil,
+
 ) {
 
     // @PostMapping("/login") seguridad y jwt
@@ -60,8 +67,9 @@ class UsuarioController
     }
 
     //Poner los permisos de preAuthorize
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/me") ///TODO METER EL USUARIO
-    fun meInfo(user:Users): ResponseEntity<UsersDto> {
+    fun meInfo(@AuthenticationPrincipal user: Users): ResponseEntity<UsersDto> {
 
         logger.info { "Obteniendo usuario: ${user.name}" }
 

@@ -25,7 +25,7 @@ class MicroServicioUsuariosApplication(
             name= "Profe",
             password = "1234",
             telephone = 787744552,
-            rol = Users.TypeRol.USER,
+            rol = Users.TypeRol.USER.name,
             avaliable = true,
             url = "url")
         service.save(user)

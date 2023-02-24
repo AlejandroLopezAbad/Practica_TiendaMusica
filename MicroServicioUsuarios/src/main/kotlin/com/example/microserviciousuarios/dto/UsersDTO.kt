@@ -42,5 +42,10 @@ data class UsersWithTokenDto(
     val token: String
 )
 
+data class UsersLoginDto(
+    val email: String,
+    val password: String
+)
+
 
 
