@@ -21,6 +21,10 @@ class ServicesService
         return repository.findById(id)
     }
 
+    suspend fun findByUuid(uuid: String): Services? {
+        return repository.findServiceByUuid(uuid)
+    }
+
     suspend fun saveService(service: Services): Services {
         return repository.save(service)
     }
