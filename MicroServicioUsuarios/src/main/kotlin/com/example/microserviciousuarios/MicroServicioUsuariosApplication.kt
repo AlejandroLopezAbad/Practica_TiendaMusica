@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 @SpringBootApplication
-class MicroServicioUsuariosApplication(
+class MicroServicioUsuariosApplication/*(
     @Autowired
     private var service: UsersServices
 ) : CommandLineRunner {
@@ -52,7 +52,7 @@ class MicroServicioUsuariosApplication(
 //        }
         //TODO CAMBIAR EL METER USUARIOS Y USAR EL SCRIP, funciona el login y el list ocn permisos de admin
     }
-}
+}*/
 
 fun main(args: Array<String>) {
     runApplication<MicroServicioUsuariosApplication>(*args)
