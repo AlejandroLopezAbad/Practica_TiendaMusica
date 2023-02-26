@@ -1,5 +1,6 @@
 package com.example.microserviciousuarios.services
 
+import com.example.microserviciousuarios.exceptions.UsersBadRequestException
 import com.example.microserviciousuarios.exceptions.UsersNotFoundException
 import com.example.microserviciousuarios.models.Users
 import com.example.microserviciousuarios.repositories.UsersRepository
@@ -50,19 +51,18 @@ class UsersServices
 
         logger.info { "Guardando usuario: $user" }
 
-       /* if (repository.findByEmail(user.email).firstOrNull() != null) {
+        if (repository.findByEmail(user.email).firstOrNull() != null) {
 
             logger.info { "El usuario ya existe con este email" }
-            throw Exception("EL nom")
-        }*/
-      /*  if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
+            throw UsersBadRequestException("El usuario ya existe con este email")
+        }
+       if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
 
             logger.info { "El usuario ya existe con este numero de telefono " }
-            throw Exception("EL nom")
-        }*/
+            throw UsersBadRequestException("El usuario ya existe con este numero de telefono ")
+        }
 
 
-        //TODO Restriciciones
         logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
             uuid = UUID.randomUUID().toString(),

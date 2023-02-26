@@ -17,7 +17,7 @@ data class Users(
     @Column("uuid")
     val uuid:String= UUID.randomUUID().toString(),
     @Column("email")
-    val email:String?,
+    val email:String,
     @Column("name")
     val name:String,
     @get:JvmName("userPassword")
@@ -25,7 +25,7 @@ data class Users(
     val password:String,
 
     @Column("telephone")
-    val telephone:Int?,
+    val telephone:Int,
     @Column("rol")
     val rol :String=TypeRol.USER.name,
     @Column("avaliable")

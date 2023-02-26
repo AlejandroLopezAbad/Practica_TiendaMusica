@@ -3,8 +3,10 @@ package com.example.microserviciousuarios.controller
 import com.example.microserviciousuarios.config.APIConfig
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
 import com.example.microserviciousuarios.dto.*
+import com.example.microserviciousuarios.exceptions.UsersBadRequestException
 
 import com.example.microserviciousuarios.mappers.toDto
+import com.example.microserviciousuarios.mappers.toModel
 import com.example.microserviciousuarios.models.Users
 import com.example.microserviciousuarios.services.UsersServices
 import com.example.microserviciousuarios.validators.validate
@@ -36,16 +38,14 @@ class UsuarioController
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenUtil: JwtTokenUtil,
 
-) {
+    ) {
 
 
     @PostMapping("/login")
     fun login(@Valid @RequestBody logingDto: UsersLoginDto): ResponseEntity<UsersWithTokenDto> {
-        //  logger.info { "Login de usuario: ${logingDto.username}" }
 
-        // podríamos hacerlo preguntándole al servicio si existe el usuario
-        // pero mejor lo hacemos con el AuthenticationManager que es el que se encarga de ello
-        // y nos devuelve el usuario autenticado o null
+        logger.info { "Login de usuario: ${logingDto.email}" }
+
 
         val authentication: Authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
@@ -62,7 +62,8 @@ class UsuarioController
 
         // Generamos el token
         val jwtToken: String = jwtTokenUtil.generateToken(user)
-        // logger.info { "Token de usuario: ${jwtToken}" }
+
+        logger.info { "Token de usuario: ${jwtToken}" }
 
         // Devolvemos el usuario con el token
         val userWithToken = UsersWithTokenDto(user.toDto(), jwtToken)
@@ -72,22 +73,26 @@ class UsuarioController
         return ResponseEntity.ok(userWithToken)
     }
 
-    /*  @PostMapping("/register")
-       suspend fun register(@RequestBody usersCreateDto: UsersCreateDto):ResponseEntity<UsersWithTokenDto>{
-           logger.info { "Registro de usuario: ${usersCreateDto.name}" }
-           try {
-              val user = usersCreateDto.validate()  //Hay que validarlo
+    @PostMapping("/register")
+    suspend fun register(@RequestBody usersCreateDto: UsersCreateDto): ResponseEntity<UsersWithTokenDto> {
+        logger.info { "Registro de usuario: ${usersCreateDto.name}" }
+        try {
+            val user = usersCreateDto.validate().toModel()  //Hay que validarlo
 
-               println(user.rol)
+            user.rol.forEach { println(it) }
 
-               val userSaved = usersService.save()//TODO ARREGLAR
+            val userSaved = usersService.save(user)
 
+            //ahora generamos el token
+            val jwtToken: String = jwtTokenUtil.generateToken(userSaved)
+            logger.info { "Token de users : ${jwtToken} " }
 
+            return ResponseEntity.ok(UsersWithTokenDto(userSaved.toDto(), jwtToken))
 
-           }
-
-
-       }*/
+        } catch (e:UsersBadRequestException){
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST,e.message)
+        }
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/list") ///TODO METER user dentro del parametro para seguridad
@@ -99,8 +104,8 @@ class UsuarioController
         return ResponseEntity.ok(res)
     }
 
-    //Poner los permisos de preAuthorize
-    @PreAuthorize("hasRole('USER')")
+
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/me") ///TODO METER EL USUARIO
     fun meInfo(@AuthenticationPrincipal user: Users): ResponseEntity<UsersDto> {
 
@@ -121,17 +126,18 @@ class UsuarioController
         usersDto.validate()
 
         val userUpdated = user.copy(
-            email= usersDto.email,
-            telephone = usersDto.telephone.toInt(),
-            password = usersDto.password,
-            url=usersDto.url
+            email = usersDto.email,
+            name=usersDto.name,
+           // telephone = usersDto.telephone.toInt(),
         )
 
         // Actualizamos el usuario
         try {
             val userUpdated = usersService.update(userUpdated)
+
             return ResponseEntity.ok(userUpdated.toDto())
         } catch (e: Exception) { ///BAD REQUES EXCEPTION
+            println("no funciona")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
