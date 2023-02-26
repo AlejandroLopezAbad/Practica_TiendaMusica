@@ -1,7 +1,9 @@
 package com.example.microserviciousuarios
 
+import com.example.microserviciousuarios.dto.UsersUpdateDto
 import com.example.microserviciousuarios.models.Users
 import com.example.microserviciousuarios.repositories.UsersRepository
+import com.example.microserviciousuarios.services.UsersServices
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -17,22 +19,29 @@ import java.util.*
 @SpringBootApplication
 class MicroServicioUsuariosApplication(
     @Autowired
-    private var service: UsersRepository
+    private var service: UsersServices
 ) : CommandLineRunner {
     override fun run(vararg args: String?): Unit = runBlocking {
         val user = Users(
-            email= "Alex@prueba.com",
-            name= "Pepe",
-            password = "\$2a\$12\$249dkPGBT6dH46f4Dbu7ouEuO8eZ7joonzWGefPJbHH8eDpJy0oCq",
-            telephone = 787744552,
+            email= "ekix@gmail.com",
+            name= "ekix 2.0",
+            password = "\$2a\$12\$tZ9OjqIhDYxZj3cZmHWmmulKtxql.DvpCnxyA/OOYaOXbKH55Jrra",//ekix1234
+            telephone = 896655442,
             rol = Users.TypeRol.ADMIN.name,
             avaliable = true,
-            url = "url")
-        service.save(user)
+            url = "fotazo")
 
+        service.update(user)
 
 
         println(user)
+
+
+       // println(user)
+
+       // val user =UsersUpdateDto("alex@alex.com","Alex")
+
+      //  var help =service.update()
 
         var ayuda = service.findAll().toList()
         println(ayuda)

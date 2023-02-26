@@ -27,13 +27,15 @@ data class UsersCreateDto(
     val password: String,
     val telephone:String,
     val rol:Set<String> = setOf(Users.TypeRol.USER.name),
+    val url:String?=null
 )
 
 data class UsersUpdateDto(
     val email:String,
-    val password:String,
-    val telephone:String,
-    val url:String,
+    val name:String,
+
+   // val telephone:String,
+
 )
 
 

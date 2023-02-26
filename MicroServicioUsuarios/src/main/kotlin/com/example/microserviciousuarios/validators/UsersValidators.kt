@@ -16,13 +16,11 @@ fun UsersCreateDto.validate(): UsersCreateDto {
 
 
 fun UsersUpdateDto.validate(): UsersUpdateDto {
-    if (this.telephone.isBlank()) {
-        throw UsersBadRequestException("El telephone no puede estar vacío")
-    } else if (this.email.isBlank() || !this.email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$")))
+     if (this.email.isBlank() || !this.email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$")))
         throw UsersBadRequestException("El email no puede estar vacío o no tiene el formato correcto")
-    else if (this.url.isBlank())
-        throw UsersBadRequestException("El url no puede estar vacío")
-    else if (this.password.isBlank()||this.password.length>5)
-        throw UsersBadRequestException("El password no puede estar vacio o ser menor de 5 caracteres")
+    else if (this.name.isBlank())
+        throw UsersBadRequestException("El name no puede estar vacío")
+  //  else if (this.telephone.isBlank())//||this.telephone.length>8
+     //   throw UsersBadRequestException("El telephone no puede estar vacio o ser menor de 5 caracteres")
     return this
 }
