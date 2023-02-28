@@ -117,6 +117,7 @@ class UsuarioController
 
     @PutMapping("/me")
     suspend fun updateMe(
+        @AuthenticationPrincipal
         user: Users, //todo SEGURIDAD
         @Valid @RequestBody usersDto: UsersUpdateDto
     ): ResponseEntity<UsersDto> {
@@ -126,8 +127,9 @@ class UsuarioController
         usersDto.validate()
 
         val userUpdated = user.copy(
+
             email = usersDto.email,
-            name=usersDto.name,
+            name=usersDto.name
            // telephone = usersDto.telephone.toInt(),
         )
 

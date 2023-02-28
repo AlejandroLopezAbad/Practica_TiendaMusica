@@ -25,7 +25,7 @@ data class Users(
     val password:String,
 
     @Column("telephone")
-    val telephone:Int,
+    val telephone:Int = 787744741,
     @Column("rol")
     val rol :String=TypeRol.USER.name,
     @Column("avaliable")
