@@ -3,7 +3,8 @@ package com.example.apiproducto.services
 import com.example.apiproducto.dto.ServiceUpdateDto
 import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.repositories.ServiceRepository
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import com.example.apiproducto.models.Service as Services
@@ -13,16 +14,18 @@ class ServicesService
 @Autowired constructor(
     private val repository: ServiceRepository,
 ) {
-    suspend fun findAllServices(): Flow<Services> {
-        return repository.findAll()
+    suspend fun findAllServices(): List<Services> {
+        return repository.findAll().toList()
     }
 
-    suspend fun findById(id: Int): Services? {
+    suspend fun findServiceById(id: Int): Services {
         return repository.findById(id)
+            ?: throw ServiceNotFoundException("No se ha encontrado un servicio con el id: $id")
     }
 
-    suspend fun findByUuid(uuid: String): Services? {
-        return repository.findServiceByUuid(uuid)
+    suspend fun findServiceByUuid(uuid: String): Services {
+        return repository.findServiceByUuid(uuid).firstOrNull()
+            ?: throw ServiceNotFoundException("No se ha encontrado un servicio con el uuid: $uuid")
     }
 
     suspend fun saveService(service: Services): Services {

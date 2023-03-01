@@ -3,15 +3,18 @@ package com.example.apiproducto.controller
 import com.example.apiproducto.dto.ServiceCreateDto
 import com.example.apiproducto.dto.ServiceDto
 import com.example.apiproducto.dto.ServiceUpdateDto
+import com.example.apiproducto.exceptions.InvalidTokenException
 import com.example.apiproducto.exceptions.ServiceBadRequestException
 import com.example.apiproducto.exceptions.ServiceException
+import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.mappers.toService
 import com.example.apiproducto.mappers.toServiceDto
 import com.example.apiproducto.models.Service
 import com.example.apiproducto.services.ServicesService
+import com.example.apiproducto.services.TokenService
 import com.example.apiproducto.validators.validate
-import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,15 +25,28 @@ import org.springframework.web.server.ResponseStatusException
 class ServiceController
 @Autowired constructor(
     private val service: ServicesService,
+    private val tokenService: TokenService,
 ) {
+    @GetMapping("/prueba")
+    fun prueba(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String): ResponseEntity<Void> {
+        try {
+            tokenService.tokenVerify(token)
+            val roles = tokenService.getRoles(token)
+            println(roles)
+        } catch (e: InvalidTokenException) {
+            println(e.message)
+        }
+        return ResponseEntity.noContent().build()
+    }
+
     @GetMapping("")
-    suspend fun findAll(): ResponseEntity<List<ServiceDto>> {
+    suspend fun getAllServices(): ResponseEntity<List<ServiceDto>> {
         val res = service.findAllServices().toList().map { it.toServiceDto() }
         return ResponseEntity.ok(res)
     }
 
     @PostMapping("")
-    suspend fun create(@RequestBody service: ServiceCreateDto): ResponseEntity<Service> {
+    suspend fun saveService(@RequestBody service: ServiceCreateDto): ResponseEntity<Service> {
         try {
             service.validate()
             val res = this.service.saveService(service.toService())
@@ -42,21 +58,21 @@ class ServiceController
 
 //    @GetMapping("/{id}")
 //    suspend fun findById(@PathVariable id: Int): ResponseEntity<Service> {
-//        val res = service.findById(id)
-//        res?.let {
-//            return ResponseEntity.ok(it)
-//        } ?: run {
-//            return ResponseEntity.notFound().build()
+//        try {
+//            val find = service.findServiceById(id)
+//            return ResponseEntity.ok(find)
+//        } catch (e: ServiceNotFoundException) {
+//            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
 //        }
 //    }
 
     @GetMapping("/{uuid}")
     suspend fun findByUuid(@PathVariable uuid: String): ResponseEntity<Service> {
-        val res = service.findByUuid(uuid)
-        res?.let {
-            return ResponseEntity.ok(it)
-        } ?: run {
-            return ResponseEntity.notFound().build()
+        try {
+            val res = service.findServiceByUuid(uuid)
+            return ResponseEntity.ok(res)
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
@@ -73,14 +89,12 @@ class ServiceController
     @PutMapping("/{id}")
     suspend fun update(@PathVariable id: Int, @RequestBody service: ServiceUpdateDto): ResponseEntity<Service> {
         try {
+            val find = this.service.findServiceById(id)
             service.validate()
-            val find = this.service.findById(id)
-            find?.let {
-                val res = this.service.updateService(it, service)
-                return ResponseEntity.ok(res)
-            } ?: run {
-                return ResponseEntity.notFound().build()
-            }
+            val res = this.service.updateService(find, service)
+            return ResponseEntity.ok(res)
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: ServiceBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
