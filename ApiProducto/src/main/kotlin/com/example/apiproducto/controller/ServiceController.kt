@@ -1,11 +1,9 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ServiceCreateDto
-import com.example.apiproducto.dto.ServiceDto
 import com.example.apiproducto.dto.ServiceUpdateDto
 import com.example.apiproducto.exceptions.InvalidTokenException
 import com.example.apiproducto.exceptions.ServiceBadRequestException
-import com.example.apiproducto.exceptions.ServiceException
 import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.mappers.toService
 import com.example.apiproducto.mappers.toServiceDto
@@ -30,73 +28,116 @@ class ServiceController
     @GetMapping("/prueba")
     fun prueba(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String): ResponseEntity<Void> {
         try {
-            tokenService.tokenVerify(token)
-            val roles = tokenService.getRoles(token)
-            println(roles)
+            val roles = getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) println("Muestra todo por defecto")
+            else println("Muestra la otra")
         } catch (e: InvalidTokenException) {
             println(e.message)
         }
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("")
-    suspend fun getAllServices(): ResponseEntity<List<ServiceDto>> {
-        val res = service.findAllServices().toList().map { it.toServiceDto() }
-        return ResponseEntity.ok(res)
-    }
-
-    @PostMapping("")
-    suspend fun saveService(@RequestBody service: ServiceCreateDto): ResponseEntity<Service> {
-        try {
-            service.validate()
-            val res = this.service.saveService(service.toService())
-            return ResponseEntity.status(HttpStatus.CREATED).body(res)
-        } catch (e: ServiceBadRequestException) {
+    @GetMapping
+    suspend fun getAllServices(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String): ResponseEntity<List<Any>> {
+        return try {
+            val roles = getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                val res = service.findAllServices().toList()
+                ResponseEntity.ok(res)
+            } else {
+                val res = service.findAllServices().toList().filter { it.available }.map { it.toServiceDto() }
+                ResponseEntity.ok(res)
+            }
+        } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
-//    @GetMapping("/{id}")
-//    suspend fun findById(@PathVariable id: Int): ResponseEntity<Service> {
-//        try {
-//            val find = service.findServiceById(id)
-//            return ResponseEntity.ok(find)
-//        } catch (e: ServiceNotFoundException) {
-//            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-//        }
-//    }
-
     @GetMapping("/{uuid}")
-    suspend fun findByUuid(@PathVariable uuid: String): ResponseEntity<Service> {
-        try {
-            val res = service.findServiceByUuid(uuid)
-            return ResponseEntity.ok(res)
+    suspend fun findByUuid(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @PathVariable uuid: String,
+    ): ResponseEntity<Any> {
+        return try {
+            val roles = getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                val res = service.findServiceByUuid(uuid)
+                ResponseEntity.ok(res)
+            } else {
+                val res = service.findServiceByUuid(uuid)
+                ResponseEntity.ok(res.toServiceDto())
+            }
         } catch (e: ServiceNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
-    @DeleteMapping("/{id}")
-    suspend fun delete(@PathVariable id: Int): ResponseEntity<Service> {
+    @PostMapping
+    suspend fun saveService(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @RequestBody service: ServiceCreateDto,
+    ): ResponseEntity<Service> {
         try {
-            this.service.deleteService(id)
-            return ResponseEntity.noContent().build()
-        } catch (e: ServiceException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+            val roles = getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                service.validate()
+                val res = this.service.saveService(service.toService())
+                return ResponseEntity.status(HttpStatus.CREATED).body(res)
+            } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
+        } catch (e: ServiceBadRequestException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
     @PutMapping("/{id}")
-    suspend fun update(@PathVariable id: Int, @RequestBody service: ServiceUpdateDto): ResponseEntity<Service> {
+    suspend fun update(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @PathVariable id: Int,
+        @RequestBody service: ServiceUpdateDto,
+    ): ResponseEntity<Service> {
         try {
-            val find = this.service.findServiceById(id)
-            service.validate()
-            val res = this.service.updateService(find, service)
-            return ResponseEntity.ok(res)
+            val roles = getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                val find = this.service.findServiceById(id)
+                service.validate()
+                val res = this.service.updateService(find, service)
+                return ResponseEntity.ok(res)
+            } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
         } catch (e: ServiceNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: ServiceBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
+    }
+
+    @DeleteMapping("/{id}")
+    suspend fun delete(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @PathVariable id: Int,
+    ): ResponseEntity<Service> {
+        return try {
+            val roles = getRoles(token)
+            if (roles.contains("SUPERADMIN")) {
+                this.service.deleteService(id)
+                ResponseEntity.noContent().build()
+            } else if (roles.contains("ADMIN")) {
+                println("Soy admin")
+                this.service.notAvailableService(id)
+                ResponseEntity.noContent().build()
+            } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        }
+    }
+
+
+    private fun getRoles(token: String): String {
+        return tokenService.getRoles(token)
     }
 }

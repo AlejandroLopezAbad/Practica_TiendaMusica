@@ -52,4 +52,22 @@ class ServicesService
             return repository.deleteById(id).let { true }
         } ?: throw ServiceNotFoundException("No existe el servicio con id: $id")
     }
+
+    suspend fun notAvailableService(id: Int): Boolean {
+        val exist = repository.findById(id)
+        exist?.let {
+            repository.save(
+                Services(
+                    it.id,
+                    it.uuid,
+                    it.price,
+                    false,
+                    it.description,
+                    it.url,
+                    it.category
+                )
+            )
+            return true
+        } ?: throw ServiceNotFoundException("No existe el servicio con id: $id")
+    }
 }
