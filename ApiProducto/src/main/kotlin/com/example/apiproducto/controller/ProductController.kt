@@ -144,7 +144,7 @@ class ProductController
                 ResponseEntity.ok(find.toProductResponseDto())
             }else{
                 if(!find.available){
-                    throw ResponseStatusException(HttpStatus.NOT_FOUND,"No se ha encontrado un producto con uuid: $uuid")
+                    throw ResponseStatusException(HttpStatus.NOT_FOUND,"No se ha encontrado un producto con el uuid: $uuid")
                 }else{
                     ResponseEntity.ok(find.toProductResponseDto())
                 }
