@@ -20,7 +20,11 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 
 /**
- * Servicio que realiza operaciones de usuarios.
+ * Users services
+ *
+ * @property repository
+ * @property passwordEncoder
+ * @constructor Create empty Users services
  */
 @Service
 class UsersServices
@@ -36,20 +40,40 @@ class UsersServices
     }
 
 
-
+    /**
+     * Find all
+     *
+     */
     suspend fun findAll() = withContext(Dispatchers.IO) {
         return@withContext repository.findAll()
     }
 
 
+    /**
+     * Load user by id
+     *
+     * @param userId
+     */
     suspend fun loadUserById(userId: Long) = withContext(Dispatchers.IO) {
         return@withContext repository.findById(userId)
     }
 
+    /**
+     * Load userby uuid
+     *
+     * @param uuid
+     */
     suspend fun loadUserbyUuid(uuid:String)= withContext(Dispatchers.IO) {
         return@withContext repository.findByUuid(uuid).firstOrNull()
     }
 
+    /**
+     * Save
+     *
+     * @param user
+     * @param isAdmin
+     * @return
+     */
     suspend fun save(user: Users, isAdmin: Boolean = false): Users = withContext(Dispatchers.IO) {
 
         logger.info { "Guardando usuario: $user" }
@@ -90,6 +114,11 @@ class UsersServices
 
     }
 
+    /**
+     * Update
+     *
+     * @param user
+     */
     suspend fun update(user: Users) = withContext(Dispatchers.IO) {
         logger.info { "Actualizando usuario: $user" }
 

@@ -20,10 +20,11 @@ import org.springframework.security.web.SecurityFilterChain
 private val logger = KotlinLogging.logger {}
 
 /**
- * Clase que configura la seguridad de Spring, aplica filtros en los END_POINTS
+ * Security config
  *
- *  @property userService
- *  @property jwtTokenUtil
+ * @property userService
+ * @property jwtTokenUtil
+ * @constructor Create empty Security config
  */
 @Configuration
 @EnableWebSecurity // Habilitamos la seguridad web
@@ -34,6 +35,12 @@ class SecurityConfig
     private val userService: UsersServices,
     private val jwtTokenUtil: JwtTokenUtil
 ){
+    /**
+     * Auth manager
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun authManager(http:HttpSecurity):AuthenticationManager{
         val authenticationManagerBuilder=http.getSharedObject(
@@ -43,6 +50,12 @@ class SecurityConfig
         return authenticationManagerBuilder.build()
     }
 
+    /**
+     * Filter chain
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun filterChain(http:HttpSecurity):SecurityFilterChain{
         val authenticationManager=authManager(http)

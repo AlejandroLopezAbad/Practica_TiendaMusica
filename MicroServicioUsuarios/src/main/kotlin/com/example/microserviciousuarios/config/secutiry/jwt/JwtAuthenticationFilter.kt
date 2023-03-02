@@ -26,6 +26,12 @@ class JwtAuthenticationFilter(
     private val authenticationManagerX: AuthenticationManager,
 ) : UsernamePasswordAuthenticationFilter() {
 
+    /**
+     * Attempt authentication
+     * @param req
+     * @param response
+     * @return
+     */
     override fun attemptAuthentication(req: HttpServletRequest, response: HttpServletResponse): Authentication {
         logger.info { "Intentando autenticar" }
 
@@ -37,6 +43,14 @@ class JwtAuthenticationFilter(
         return authenticationManagerX.authenticate(auth)
     }
 
+    /**
+     * Successful authentication
+     *
+     * @param req
+     * @param res
+     * @param chain
+     * @param auth
+     */
     override fun successfulAuthentication(
         req: HttpServletRequest?, res: HttpServletResponse, chain: FilterChain?,
         auth: Authentication
@@ -50,6 +64,13 @@ class JwtAuthenticationFilter(
         res.addHeader("Access-Control-Expose-Headers", JwtTokenUtil.TOKEN_HEADER)
     }
 
+    /**
+     * Unsuccessful authentication
+     *
+     * @param request
+     * @param response
+     * @param failed
+     */
     override fun unsuccessfulAuthentication(
         request: HttpServletRequest,
         response: HttpServletResponse,

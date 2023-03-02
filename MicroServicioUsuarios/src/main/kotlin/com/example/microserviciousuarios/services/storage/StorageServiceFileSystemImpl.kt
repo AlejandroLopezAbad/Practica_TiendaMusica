@@ -18,7 +18,10 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 /**
- * Servicio de almacenamiento.
+ * Storage service file system impl
+ *
+ * @property path
+ * @constructor Create empty Storage service file system impl
  */
 @Service
 class StorageServiceFileSystemImpl(
@@ -33,6 +36,10 @@ class StorageServiceFileSystemImpl(
         this.init()
     }
 
+    /**
+     * Init
+     *
+     */
     override fun init() {
         try {
             if(!Files.exists(location)){
@@ -43,6 +50,13 @@ class StorageServiceFileSystemImpl(
         }
     }
 
+    /**
+     * Save
+     *
+     * @param file
+     * @param username
+     * @return
+     */
     override fun save(file: MultipartFile, username: String): String {
         val filename = StringUtils.cleanPath(file.originalFilename.toString())
         val extension = StringUtils.getFilenameExtension(filename).toString()
@@ -67,6 +81,12 @@ class StorageServiceFileSystemImpl(
         }
     }
 
+    /**
+     * Load
+     *
+     * @param filename
+     * @return
+     */
     override fun load(filename: String): Resource {
         return try {
             val fichero = location.resolve(filename)
@@ -83,6 +103,12 @@ class StorageServiceFileSystemImpl(
         }
     }
 
+    /**
+     * Get url
+     *
+     * @param filename
+     * @return
+     */
     override fun getUrl(filename: String): String {
         return MvcUriComponentsBuilder
             .fromMethodName(StorageController::class.java, "loadFile", filename, null)

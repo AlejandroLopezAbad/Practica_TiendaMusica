@@ -35,12 +35,13 @@ import org.springframework.web.server.ResponseStatusException
 private val logger = KotlinLogging.logger {}
 
 /**
- * Controlador que hace las peraciones básicas de los usuarios.
+ * Usuario controller
  *
- *  @property usersService
- *  @property authenticationManager
- *  @property jwtTokenUtils
- *  @property storageService
+ * @property usersService
+ * @property authenticationManager
+ * @property jwtTokenUtil
+ * @property storageService
+ * @constructor Create empty Usuario controller
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH + "/users")
@@ -53,6 +54,12 @@ class UsuarioController
 ) {
 
 
+    /**
+     * Login
+     *
+     * @param logingDto
+     * @return
+     */
     @PostMapping("/login")
     fun login(@Valid @RequestBody logingDto: UsersLoginDto): ResponseEntity<UsersWithTokenDto> {
 
@@ -79,6 +86,12 @@ class UsuarioController
         return ResponseEntity.ok(userWithToken)
     }
 
+    /**
+     * Register
+     *
+     * @param usersCreateDto
+     * @return
+     */
     @PostMapping("/register")
     suspend fun register(@RequestBody usersCreateDto: UsersCreateDto): ResponseEntity<UsersWithTokenDto> {
         logger.info { "Registro de usuario: ${usersCreateDto.name}" }
@@ -100,6 +113,12 @@ class UsuarioController
         }
     }
 
+    /**
+     * List
+     *
+     * @param user
+     * @return
+     */
     @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN','SUPERADMIN')")
     @GetMapping("/list")
     suspend fun list(@AuthenticationPrincipal user: Users): ResponseEntity<List<UsersDto>> {
@@ -111,6 +130,12 @@ class UsuarioController
     }
 
 
+    /**
+     * Me info
+     *
+     * @param user
+     * @return
+     */
     @GetMapping("/me")
     fun meInfo(@AuthenticationPrincipal user: Users): ResponseEntity<UsersDto> {
 
@@ -120,6 +145,13 @@ class UsuarioController
     }
 
 
+    /**
+     * Update me
+     *
+     * @param user
+     * @param usersDto
+     * @return
+     */
     @PutMapping("/me")
     suspend fun updateMe(
         @AuthenticationPrincipal
@@ -148,6 +180,13 @@ class UsuarioController
     }
 
 
+    /**
+     * Update avatar
+     *
+     * @param user
+     * @param file
+     * @return
+     */
     @PatchMapping(
         value = ["/me"],
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
