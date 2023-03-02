@@ -53,8 +53,11 @@ class SecurityConfig
             .authorizeHttpRequests()
             // Permiso para errores y mostrarlos
             .requestMatchers("/error/**").permitAll()
-            .requestMatchers("/api/**").permitAll()
-            .requestMatchers("users/list").permitAll()
+          //  .requestMatchers("/api/**").permitAll() esto permite todas las consultas a la api
+            .requestMatchers("users/login", "users/register").permitAll()
+
+            .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
+            .requestMatchers("users/me").permitAll()
             .and()
             .addFilter(JwtAuthenticationFilter(jwtTokenUtil, authenticationManager))
             .addFilter(JwtAuthorizationFilter(jwtTokenUtil, userService, authenticationManager))

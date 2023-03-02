@@ -41,7 +41,7 @@ data class Users(
 
 
     enum class TypeRol() {
-        USER,EMPLOYE,ADMIN,SUPERADMIN
+        USER,EMPLOYEE,ADMIN,SUPERADMIN
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {

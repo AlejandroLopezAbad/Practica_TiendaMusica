@@ -9,12 +9,7 @@ import java.util.stream.Stream
 
 interface StorageService {
     fun init()
-    fun store(file: MultipartFile): String
-    fun loadAll(): Stream<Path>
-    fun load(filename: String): Path
-    fun loadAsResource(filename: String): Resource
-    fun delete(filename: String)
-    fun deleteAll()
+    fun save(file: MultipartFile, username:String): String
+    fun load(filename:String): Resource
     fun getUrl(filename: String): String
-    fun store(file: MultipartFile, filenameFromUser: String): String
 }

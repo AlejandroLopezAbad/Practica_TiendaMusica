@@ -3,11 +3,13 @@ package com.example.microserviciousuarios.controller
 import com.example.microserviciousuarios.config.APIConfig
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
 import com.example.microserviciousuarios.dto.*
+import com.example.microserviciousuarios.exceptions.StorageException
 import com.example.microserviciousuarios.exceptions.UsersBadRequestException
 
 import com.example.microserviciousuarios.mappers.toDto
 import com.example.microserviciousuarios.mappers.toModel
 import com.example.microserviciousuarios.models.Users
+import com.example.microserviciousuarios.services.storage.StorageService
 import com.example.microserviciousuarios.services.users.UsersServices
 import com.example.microserviciousuarios.validators.validate
 import jakarta.validation.Valid
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.toList
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
@@ -25,6 +28,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
 
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -37,8 +41,8 @@ class UsuarioController
     private val usersService: UsersServices,
     private val authenticationManager: AuthenticationManager,
     private val jwtTokenUtil: JwtTokenUtil,
-
-    ) {
+    private val storageService: StorageService
+) {
 
 
     @PostMapping("/login")
@@ -53,22 +57,16 @@ class UsuarioController
                 logingDto.password
             )
         )
-        // Autenticamos al usuario, si lo es nos lo devuelve
+
         SecurityContextHolder.getContext().authentication = authentication
 
-        // Devolvemos al usuario autenticado
         val user = authentication.principal as Users
-        println(user)
 
-        // Generamos el token
         val jwtToken: String = jwtTokenUtil.generateToken(user)
 
         logger.info { "Token de usuario: ${jwtToken}" }
 
-        // Devolvemos el usuario con el token
         val userWithToken = UsersWithTokenDto(user.toDto(), jwtToken)
-
-        // La respuesta que queremos
 
         return ResponseEntity.ok(userWithToken)
     }
@@ -77,24 +75,24 @@ class UsuarioController
     suspend fun register(@RequestBody usersCreateDto: UsersCreateDto): ResponseEntity<UsersWithTokenDto> {
         logger.info { "Registro de usuario: ${usersCreateDto.name}" }
         try {
-            val user = usersCreateDto.validate().toModel()  //Hay que validarlo
+            val user = usersCreateDto.validate().toModel()
 
             user.rol.forEach { println(it) }
 
             val userSaved = usersService.save(user)
 
-            //ahora generamos el token
+
             val jwtToken: String = jwtTokenUtil.generateToken(userSaved)
             logger.info { "Token de users : ${jwtToken} " }
 
             return ResponseEntity.ok(UsersWithTokenDto(userSaved.toDto(), jwtToken))
 
-        } catch (e:UsersBadRequestException){
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST,e.message)
+        } catch (e: UsersBadRequestException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
-    @PreAuthorize("hasAnyRole('EMPLOYE','ADMIN','SUPERADMIN')") //TODO CAMBIAR EL SECURITY CONFIG
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN','SUPERADMIN')")
     @GetMapping("/list")
     suspend fun list(@AuthenticationPrincipal user: Users): ResponseEntity<List<UsersDto>> {
 
@@ -120,7 +118,6 @@ class UsuarioController
         user: Users,
         @Valid @RequestBody usersDto: UsersUpdateDto
     ): ResponseEntity<UsersDto> {
-        // No hay que buscar porque el usuario ya está autenticado y lo tenemos en el contexto
         logger.info { "Actualizando usuario: ${user.name}" }
 
         usersDto.validate()
@@ -128,20 +125,49 @@ class UsuarioController
         val userUpdated = user.copy(
 
             email = usersDto.email,
-            name=usersDto.name,
-           telephone= usersDto.telephone.toInt()
+            name = usersDto.name,
+            telephone = usersDto.telephone.toInt()
         )
 
-        // Actualizamos el usuario
+
         try {
             val userUpdated = usersService.update(userUpdated)
 
             return ResponseEntity.ok(userUpdated.toDto())
-        } catch (e: Exception) { ///BAD REQUES  TODO
-            println("no funciona")
+        } catch (e: Exception) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
 
+    @PatchMapping(
+        value = ["/me"],
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
+    suspend fun updateAvatar(
+        @AuthenticationPrincipal user: Users,
+        @RequestPart("file") file: MultipartFile
+    ): ResponseEntity<UsersDto> {
+
+        logger.info { "Actualizando avatar de usuario: ${user.username}" }
+
+        try {
+            var urlImagen = user.url
+
+            if (!file.isEmpty) {
+                val imagen: String = storageService.save(file, user.uuid)
+                urlImagen = storageService.getUrl(imagen)
+            }
+            val userAvatar = user.copy(
+                url = urlImagen
+            )
+            val userUpdated = usersService.update(userAvatar)
+            return ResponseEntity.ok(userUpdated.toDto())
+        } catch (e: UsersBadRequestException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: StorageException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        }
+    }
 }
+

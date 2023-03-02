@@ -82,7 +82,7 @@ class UsersServices
         try {
             return@withContext repository.save(newUser)
         } catch (e: Exception) {
-            throw Exception("Error al crear el usuario: Nombre de usuario o email ya existen")
+            throw UsersBadRequestException("Error al crear el usuario: Nombre de usuario o email ya existen")
         }
 
     }
@@ -94,14 +94,14 @@ class UsersServices
             .firstOrNull()
 
         if (userDB != null && userDB.id != user.id) {
-            throw Exception("El Id ya existe")//TODO cambiar excepciones
+            throw UsersBadRequestException("El Id ya existe")
         }
 
         userDB = repository.findByEmail(user.email!!)
             .firstOrNull()
 
         if (userDB != null && userDB.id != user.id) {
-            throw Exception("El email ya existe")
+            throw UsersBadRequestException("El email ya existe")
         }
 
         logger.info { "El usuario no existe, lo actualizamos" }
@@ -113,7 +113,7 @@ class UsersServices
         try {
             return@withContext repository.save(updtatedUser)
         } catch (e: Exception) {
-            throw Exception("Error al actualizar el usuario: Nombre de usuario o email ya existen")
+            throw UsersBadRequestException("Error al actualizar el usuario: Nombre de usuario o email ya existen")
         }
 
     }
