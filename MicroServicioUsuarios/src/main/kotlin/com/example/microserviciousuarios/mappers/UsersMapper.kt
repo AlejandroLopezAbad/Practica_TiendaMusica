@@ -24,14 +24,14 @@ fun Users.toDto(): UsersDto {
 
 }
 
-//TODO MAPPER DEL CREATE A USERS
+
 
 fun UsersCreateDto.toModel(): Users {
     return Users(
         email = this.email,
         name = this.name,
         password = this.password,
-        telephone = this.password.toInt(),
+        telephone = this.telephone.toInt(),
         rol =  this.rol.joinToString(", ") { it.uppercase().trim() },
     )
 

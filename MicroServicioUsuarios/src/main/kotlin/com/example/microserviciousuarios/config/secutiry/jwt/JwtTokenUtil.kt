@@ -4,6 +4,7 @@ package com.example.microserviciousuarios.config.secutiry.jwt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.example.microserviciousuarios.exceptions.TokenInvalidException
 import com.example.microserviciousuarios.models.Users
 
 import mu.KotlinLogging
@@ -57,7 +58,7 @@ class JwtTokenUtil {
         try {
             return JWT.require(Algorithm.HMAC512(jwtSecreto)).build().verify(authToken)
         } catch (e: Exception) {
-            throw Exception("Token no válido o expirado")//TODO cambiar excepciones
+            throw TokenInvalidException("Token no válido o expirado")
         }
     }
 

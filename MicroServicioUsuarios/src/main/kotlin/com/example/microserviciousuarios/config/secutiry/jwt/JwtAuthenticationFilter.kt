@@ -19,7 +19,7 @@ private val logger = KotlinLogging.logger {}
 
 class JwtAuthenticationFilter(
     private val jwtTokenUtil: JwtTokenUtil,
-    private val authenticationManagerX: AuthenticationManager,//TODO mirar que pasa qui
+    private val authenticationManagerX: AuthenticationManager,
 ) : UsernamePasswordAuthenticationFilter() {
 
     override fun attemptAuthentication(req: HttpServletRequest, response: HttpServletResponse): Authentication {
@@ -39,12 +39,10 @@ class JwtAuthenticationFilter(
     ) {
         logger.info { "Autenticación correcta" }
 
-        // val username = (auth.principal as Usuario).username
-        // val token: String = jwtTokenUtil.generateToken(username)
+
         val user = auth.principal as Users
         val token: String = jwtTokenUtil.generateToken(user)
         res.addHeader("Authorization", token)
-        // Authorization
         res.addHeader("Access-Control-Expose-Headers", JwtTokenUtil.TOKEN_HEADER)
     }
 

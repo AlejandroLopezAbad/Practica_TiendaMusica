@@ -25,7 +25,7 @@ data class Users(
     val password:String,
 
     @Column("telephone")
-    val telephone:Int,
+    val telephone:Int = 787744741,
     @Column("rol")
     val rol :String=TypeRol.USER.name,
     @Column("avaliable")
@@ -41,7 +41,7 @@ data class Users(
 
 
     enum class TypeRol() {
-        USER,EMPLOYE,ADMIN,SUPERADMIN
+        USER,EMPLOYEE,ADMIN,SUPERADMIN
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {

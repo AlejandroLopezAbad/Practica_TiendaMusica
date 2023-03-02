@@ -2,7 +2,7 @@
 package com.example.microserviciousuarios.config.secutiry.jwt
 
 
-import com.example.microserviciousuarios.services.UsersServices
+import com.example.microserviciousuarios.services.users.UsersServices
 
 import io.netty.handler.codec.http.HttpHeaderNames.AUTHORIZATION
 import jakarta.servlet.FilterChain
