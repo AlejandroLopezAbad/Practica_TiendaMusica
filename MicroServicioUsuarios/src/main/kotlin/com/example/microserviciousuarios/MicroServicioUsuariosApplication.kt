@@ -1,19 +1,7 @@
 package com.example.microserviciousuarios
 
-import com.example.microserviciousuarios.dto.UsersUpdateDto
-import com.example.microserviciousuarios.models.Users
-import com.example.microserviciousuarios.repositories.UsersRepository
-import com.example.microserviciousuarios.services.UsersServices
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.annotation.Id
-import org.springframework.data.relational.core.mapping.Column
-import java.time.LocalDateTime
 import java.util.*
 
 @SpringBootApplication

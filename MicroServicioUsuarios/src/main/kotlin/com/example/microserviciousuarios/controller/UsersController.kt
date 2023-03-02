@@ -8,7 +8,7 @@ import com.example.microserviciousuarios.exceptions.UsersBadRequestException
 import com.example.microserviciousuarios.mappers.toDto
 import com.example.microserviciousuarios.mappers.toModel
 import com.example.microserviciousuarios.models.Users
-import com.example.microserviciousuarios.services.UsersServices
+import com.example.microserviciousuarios.services.users.UsersServices
 import com.example.microserviciousuarios.validators.validate
 import jakarta.validation.Valid
 
@@ -94,9 +94,9 @@ class UsuarioController
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/list") ///TODO METER user dentro del parametro para seguridad
-    suspend fun list(): ResponseEntity<List<UsersDto>> {
+    @PreAuthorize("hasAnyRole('EMPLOYE','ADMIN','SUPERADMIN')") //TODO CAMBIAR EL SECURITY CONFIG
+    @GetMapping("/list")
+    suspend fun list(@AuthenticationPrincipal user: Users): ResponseEntity<List<UsersDto>> {
 
         logger.info { "Obteniendo lista de usuarios" }
 
@@ -105,8 +105,7 @@ class UsuarioController
     }
 
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    @GetMapping("/me") ///TODO METER EL USUARIO
+    @GetMapping("/me")
     fun meInfo(@AuthenticationPrincipal user: Users): ResponseEntity<UsersDto> {
 
         logger.info { "Obteniendo usuario: ${user.name}" }
@@ -118,7 +117,7 @@ class UsuarioController
     @PutMapping("/me")
     suspend fun updateMe(
         @AuthenticationPrincipal
-        user: Users, //todo SEGURIDAD
+        user: Users,
         @Valid @RequestBody usersDto: UsersUpdateDto
     ): ResponseEntity<UsersDto> {
         // No hay que buscar porque el usuario ya está autenticado y lo tenemos en el contexto
@@ -129,8 +128,8 @@ class UsuarioController
         val userUpdated = user.copy(
 
             email = usersDto.email,
-            name=usersDto.name
-           // telephone = usersDto.telephone.toInt(),
+            name=usersDto.name,
+           telephone= usersDto.telephone.toInt()
         )
 
         // Actualizamos el usuario
@@ -138,7 +137,7 @@ class UsuarioController
             val userUpdated = usersService.update(userUpdated)
 
             return ResponseEntity.ok(userUpdated.toDto())
-        } catch (e: Exception) { ///BAD REQUES EXCEPTION
+        } catch (e: Exception) { ///BAD REQUES  TODO
             println("no funciona")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }

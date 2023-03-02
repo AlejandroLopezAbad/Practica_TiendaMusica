@@ -33,8 +33,7 @@ data class UsersCreateDto(
 data class UsersUpdateDto(
     val email:String,
     val name:String,
-
-   // val telephone:String,
+    val telephone:String,
 
 )
 

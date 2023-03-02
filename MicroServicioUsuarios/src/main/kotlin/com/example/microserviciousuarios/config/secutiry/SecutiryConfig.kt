@@ -4,7 +4,7 @@ package com.example.microserviciousuarios.config.secutiry
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthenticationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthorizationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
-import com.example.microserviciousuarios.services.UsersServices
+import com.example.microserviciousuarios.services.users.UsersServices
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
