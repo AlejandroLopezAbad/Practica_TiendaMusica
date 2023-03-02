@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "4469010b-d932-4ec5-bb79-b687917ff065",
+		"name": "TIendaMusica",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25247452"
+	},
+	"item": [
+		{
+			"name": "Login Users",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"pepe@prueba.com\",\r\n    \"password\": \"pepe1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ALL Users",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get ME",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIwZDBkMjA2MS1lOWM1LTQ5ZjEtYTE4Zi03NGQ2Nzc5OGVlMTYiLCJyb2xlcyI6IltBRE1JTl0iLCJuYW1lIjoiUGVwZSIsImV4cCI6MTY3NzQzODg1MCwiaWF0IjoxNjc3NDM1MjUwLCJlbWFpbCI6IkFsZXhAcHJ1ZWJhLmNvbSJ9.YTfFNjHu4b69K5-xc4iT3YuNMXi1VXRcXHnmaruwb4I3WaLxR-QZN7IX6ogzBOpvaZr3YqUO2wZCEgn9vwNYEw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/users/me",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Me",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyZTI3OGM4Yy0yMzA5LTQ5YTEtYjMyOS0xOGZkODVhYmNmZmMiLCJyb2xlcyI6IltBRE1JTl0iLCJuYW1lIjoiSlVBTiIsImV4cCI6MTY3NzU5MDYwNSwiaWF0IjoxNjc3NTg3MDA1LCJlbWFpbCI6InBlcGVAcGVwZS5lcyJ9.PxZP2-f-M-JpyFuaa8C8RP76otbzm8FDakXWHL_IGb_r3M5eR4Futsdld4k7nWEswIa0zJ1KKlH5uDy4_3DjjA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"pepe@alex.es\",\r\n    \"name\": \"JUAN Alex\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8081/api/users/me",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/users/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Url",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/api/users/me",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

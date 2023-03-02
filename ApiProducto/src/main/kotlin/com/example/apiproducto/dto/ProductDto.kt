@@ -15,6 +15,7 @@ data class ProductDto(
     var model: String
 )
 
+
 /**
  * Dto de respuesta con el usuario es de tipo user
  */
