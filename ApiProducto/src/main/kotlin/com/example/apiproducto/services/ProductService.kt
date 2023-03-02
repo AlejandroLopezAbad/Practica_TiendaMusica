@@ -62,13 +62,34 @@ class ProductService
         )
     }
 
+    @CachePut("products")
+    suspend fun notAvailableProduct(uuid: String): Boolean{
+        val exist = repository.findProductByUuid(uuid).firstOrNull()
+        exist?.let {
+            val product = Product(
+                id = exist.id,
+                uuid = exist.uuid,
+                name = exist.name,
+                price = exist.price,
+                available = false ,
+                description = exist.description,
+                url = exist.url,
+                category = exist.category,
+                stock = exist.stock,
+                brand = exist.brand,
+                model = exist.model
+            )
+            repository.save(product)
+            return true
+        } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
+    }
 
     @CacheEvict("products")
-    suspend fun deleteProduct(id: Int): Boolean {
-        val exist = repository.findById(id)
+    suspend fun deleteProduct(uuid: String): Boolean {
+        val exist = repository.findProductByUuid(uuid).firstOrNull()
         exist?.let {
             return repository.delete(it).let { true }
-        } ?: throw ProductNotFoundException("No existe el producto con id: $id")
+        } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
 
     }
 }
