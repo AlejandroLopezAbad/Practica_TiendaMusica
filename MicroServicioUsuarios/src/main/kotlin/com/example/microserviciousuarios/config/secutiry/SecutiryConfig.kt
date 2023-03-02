@@ -1,10 +1,9 @@
 package com.example.microserviciousuarios.config.secutiry
 
-
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthenticationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthorizationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
-import com.example.microserviciousuarios.services.UsersServices
+import com.example.microserviciousuarios.services.users.UsersServices
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +19,12 @@ import org.springframework.security.web.SecurityFilterChain
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Clase que configura la seguridad de Spring, aplica filtros en los END_POINTS
+ *
+ *  @property userService
+ *  @property jwtTokenUtil
+ */
 @Configuration
 @EnableWebSecurity // Habilitamos la seguridad web
 // Activamos la seguridad a nivel de método, por si queremos trabajar a nivel de controlador
@@ -53,15 +58,15 @@ class SecurityConfig
             .authorizeHttpRequests()
             // Permiso para errores y mostrarlos
             .requestMatchers("/error/**").permitAll()
-            .requestMatchers("/api/**").permitAll()
-            .requestMatchers("users/list").permitAll()
+          //  .requestMatchers("/api/**").permitAll() esto permite todas las consultas a la api
+            .requestMatchers("users/login", "users/register").permitAll()
+
+            .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
+            .requestMatchers("users/me").permitAll()
             .and()
             .addFilter(JwtAuthenticationFilter(jwtTokenUtil, authenticationManager))
             .addFilter(JwtAuthorizationFilter(jwtTokenUtil, userService, authenticationManager))
 
         return http.build()
-
     }
-
-
 }

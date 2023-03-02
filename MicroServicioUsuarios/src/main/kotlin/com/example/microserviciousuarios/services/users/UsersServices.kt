@@ -1,4 +1,4 @@
-package com.example.microserviciousuarios.services
+package com.example.microserviciousuarios.services.users
 
 import com.example.microserviciousuarios.exceptions.UsersBadRequestException
 import com.example.microserviciousuarios.exceptions.UsersNotFoundException
@@ -19,15 +19,18 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Servicio que realiza operaciones de usuarios.
+ */
 @Service
 class UsersServices
 @Autowired constructor(
     private val repository: UsersRepository,
-    private val passwordEncoder:PasswordEncoder
-):UserDetailsService {
+    private val passwordEncoder: PasswordEncoder
+): UserDetailsService {
 
 
-    override fun loadUserByUsername(email: String): UserDetails= runBlocking {
+    override fun loadUserByUsername(email: String): UserDetails = runBlocking {
         return@runBlocking repository.findByEmail(email).firstOrNull()
             ?: throw UsersNotFoundException("Usuario no encontrado con username: $email")
     }
@@ -43,7 +46,7 @@ class UsersServices
         return@withContext repository.findById(userId)
     }
 
-    suspend fun loadUserbyUuid(uuid:String)= withContext(Dispatchers.IO){
+    suspend fun loadUserbyUuid(uuid:String)= withContext(Dispatchers.IO) {
         return@withContext repository.findByUuid(uuid).firstOrNull()
     }
 
@@ -56,7 +59,7 @@ class UsersServices
             logger.info { "El usuario ya existe con este email" }
             throw UsersBadRequestException("El usuario ya existe con este email")
         }
-       if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
+        if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
 
             logger.info { "El usuario ya existe con este numero de telefono " }
             throw UsersBadRequestException("El usuario ya existe con este numero de telefono ")
@@ -71,8 +74,8 @@ class UsersServices
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
 
-            )
-        if (isAdmin) { //TODO comprobar que funciona
+        )
+        if (isAdmin) {
             newUser = newUser.copy(
                 rol = Users.TypeRol.ADMIN.name
             )
@@ -82,7 +85,7 @@ class UsersServices
         try {
             return@withContext repository.save(newUser)
         } catch (e: Exception) {
-            throw Exception("Error al crear el usuario: Nombre de usuario o email ya existen")
+            throw UsersBadRequestException("Error al crear el usuario: Nombre de usuario o email ya existen")
         }
 
     }
@@ -94,14 +97,14 @@ class UsersServices
             .firstOrNull()
 
         if (userDB != null && userDB.id != user.id) {
-            throw Exception("El Id ya existe")//TODO cambiar excepciones
+            throw UsersBadRequestException("El Id ya existe")
         }
 
         userDB = repository.findByEmail(user.email!!)
             .firstOrNull()
 
         if (userDB != null && userDB.id != user.id) {
-            throw Exception("El email ya existe")
+            throw UsersBadRequestException("El email ya existe")
         }
 
         logger.info { "El usuario no existe, lo actualizamos" }
@@ -113,10 +116,8 @@ class UsersServices
         try {
             return@withContext repository.save(updtatedUser)
         } catch (e: Exception) {
-            throw Exception("Error al actualizar el usuario: Nombre de usuario o email ya existen")
+            throw UsersBadRequestException("Error al actualizar el usuario: Nombre de usuario o email ya existen")
         }
 
     }
-
-
 }
