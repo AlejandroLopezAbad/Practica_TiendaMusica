@@ -16,7 +16,11 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
-
+/**
+ * Clase para la autenticación del usuario con Json Web Token
+ * @property jwtTokenUtils
+ * @property authenticationManager
+ */
 class JwtAuthenticationFilter(
     private val jwtTokenUtil: JwtTokenUtil,
     private val authenticationManagerX: AuthenticationManager,
@@ -61,6 +65,9 @@ class JwtAuthenticationFilter(
 
 }
 
+/**
+ * Clase que maneja los errores de las credenciales.
+ */
 private data class BadCredentialsError(
     val timestamp: Long = Date().time,
     val status: Int = 401,

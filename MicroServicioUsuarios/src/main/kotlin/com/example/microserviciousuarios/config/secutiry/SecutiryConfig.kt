@@ -1,6 +1,5 @@
 package com.example.microserviciousuarios.config.secutiry
 
-
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthenticationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthorizationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
@@ -20,6 +19,12 @@ import org.springframework.security.web.SecurityFilterChain
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Clase que configura la seguridad de Spring, aplica filtros en los END_POINTS
+ *
+ *  @property userService
+ *  @property jwtTokenUtil
+ */
 @Configuration
 @EnableWebSecurity // Habilitamos la seguridad web
 // Activamos la seguridad a nivel de método, por si queremos trabajar a nivel de controlador
@@ -63,8 +68,5 @@ class SecurityConfig
             .addFilter(JwtAuthorizationFilter(jwtTokenUtil, userService, authenticationManager))
 
         return http.build()
-
     }
-
-
 }

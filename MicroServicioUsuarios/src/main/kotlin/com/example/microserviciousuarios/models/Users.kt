@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
 import java.util.*
 
+/**
+ * Users model
+ */
 @Table(name = "users")
 data class Users(
     @Id

@@ -1,6 +1,5 @@
 package com.example.microserviciousuarios.controller
 
-
 import com.example.microserviciousuarios.config.APIConfig
 import com.example.microserviciousuarios.exceptions.StorageBadRequestException
 import com.example.microserviciousuarios.exceptions.StorageException
@@ -13,22 +12,21 @@ import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-
 import java.io.IOException
 import java.time.LocalDateTime
 
+/**
+ * Controlador para la subida de archivos.
+ */
 @RestController
 @RequestMapping(APIConfig.API_PATH + "/storage")
 class StorageController
 @Autowired constructor(
     private val service: StorageService
 ){
-
-
     @PostMapping(
         value = [""],
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
@@ -50,8 +48,6 @@ class StorageController
             throw StorageBadRequestException(e.message.toString())
         }
     }
-
-
 
     @GetMapping(value = ["{filename:.+}"])
     @ResponseBody

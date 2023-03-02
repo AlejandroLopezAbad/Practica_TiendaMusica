@@ -1,6 +1,4 @@
-
 package com.example.microserviciousuarios.config.secutiry.jwt
-
 
 import com.example.microserviciousuarios.services.users.UsersServices
 
@@ -19,6 +17,14 @@ import java.io.IOException
 
 private val logger = mu.KotlinLogging.logger {}
 
+/**
+ * Clase que filtra la autorización de JWT.
+ * @property jwtTokenUtils
+ * @property service
+ * @constructor
+ * El generador y verificador de tokens, el servicio de usuarios y el AuthenticationManager
+ * @param authManager
+ */
 class JwtAuthorizationFilter(
     private val jwtTokenUtil: JwtTokenUtil,
     private val service: UsersServices,
@@ -43,6 +49,10 @@ class JwtAuthorizationFilter(
         chain.doFilter(req, res)
     }
 
+    /**
+     * Método que obtiene la implementación de la autenticación
+     *
+     */
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
         logger.info { "Obteniendo autenticación" }
 

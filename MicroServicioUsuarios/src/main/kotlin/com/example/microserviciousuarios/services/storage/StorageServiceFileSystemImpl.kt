@@ -1,6 +1,5 @@
 package com.example.microserviciousuarios.services.storage
 
-
 import com.example.microserviciousuarios.controller.StorageController
 import com.example.microserviciousuarios.exceptions.StorageBadRequestException
 import com.example.microserviciousuarios.exceptions.StorageFileNotFoundException
@@ -18,6 +17,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
+/**
+ * Servicio de almacenamiento.
+ */
 @Service
 class StorageServiceFileSystemImpl(
     @Value("\${upload.location}")
