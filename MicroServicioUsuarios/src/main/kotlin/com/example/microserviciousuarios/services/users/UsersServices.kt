@@ -19,6 +19,9 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Servicio que realiza operaciones de usuarios.
+ */
 @Service
 class UsersServices
 @Autowired constructor(
@@ -117,6 +120,4 @@ class UsersServices
         }
 
     }
-
-
 }

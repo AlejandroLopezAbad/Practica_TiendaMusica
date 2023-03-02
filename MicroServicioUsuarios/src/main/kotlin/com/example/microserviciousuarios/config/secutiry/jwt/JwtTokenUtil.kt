@@ -14,6 +14,9 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Clase que genera y verifica los tokens de los usuarios, JWT.
+ */
 @Component
 class JwtTokenUtil {
 
