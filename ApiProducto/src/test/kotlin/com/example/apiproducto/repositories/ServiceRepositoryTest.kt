@@ -3,6 +3,7 @@ package com.example.apiproducto.repositories
 import com.example.apiproducto.models.Service
 import com.example.apiproducto.models.ServiceCategory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.*
@@ -52,8 +53,37 @@ internal class ServiceRepositoryTest {
     }
 
     @Test
+    fun findByUuid() = runTest {
+        val serviceTest = Service(
+            price = 8.5,
+            available = true,
+            description = "Prueba",
+            url = "url",
+            category = ServiceCategory.CHANGE_OF_STRINGS,
+        )
+        val save = repository.save(serviceTest)
+        val res = repository.findServiceByUuid(save.uuid).firstOrNull()
+
+        assertAll(
+            { assertNotNull(res) },
+            { assertEquals(serviceTest.url, res?.url) },
+            { assertEquals(serviceTest.category, res?.category) },
+            { assertEquals(serviceTest.price, res?.price) },
+            { assertEquals(serviceTest.available, res?.available) }
+        )
+
+        repository.delete(serviceTest)
+    }
+
+    @Test
     fun findByIdNotFound() = runTest {
         val res = repository.findById(-1)
+        assertNull(res)
+    }
+
+    @Test
+    fun findByUuidNotFound() = runTest {
+        val res = repository.findServiceByUuid("-1").firstOrNull()
         assertNull(res)
     }
 
