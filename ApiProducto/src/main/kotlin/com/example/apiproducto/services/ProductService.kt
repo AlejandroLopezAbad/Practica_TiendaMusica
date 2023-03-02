@@ -15,37 +15,38 @@ import org.springframework.stereotype.Service
 @Service
 class ProductService
 @Autowired constructor(
-    private val repository: ProductRepository
-){
+    private val repository: ProductRepository,
+) {
 
-    suspend fun findProductsByCategory(category: String):List<Product>{
+    suspend fun findProductsByCategory(category: String): List<Product> {
         return repository.findProductsByCategory(category).toList()
     }
 
-    suspend fun findAllProducts():List<Product>{
+    suspend fun findAllProducts(): List<Product> {
         return repository.findAll().toList()
     }
 
     @Cacheable("products")
-    suspend fun findProductById(id:Int):Product?{
+    suspend fun findProductById(id: Int): Product {
         return repository.findById(id)
             ?: throw ProductNotFoundException("No se ha encontrado un producto con el id: $id")
     }
 
     @Cacheable("products")
-    suspend fun findProductByUuid(uuid:String): Product?{
+    suspend fun findProductByUuid(uuid: String): Product {
         return repository.findProductByUuid(uuid).firstOrNull()
             ?: throw ProductNotFoundException("No se ha encontrado un producto con el uuid: $uuid")
     }
 
     @CachePut("products")
-    suspend fun saveProduct(product: Product): Product{
+    suspend fun saveProduct(product: Product): Product {
         return repository.save(product)
     }
 
     @CachePut("products")
-    suspend fun updateProduct(product: Product, updateData:Product): Product{
-        return repository.save(Product(
+    suspend fun updateProduct(product: Product, updateData: Product): Product {
+        return repository.save(
+            Product(
                 id = product.id,
                 uuid = product.uuid,
                 name = updateData.name,
@@ -57,12 +58,38 @@ class ProductService
                 stock = updateData.stock,
                 brand = updateData.brand,
                 model = updateData.model
-        ))
+            )
+        )
     }
 
+    @CachePut("products")
+    suspend fun notAvailableProduct(uuid: String): Boolean{
+        val exist = repository.findProductByUuid(uuid).firstOrNull()
+        exist?.let {
+            val product = Product(
+                id = exist.id,
+                uuid = exist.uuid,
+                name = exist.name,
+                price = exist.price,
+                available = false ,
+                description = exist.description,
+                url = exist.url,
+                category = exist.category,
+                stock = exist.stock,
+                brand = exist.brand,
+                model = exist.model
+            )
+            repository.save(product)
+            return true
+        } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
+    }
 
     @CacheEvict("products")
-    suspend fun deleteProduct(product: Product){
-        repository.delete(product)
+    suspend fun deleteProduct(uuid: String): Boolean {
+        val exist = repository.findProductByUuid(uuid).firstOrNull()
+        exist?.let {
+            return repository.delete(it).let { true }
+        } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
+
     }
 }

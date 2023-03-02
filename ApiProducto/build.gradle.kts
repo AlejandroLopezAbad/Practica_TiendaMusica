@@ -20,6 +20,9 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -31,6 +34,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("io.projectreactor:reactor-test")
+
+    implementation("com.auth0:java-jwt:4.2.1")
+
     // Mockk
     testImplementation("com.ninja-squad:springmockk:4.0.0")
     // Test
