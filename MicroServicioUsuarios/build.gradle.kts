@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.7.22"
 
     id("org.jetbrains.dokka") version "1.7.20"
+
 }
 
 group = "com.example"
@@ -15,6 +16,8 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 dependencies {
@@ -34,10 +37,15 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.5")
     // JWT
     implementation("com.auth0:java-jwt:4.2.1")
-    // Para mis logs
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    //security provider
+    // Dependencias de Seguridad Lo usaremos más adelante
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
-    runtimeOnly("org.postgresql:postgresql")
+    // Swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+
+    runtimeOnly("org.mariadb:r2dbc-mariadb:1.1.3")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

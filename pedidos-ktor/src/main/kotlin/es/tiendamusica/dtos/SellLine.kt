@@ -3,8 +3,8 @@ package es.tiendamusica.dtos
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LineaVenta(
+data class SellLine(
     val idItem: String,
-    val precio: Double,
-    val cantidad: Int
+    val price: Double,
+    val quantity: Int
 )

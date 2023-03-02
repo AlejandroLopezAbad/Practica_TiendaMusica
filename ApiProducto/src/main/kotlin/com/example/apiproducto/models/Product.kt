@@ -17,13 +17,9 @@ data class Product(
     var category: ProductCategory,
     var stock: Int,
     var brand: String,
-<<<<<<< HEAD
     var model: String
 ): Item(id, uuid, price, available, description, url)
-=======
-    var model: String,
-) : Item(id, uuid, price, available, description, url)
->>>>>>> c6a6bd8ac6d160b0fae5964b6615c56980e80c02
+
 
 enum class ProductCategory {
     GUITAR, BASS_GUITAR, BOOSTER, ACCESSORY

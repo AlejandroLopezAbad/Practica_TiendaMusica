@@ -1,7 +1,7 @@
 package es.tiendamusica.models
 
-import es.tiendamusica.dtos.LineaVenta
-import es.tiendamusica.dtos.PedidoCreateDto
+import es.tiendamusica.dtos.OrderCreateDto
+import es.tiendamusica.dtos.SellLine
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
@@ -11,9 +11,9 @@ import java.time.LocalDate
 import java.util.*
 
 @Serializable
-data class Pedido(
+data class Order(
     @BsonId @Contextual
-    val id: String = newId<Pedido>().toString(), // no cambia
+    val id: String = newId<Order>().toString(), // no cambia
     val uuid: String = UUID.randomUUID().toString(), // no cambia
     var price: Double, // si cambia
     var userId: String, // no cambia
@@ -22,32 +22,32 @@ data class Pedido(
     var createdAt: LocalDate, // no cambia
     @Serializable(LocalDateSerializer::class)
     var deliveredAt: LocalDate?, // si cambia
-    val productos: MutableList<LineaVenta>
+    val productos: MutableList<SellLine>
 ) {
     enum class Status(val status: String) {
         RECEIVED("Received"),
-        PROCESS("Process"),
+        PROCESSING("Processing"),
         FINISHED("Finished");
 
         companion object {
             fun from(estado: String): Status {
                 return when (estado) {
                     "Recieved" -> RECEIVED
-                    "Process" -> PROCESS
+                    "Processing" -> PROCESSING
                     "Finished" -> FINISHED
-                    else -> throw Exception("Status don´t exist")
+                    else -> throw Exception("Status doesn´t exist")
                 }
             }
         }
     }
 }
 
-fun PedidoCreateDto.toModel() = Pedido(
-    price = this.productos.sumOf { it.precio * it.cantidad },
+fun OrderCreateDto.toModel() = Order(
+    price = this.products.sumOf { it.price * it.quantity },
     uuid = UUID.randomUUID().toString(),
     userId = this.userId,
-    status = Pedido.Status.RECEIVED,
+    status = Order.Status.PROCESSING,
     createdAt = LocalDate.now(),
     deliveredAt = null,
-    productos = this.productos as MutableList<LineaVenta>
+    productos = this.products as MutableList<SellLine>
 )
