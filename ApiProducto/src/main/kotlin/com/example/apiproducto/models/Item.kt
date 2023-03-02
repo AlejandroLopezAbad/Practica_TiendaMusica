@@ -1,6 +1,4 @@
 package com.example.apiproducto.models
-import org.springframework.data.annotation.Id
-import java.util.*
 
 abstract class Item(
     open var id: Int?,
@@ -8,6 +6,5 @@ abstract class Item(
     open var price: Double,
     open var available: Boolean,
     open var description: String,
-    open var url: String
-){
-}
+    open var url: String,
+)

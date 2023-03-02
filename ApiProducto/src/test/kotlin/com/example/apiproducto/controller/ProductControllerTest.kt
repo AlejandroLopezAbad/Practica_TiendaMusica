@@ -1,6 +1,7 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ProductDto
+import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.models.ProductCategory
 import com.example.apiproducto.services.ProductService
@@ -15,11 +16,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -95,10 +98,14 @@ class ProductControllerTest {
 
     @Test
     fun findProductByIdNotFound() = runTest {
-        coEvery { service.findProductById(test.id!!) } returns null
-        val find = controller.findProductById(test.id!!)
-        val result = find.statusCode
-        assertTrue(result == HttpStatus.NOT_FOUND)
+        coEvery { service.findProductById(test.id!!) } throws ProductNotFoundException("No se ha encontrado un producto con el id: ${test.id}")
+        val find = assertThrows<ResponseStatusException>{
+            controller.findProductById(test.id!!)
+        }
+        assertEquals(
+            """404 NOT_FOUND "No se ha encontrado un producto con el id: ${test.id}"""",
+            find.message
+        )
         coVerify(exactly=1){service.findProductById(test.id!!)}
     }
 
@@ -156,10 +163,14 @@ class ProductControllerTest {
 
     @Test
     fun updateProductNotFound() = runTest{
-        coEvery { service.findProductById(test.id!!) } returns null
-        val update = controller.updateProduct(testDto, test.id!!)
-        val result = update.statusCode
-        assertTrue(result == HttpStatus.NOT_FOUND)
+        coEvery { service.findProductById(test.id!!) } throws ProductNotFoundException("No se ha encontrado un producto con el id: ${test.id}")
+        val update = assertThrows<ResponseStatusException>{
+            controller.updateProduct(testDto, test.id!!)
+        }
+        assertEquals(
+            """404 NOT_FOUND "No se ha encontrado un producto con el id: ${test.id}"""",
+            update.message
+        )
         coVerify(exactly = 1){service.findProductById(test.id!!)}
     }
 
@@ -176,13 +187,17 @@ class ProductControllerTest {
         coVerify(exactly = 1){ service.deleteProduct(test) }
     }
 
-    
     @Test
     fun deleteProductNotFound() = runTest{
-        coEvery { service.findProductById(test.id!!) } returns null
-        val delete = controller.deleteProduct(test.id!!)
-        val result = delete.statusCode
-        assertTrue(result == HttpStatus.NOT_FOUND)
+        coEvery { service.findProductById(test.id!!) } throws ProductNotFoundException("No se ha encontrado un producto con el id: ${test.id}")
+        val delete = assertThrows<ResponseStatusException>{
+            controller.deleteProduct(test.id!!)
+        }
+
+        assertEquals(
+            """404 NOT_FOUND "No se ha encontrado un producto con el id: ${test.id}"""",
+            delete.message
+        )
         coVerify(exactly = 1){ service.findProductById(test.id!!) }
     }
 }

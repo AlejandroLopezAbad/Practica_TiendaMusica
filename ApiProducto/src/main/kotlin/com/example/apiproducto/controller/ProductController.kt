@@ -1,9 +1,12 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ProductDto
+import com.example.apiproducto.exceptions.ProductBadRequestException
+import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.mappers.toProduct
 import com.example.apiproducto.models.*
 import com.example.apiproducto.services.ProductService
+import com.example.apiproducto.validators.validate
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
+import java.nio.file.Files
 
 //TODO Hacer --> Dependiendo de si es admin o no se muestran los productos no disponibles también
 // TODO Cuando esté la seguridad dependiendo de si es user o admin devolver un dto
@@ -58,19 +63,23 @@ class ProductController
 
     @GetMapping("/{id}")
     suspend fun findProductById(@PathVariable id: Int): ResponseEntity<Product>{
-        val find = service.findProductById(id)
-        find?.let {
-            return ResponseEntity.ok(it)
-        }?:run{
-            return ResponseEntity.notFound().build()
+        try {
+            val find = service.findProductById(id)
+            return ResponseEntity.ok(find)
+        } catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
     @PostMapping("")
     suspend fun saveProduct(@RequestBody dto: ProductDto):ResponseEntity<Product>{
-        val product = dto.toProduct()
-        val created = service.saveProduct(product)
-        return ResponseEntity.status(HttpStatus.CREATED).body(created)
+        try{
+            val product = dto.validate().toProduct()
+            val created = service.saveProduct(product)
+            return ResponseEntity.status(HttpStatus.CREATED).body(created)
+        }catch (e: ProductBadRequestException){
+            throw  ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        }
     }
 
 
@@ -79,24 +88,27 @@ class ProductController
         @RequestBody dto: ProductDto,
         @PathVariable id: Int
     ): ResponseEntity<Product>{
-        val find = service.findProductById(id)
-        find?.let {
-            val dtoProduct = dto.toProduct()
-            val updated = service.updateProduct(it, dtoProduct)
+        try {
+            val find = service.findProductById(id)
+            val dtoProduct = dto.validate().toProduct()
+            val updated = service.updateProduct(find!!, dtoProduct)
             return ResponseEntity.ok(updated)
-        }?: run{
-            return ResponseEntity.notFound().build()
+        }catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        }catch (e: ProductBadRequestException){
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 
+
     @DeleteMapping("/{id}")
     suspend fun deleteProduct(@PathVariable id:Int): ResponseEntity<Product> {
-        val find = service.findProductById(id)
-        find?.let {
-            service.deleteProduct(it)
+        try {
+            val find = service.findProductById(id)
+            service.deleteProduct(find!!)
             return ResponseEntity.noContent().build()
-        }?: run{
-            return ResponseEntity.notFound().build()
+        }catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 }

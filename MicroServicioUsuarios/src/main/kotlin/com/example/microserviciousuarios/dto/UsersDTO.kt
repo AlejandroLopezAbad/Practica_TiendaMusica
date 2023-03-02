@@ -4,15 +4,13 @@ import com.example.microserviciousuarios.models.Users
 import java.time.LocalDateTime
 
 data class UsersDto(
-
-    val id: Int? = null,
-
+   // val id: Int? = null,
     val uuid:String,
     val email: String,
     val name: String,
     val telephone: String,
     val url: String,
-    val rol: String,
+    val rol: Set<String> = setOf(Users.TypeRol.USER.name),
     val metadata: MetaData? = null,
 ) {
     data class MetaData(
@@ -24,16 +22,31 @@ data class UsersDto(
 }
 
 data class UsersCreateDto(
-    val name: String,
     val email: String,
-    val rol:String,
-    val password: String
-    //TODO meter los campos del user
+    val name: String,
+    val password: String,
+    val telephone:String,
+    val rol:Set<String> = setOf(Users.TypeRol.USER.name),
+    val url:String?=null
 )
+
+data class UsersUpdateDto(
+    val email:String,
+    val name:String,
+
+   // val telephone:String,
+
+)
+
 
 data class UsersWithTokenDto(
     val user: UsersDto,
     val token: String
+)
+
+data class UsersLoginDto(
+    val email: String,
+    val password: String
 )
 
 

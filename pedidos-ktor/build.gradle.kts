@@ -41,7 +41,8 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("io.ktor:ktor-server-cors-jvm:2.2.2")
-
+//Validators Ktor
+    implementation("io.ktor:ktor-server-request-validation:$ktor_version")
 
     // Para testear métodos suspendidos o corrutinas
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
@@ -56,7 +57,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
 
     //KOIN
-    implementation("io.insert-koin:koin-ktor:$koin_ktor_version")
+    implementation ("io.insert-koin:koin-ktor:$koin_ktor_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_ktor_version")
     implementation("io.insert-koin:koin-annotations:$koin_ksp_version")
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version")

@@ -11,7 +11,6 @@ import java.util.*
 data class OrderDto(
     val id: String,
     @Serializable(UUIDSerializer::class)
-
     val uuid: UUID,
     val price: Double,
     val user: UserDto,
