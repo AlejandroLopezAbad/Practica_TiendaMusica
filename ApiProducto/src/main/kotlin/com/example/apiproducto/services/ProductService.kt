@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 
 /**
  * Servicio de Productos cacheado.
+ * @property repository repositorio de productos.
  */
 @Service
 class ProductService

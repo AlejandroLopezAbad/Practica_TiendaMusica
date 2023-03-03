@@ -16,6 +16,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
+/**
+ * Servicio de almacenamiento de productos y servicios.
+ */
 @Service
 class StorageServiceImpl(
     @Value("\${upload.location}") path: String
@@ -32,6 +35,10 @@ class StorageServiceImpl(
     }
 
 
+    /**
+     * Creación de las carpetas de almacenamiento si no existiesen.
+     * @throws StorageBadRequestException si diese problemas con la creación de las carpetas.
+     */
     override fun init() {
         try {
             if (!Files.exists(rootLocation))
@@ -48,6 +55,13 @@ class StorageServiceImpl(
     }
 
 
+    /**
+     * Almacenar un fichero en producto.
+     * @param file fichero a almacenar.
+     * @param uuidProduct uuid del producto que va a tener este fichero.
+     * @throws StorageBadRequestException Si hay fallos con el almacenamiento.
+     * @return nombre del fichero y extensión almacenado.
+     */
     override fun storeProduct(file: MultipartFile, uuidProduct: String): String {
         val filename = StringUtils.cleanPath(file.originalFilename.toString())
         val extension = StringUtils.getFilenameExtension(filename).toString()
@@ -72,6 +86,13 @@ class StorageServiceImpl(
     }
 
 
+    /**
+    * Almacenar un fichero en service.
+    * @param file fichero a almacenar.
+    * @param uuidService uuid del servicio que va a tener este fichero.
+    * @throws StorageBadRequestException Si hay fallos con el almacenamiento.
+    * @return nombre del fichero y extensión almacenado.
+    */
     override fun storeService(file: MultipartFile, uuidService: String): String {
         val filename = StringUtils.cleanPath(file.originalFilename.toString())
         val extension = StringUtils.getFilenameExtension(filename).toString()
@@ -96,6 +117,12 @@ class StorageServiceImpl(
     }
 
 
+    /**
+     * Cargar los ficheros como resource.
+     * @param filename nombre del fichero a buscar.
+     * @param type si es de producto o servicio.
+     * @return el fichero encontrado como resource.
+     */
     override fun loadAsResource(filename: String, type: String): Resource {
         return try {
             if(type == "PRODUCT"){
@@ -121,6 +148,11 @@ class StorageServiceImpl(
     }
 
 
+    /**
+     * Eliminar un fichero de la carpeta product.
+     * @param filename nombre del fichero a eliminar.
+     * @throws StorageBadRequestException si da fallo para eliminar el fichero.
+     */
     override fun deleteProduct(filename: String) {
         try {
             val file = productLocation.resolve(filename)
@@ -131,6 +163,11 @@ class StorageServiceImpl(
     }
 
 
+    /**
+     * Eliminar un fichero de la carpeta service.
+     * @param filename nombre del fichero a eliminar.
+     * @throws StorageBadRequestException si da fallo para eliminar el fichero.
+     */
     override fun deleteService(filename: String) {
         try {
             val file = serviceLocation.resolve(filename)

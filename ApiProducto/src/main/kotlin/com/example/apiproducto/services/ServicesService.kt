@@ -11,6 +11,7 @@ import com.example.apiproducto.models.Service as Services
 
 /**
  * Servicio de servicios.
+ * @property repository repositorio de servicios
  */
 @Service
 class ServicesService
@@ -81,7 +82,7 @@ class ServicesService
         )
     }
 
-    
+
     suspend fun deleteService(id: Int): Boolean {
         val exist = repository.findById(id)
         exist?.let {
