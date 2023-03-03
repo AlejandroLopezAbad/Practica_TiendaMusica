@@ -18,7 +18,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 /**
- * Servicio de almacenamiento.
+ * Servicio de almacenamiento de usuarios.
  */
 @Service
 class StorageServiceFileSystemImpl(
@@ -33,6 +33,10 @@ class StorageServiceFileSystemImpl(
         this.init()
     }
 
+    /**
+     * Creación de las carpetas de almacenamiento si no existieran.
+     * @throws StorageBadRequestException al haber problemas al crear las carpetas.
+     */
     override fun init() {
         try {
             if(!Files.exists(location)){
@@ -43,6 +47,13 @@ class StorageServiceFileSystemImpl(
         }
     }
 
+    /**
+     * Almacenar un fichero en usuario.
+     * @param file fichero a almacenar.
+     * @param extension extensión del fichero.
+     * @throws StorageBadRequestException si falla el almacenamiento.
+     * @return el nombre del archivo.
+     */
     override fun save(file: MultipartFile, username: String): String {
         val filename = StringUtils.cleanPath(file.originalFilename.toString())
         val extension = StringUtils.getFilenameExtension(filename).toString()
@@ -67,6 +78,12 @@ class StorageServiceFileSystemImpl(
         }
     }
 
+    /**
+     * Carga los ficheros.
+     * @param fichero nombre del fichero a buscar.
+     * @throws StorageFileNotFoundException si no puede leer los ficheros.
+     * @return el fichero como recurso.
+     */
     override fun load(filename: String): Resource {
         return try {
             val fichero = location.resolve(filename)
@@ -83,6 +100,10 @@ class StorageServiceFileSystemImpl(
         }
     }
 
+    /**
+     * Devuelve la URL.
+     * @param filename nombre del fichero.
+     */
     override fun getUrl(filename: String): String {
         return MvcUriComponentsBuilder
             .fromMethodName(StorageController::class.java, "loadFile", filename, null)

@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration
 
 /**
  * Clase de configuración con la información básica de la API.
- *
  */
 @Configuration
 class APIConfig {

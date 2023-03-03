@@ -20,10 +20,7 @@ import org.springframework.security.web.SecurityFilterChain
 private val logger = KotlinLogging.logger {}
 
 /**
- * Clase que configura la seguridad de Spring, aplica filtros en los END_POINTS
- *
- *  @property userService
- *  @property jwtTokenUtil
+ * Clase que configura la seguridad de Spring y aplica filtros en los END_POINTS
  */
 @Configuration
 @EnableWebSecurity // Habilitamos la seguridad web

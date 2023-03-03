@@ -19,7 +19,7 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 /**
- * Controlador para la subida de archivos.
+ * Controlador de la subida de archivos.
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH + "/storage")

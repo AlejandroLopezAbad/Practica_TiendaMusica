@@ -17,9 +17,7 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 
 /**
- * Clase para la autenticación del usuario con Json Web Token
- * @property jwtTokenUtils
- * @property authenticationManager
+ * Clase que realiza la autenticación del usuario con Json Web Token
  */
 class JwtAuthenticationFilter(
     private val jwtTokenUtil: JwtTokenUtil,
