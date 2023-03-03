@@ -35,12 +35,7 @@ import org.springframework.web.server.ResponseStatusException
 private val logger = KotlinLogging.logger {}
 
 /**
- * Controlador que hace las peraciones básicas de los usuarios.
- *
- *  @property usersService
- *  @property authenticationManager
- *  @property jwtTokenUtils
- *  @property storageService
+ * Controlador que realiza las operaciones básicas de los usuarios.
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH + "/users")
@@ -178,4 +173,3 @@ class UsuarioController
         }
     }
 }
-
