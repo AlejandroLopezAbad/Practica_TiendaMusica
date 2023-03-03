@@ -12,37 +12,76 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
+/**
+ * Servicio de Productos cacheado.
+ */
 @Service
 class ProductService
 @Autowired constructor(
     private val repository: ProductRepository,
 ) {
 
+    /**
+     * Buscar productos por su categoría.
+     * @param category categoría por la que buscar los productos.
+     * @return lista de los productos encontrados con la categoría pedida.
+     */
     suspend fun findProductsByCategory(category: String): List<Product> {
         return repository.findProductsByCategory(category).toList()
     }
 
+    /**
+     * Buscar todos los productos.
+     * @return lista de todos los productos.
+     */
     suspend fun findAllProducts(): List<Product> {
         return repository.findAll().toList()
     }
 
+
+    /**
+     * Buscar un producto por su id.
+     * @param id id del producto a buscar.
+     * @throws ProductNotFoundException si no ha encontrado el producto.
+     * @return el producto encontrado.
+     */
     @Cacheable("products")
     suspend fun findProductById(id: Int): Product {
         return repository.findById(id)
             ?: throw ProductNotFoundException("No se ha encontrado un producto con el id: $id")
     }
 
+
+    /**
+     * Buscar un porducto por su uuid.
+     * @param uuid uuid del producto a buscar.
+     * @throws ProductNotFoundException si no se ha encontrado el producto.
+     * @return el producto encontrado.
+     */
     @Cacheable("products")
     suspend fun findProductByUuid(uuid: String): Product {
         return repository.findProductByUuid(uuid).firstOrNull()
             ?: throw ProductNotFoundException("No se ha encontrado un producto con el uuid: $uuid")
     }
 
+
+    /**
+     * Guardar un producto.
+     * @param product producto a guardar en el repositorio.
+     * @return el producto guardado.
+     */
     @CachePut("products")
     suspend fun saveProduct(product: Product): Product {
         return repository.save(product)
     }
 
+
+    /**
+     * Actualizar un producto.
+     * @param product Producto original, el que está almacenado.
+     * @param updateData producto con los datos actualizados.
+     * @return producto actualizado.
+     */
     @CachePut("products")
     suspend fun updateProduct(product: Product, updateData: Product): Product {
         return repository.save(
@@ -62,6 +101,13 @@ class ProductService
         )
     }
 
+
+    /**
+     * Actualizar la disponibilidad de un producto.
+     * @param uuid uuid del producto a actualizar la disponibilidad.
+     * @throws ProductNotFoundException si no se encuentra el producto a actualizar.
+     * @return boolean dependiendo de sis se ha actualizado correctamente.
+     */
     @CachePut("products")
     suspend fun notAvailableProduct(uuid: String): Boolean{
         val exist = repository.findProductByUuid(uuid).firstOrNull()
@@ -84,6 +130,13 @@ class ProductService
         } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
     }
 
+
+    /**
+     * Eliminar un producto.
+     * @param uuid uuid del producto a eliminar.
+     * @throws ProductNotFoundException si no se encuentra el producto a eliminar.
+     * @return boolean si se ha eliminado correctamente.
+     */
     @CacheEvict("products")
     suspend fun deleteProduct(uuid: String): Boolean {
         val exist = repository.findProductByUuid(uuid).firstOrNull()
