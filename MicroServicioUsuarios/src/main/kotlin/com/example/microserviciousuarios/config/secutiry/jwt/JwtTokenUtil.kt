@@ -4,6 +4,7 @@ package com.example.microserviciousuarios.config.secutiry.jwt
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.example.microserviciousuarios.exceptions.TokenInvalidException
 import com.example.microserviciousuarios.models.Users
 
 import mu.KotlinLogging
@@ -13,6 +14,11 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Jwt token util
+ *
+ * @constructor Create empty Jwt token util
+ */
 @Component
 class JwtTokenUtil {
 
@@ -24,7 +30,12 @@ class JwtTokenUtil {
     @Value("\${jwt.token-expiration:3600}")
     private val jwtDuracionTokenEnSegundos = 0
 
-
+    /**
+     * Generate token
+     *
+     * @param user
+     * @return
+     */
     fun generateToken(user: Users): String {
         logger.info { "Generando token para el usuario: ${user.name}" }
 
@@ -44,26 +55,42 @@ class JwtTokenUtil {
             .sign(Algorithm.HMAC512(jwtSecreto)) // Lo firmamos con nuestro secreto HS512
     }
 
-    // A partir de un token obetner el UUID de usuario
+    /**
+     * Get user id from jwt
+     *
+     * @param token
+     * @return
+     */// A partir de un token obetner el UUID de usuario
     fun getUserIdFromJwt(token: String?): String {
         logger.info { "Obteniendo el ID del usuario: $token" }
         return validateToken(token!!)!!.subject
     }
 
-    // Nos idica como validar el Token
+    /**
+     * Validate token
+     *
+     * @param authToken
+     * @return
+     */// Nos idica como validar el Token
     fun validateToken(authToken: String): DecodedJWT? {
         logger.info { "Validando el token: ${authToken}" }
 
         try {
             return JWT.require(Algorithm.HMAC512(jwtSecreto)).build().verify(authToken)
         } catch (e: Exception) {
-            throw Exception("Token no válido o expirado")//TODO cambiar excepciones
+            throw TokenInvalidException("Token no válido o expirado")
         }
     }
 
     private fun getClaimsFromJwt(token: String) =
         validateToken(token)?.claims
 
+    /**
+     * Get username from jwt
+     *
+     * @param token
+     * @return
+     */
     fun getUsernameFromJwt(token: String): String {
         logger.info { "Obteniendo el nombre de usuario del token: ${token}" }
 
@@ -71,6 +98,12 @@ class JwtTokenUtil {
         return claims!!["email"]!!.asString()
     }
 
+    /**
+     * Get roles from jwt
+     *
+     * @param token
+     * @return
+     */
     fun getRolesFromJwt(token: String): String {
         logger.info { "Obteniendo los roles del token: ${token}" }
 
@@ -78,6 +111,12 @@ class JwtTokenUtil {
         return claims!!["roles"]!!.asString()
     }
 
+    /**
+     * Is token valid
+     *
+     * @param token
+     * @return
+     */
     fun isTokenValid(token: String): Boolean {
         logger.info { "Comprobando si el token es válido: ${token}" }
 

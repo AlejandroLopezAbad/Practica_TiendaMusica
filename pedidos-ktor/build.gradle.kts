@@ -26,6 +26,12 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+ktor {
+    fatJar {
+        archiveFileName.set("servicio-pedidos.jar")
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -57,7 +63,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
 
     //KOIN
-    implementation ("io.insert-koin:koin-ktor:$koin_ktor_version")
+    implementation("io.insert-koin:koin-ktor:$koin_ktor_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_ktor_version")
     implementation("io.insert-koin:koin-annotations:$koin_ksp_version")
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version")
@@ -85,4 +91,21 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
+
+ktor {
+    docker {
+        localImageName.set("servicio-pedidos")
+        jreVersion.set(io.ktor.plugin.features.JreVersion.JRE_17)
+        portMappings.set(
+            listOf(
+                io.ktor.plugin.features.DockerPortMapping(
+                    8080,
+                    8080,
+                    io.ktor.plugin.features.DockerPortMappingProtocol.TCP
+                )
+            )
+        )
+    }
+}
+
 
