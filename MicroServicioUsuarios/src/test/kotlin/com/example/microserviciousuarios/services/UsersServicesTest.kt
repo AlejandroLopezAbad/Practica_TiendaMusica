@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.password.PasswordEncoder
 
 
 @ExtendWith(MockKExtension::class)
@@ -35,12 +36,13 @@ class UsersServicesTest {
     @MockK
     lateinit var repository: UsersRepository
 
+    @MockK
+    lateinit var passwordEncoder: PasswordEncoder
+
     @InjectMockKs
     lateinit var service: UsersServices
 
-    init {
-        MockKAnnotations.init(this)
-    }
+
 
     @Test
     fun findAll() = runTest {
@@ -89,8 +91,10 @@ class UsersServicesTest {
 
     @Test
     fun save() = runTest {
-        coEvery { repository.save(userTest) } returns userTest
-
+        coEvery { repository.save(any()) } returns userTest
+        coEvery { repository.findByEmail(userTest.email) } returns flowOf()
+        coEvery { repository.findByTelephone(userTest.telephone) } returns flowOf()
+        coEvery { passwordEncoder.encode("1234") } returns "\$2a\$12\$x3aWajrYazSkGRqOGMF0oudoCTi369NxnXm7DHzRQ0YJaEK0YVPNK"
         val res = service.save(userTest)
         assertAll(
             { assertNotNull(res) },
@@ -106,21 +110,30 @@ class UsersServicesTest {
 
     @Test
     fun update() = runTest {
-        coEvery { repository.findByName(userTest.name) } returns flowOf(userTest)
-        coEvery { repository.findByEmail(userTest.email) } returns flowOf(userTest)
-        coEvery { repository.save(userTest) } returns userTest
+        val updateTest = Users(
+            id = 1,
+            uuid = "565432d8-3606-4aa6-b111-5951d0643b8d",
+            email = "test@mail.com",
+            name = "update",
+            password = "1234",
+            telephone = 123456789
+        )
+        coEvery { repository.findByName(updateTest.name) } returns flowOf(userTest)
+        coEvery { repository.findByEmail(updateTest.email) } returns flowOf(userTest)
+        coEvery { repository.save(any()) } returns updateTest
 
-        val res = service.update(userTest)
+
+        val res = service.update(updateTest)
 
         assertAll(
             { assertNotNull(res) },
-            { assertEquals(userTest.name, res.name) },
-            { assertEquals(userTest.id, res.id) },
-            { assertEquals(userTest.uuid, res.uuid) },
-            { assertEquals(userTest.email, res.email) },
-            { assertEquals(userTest.name, res.name) },
-            { assertEquals(userTest.password, res.password) },
-            { assertEquals(userTest.telephone, res.telephone) }
+            { assertEquals(updateTest.name, res.name) },
+            { assertEquals(updateTest.id, res.id) },
+            { assertEquals(updateTest.uuid, res.uuid) },
+            { assertEquals(updateTest.email, res.email) },
+            { assertEquals(updateTest.name, res.name) },
+            { assertEquals(updateTest.password, res.password) },
+            { assertEquals(updateTest.telephone, res.telephone) }
         )
 
     }

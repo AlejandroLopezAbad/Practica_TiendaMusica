@@ -131,7 +131,6 @@ class UsersServices
 
         userDB = repository.findByEmail(user.email!!)
             .firstOrNull()
-
         if (userDB != null && userDB.id != user.id) {
             throw UsersBadRequestException("El email ya existe")
         }
@@ -145,6 +144,7 @@ class UsersServices
         try {
             return@withContext repository.save(updtatedUser)
         } catch (e: Exception) {
+            println(e.message)
             throw UsersBadRequestException("Error al actualizar el usuario: Nombre de usuario o email ya existen")
         }
 

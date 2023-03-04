@@ -98,7 +98,6 @@ class UsuarioController
         try {
             val user = usersCreateDto.validate().toModel()
 
-            user.rol.forEach { println(it) }
 
             val userSaved = usersService.save(user)
 
