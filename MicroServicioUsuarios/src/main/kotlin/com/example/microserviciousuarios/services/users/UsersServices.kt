@@ -48,7 +48,6 @@ class UsersServices
         return@withContext repository.findAll()
     }
 
-
     /**
      * Load user by id
      *
