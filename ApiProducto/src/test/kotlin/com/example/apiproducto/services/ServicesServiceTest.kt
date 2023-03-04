@@ -11,6 +11,7 @@ import io.mockk.coVerify
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
@@ -152,50 +153,25 @@ class ServicesServiceTest {
 
     @Test
     fun deleteTest() = runTest {
-        coEvery { repository.findById(test.id!!) } returns test
+        coEvery { repository.findServiceByUuid(test.uuid) } returns flowOf(test)
         coEvery { repository.deleteById(test.id!!) } returns Unit
 
-        val delete = service.deleteService(test.id!!)
+        val delete = service.deleteService(test.uuid)
 
         assertTrue(delete)
-        coVerify(exactly = 1) { repository.findById(test.id!!) }
+        coVerify(exactly = 1) { repository.findServiceByUuid(test.uuid) }
         coVerify(exactly = 1) { repository.deleteById(test.id!!) }
     }
 
     @Test
     fun deleteNotExistTest() = runTest {
-        coEvery { repository.findById(test.id!!) } returns null
+        coEvery { repository.findServiceByUuid(test.uuid) } returns emptyFlow()
         val find = assertThrows<ServiceNotFoundException> {
-            service.deleteService(test.id!!)
+            service.deleteService(test.uuid)
         }
         assertTrue(find.message!!.contains("No existe el servicio"))
 
-        coVerify(exactly = 1) { repository.findById(test.id!!) }
-    }
-
-    // TODO ARERGLAR ESTE
-//    @Test
-//    fun notAvailableTest() = runTest {
-//        coEvery { repository.findById(test.id!!) } returns test
-//        coEvery { repository.save(testDelete) } returns testDelete
-//
-//        val delete = service.notAvailableService(test.id!!)
-//        assertTrue(delete)
-//
-//        coVerify(exactly = 1) { repository.findById(test.id!!) }
-//        coVerify(exactly = 1) { repository.save(test) }
-//    }
-
-    @Test
-    fun notAvailableNoExistTest() = runTest {
-        coEvery { repository.findById(test.id!!) } returns null
-
-        val find = assertThrows<ServiceNotFoundException> {
-            service.deleteService(test.id!!)
-        }
-        assertTrue(find.message!!.contains("No existe el servicio"))
-
-        coVerify(exactly = 1) { repository.findById(test.id!!) }
+        coVerify(exactly = 1) { repository.findServiceByUuid(test.uuid) }
     }
 
 }
