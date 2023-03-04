@@ -3,7 +3,17 @@ version: '3.7'
 # Mis servicios
 # Iniciamos los servicios
 services:
-  # MONGO DB
+  # Servicio de pedidos
+  servicio-pedidos:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongodb-server:
+        condition: service_healthy
+      mongo-express:
+        condition: service_healthy
+    # MONGO DB
   mongodb-server:
     image: mongo
     container_name: mongo-server
@@ -28,7 +38,7 @@ services:
   # MONGO EXPRESS
   mongo-express:
     image: mongo-express
-    container_name: mongo-empress
+    container_name: mongo-express
     ports:
       - 8081:8081
     networks:
@@ -40,6 +50,7 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: mongopass
       ME_CONFIG_MONGODB_SERVER: mongodb-server
     restart: unless-stopped
+
 
 # Mi volumenes de datos compartidos
 volumes:

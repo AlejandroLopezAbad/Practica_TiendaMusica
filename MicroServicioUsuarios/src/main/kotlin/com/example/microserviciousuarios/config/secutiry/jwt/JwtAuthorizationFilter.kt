@@ -1,8 +1,6 @@
-
 package com.example.microserviciousuarios.config.secutiry.jwt
 
-
-import com.example.microserviciousuarios.services.UsersServices
+import com.example.microserviciousuarios.services.users.UsersServices
 
 import io.netty.handler.codec.http.HttpHeaderNames.AUTHORIZATION
 import jakarta.servlet.FilterChain
@@ -19,12 +17,22 @@ import java.io.IOException
 
 private val logger = mu.KotlinLogging.logger {}
 
+/**
+ * Clase que filtra la autorización de JWT.
+ */
 class JwtAuthorizationFilter(
     private val jwtTokenUtil: JwtTokenUtil,
     private val service: UsersServices,
     authManager: AuthenticationManager,
 ) : BasicAuthenticationFilter(authManager) {
 
+    /**
+     * Do filter internal
+     *
+     * @param req
+     * @param res
+     * @param chain
+     */
     @Throws(IOException::class, ServletException::class)
     override fun doFilterInternal(
         req: HttpServletRequest,
@@ -43,6 +51,10 @@ class JwtAuthorizationFilter(
         chain.doFilter(req, res)
     }
 
+    /**
+     * Método que obtiene la implementación de la autenticación
+     *
+     */
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
         logger.info { "Obteniendo autenticación" }
 
