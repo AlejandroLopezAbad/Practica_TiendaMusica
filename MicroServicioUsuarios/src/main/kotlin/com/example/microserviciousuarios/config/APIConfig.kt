@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 /**
- * A p i config
- *
- * @constructor Create empty A p i config
+
+
+
+ * Clase de configuración con la información básica de la API.
+
  */
 @Configuration
 class APIConfig {

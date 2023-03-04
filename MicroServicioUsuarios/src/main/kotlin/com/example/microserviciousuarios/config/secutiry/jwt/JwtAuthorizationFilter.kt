@@ -19,11 +19,6 @@ private val logger = mu.KotlinLogging.logger {}
 
 /**
  * Clase que filtra la autorización de JWT.
- * @property jwtTokenUtils
- * @property service
- * @constructor
- * El generador y verificador de tokens, el servicio de usuarios y el AuthenticationManager
- * @param authManager
  */
 class JwtAuthorizationFilter(
     private val jwtTokenUtil: JwtTokenUtil,

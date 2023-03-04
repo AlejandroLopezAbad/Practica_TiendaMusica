@@ -19,10 +19,7 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 /**
- * Storage controller
- *
- * @property service
- * @constructor Create empty Storage controller
+ * Controlador de la subida de archivos.
  */
 @RestController
 @RequestMapping(APIConfig.API_PATH + "/storage")

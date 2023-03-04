@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 
 /**
- * Dto de usuario para añadir usuarios a la API
+ * Dto de usuario, añade usuarios a la API.
  */
 data class UsersDto(
    // val id: Int? = null,
@@ -25,7 +25,7 @@ data class UsersDto(
 
 }
 /**
- * Dto para crear un usuario
+ * Dto que crea un usuario.
  */
 data class UsersCreateDto(
     val email: String,
@@ -36,7 +36,7 @@ data class UsersCreateDto(
     val url:String?=null
 )
 /**
- * Dto para actualizar usuario
+ * Dto que actualiza un usuario.
  */
 data class UsersUpdateDto(
     val email:String,
@@ -45,14 +45,14 @@ data class UsersUpdateDto(
 
 )
 /**
- * Dto para el token de usuario
+ * Dto para el token de usuario.
  */
 data class UsersWithTokenDto(
     val user: UsersDto,
     val token: String
 )
 /**
- * dto para el login de usuario
+ * dto para el login de usuario.
  */
 data class UsersLoginDto(
     val email: String,
