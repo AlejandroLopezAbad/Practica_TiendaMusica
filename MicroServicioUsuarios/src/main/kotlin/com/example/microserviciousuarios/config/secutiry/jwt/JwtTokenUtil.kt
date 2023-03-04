@@ -15,7 +15,9 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 
 /**
- * Clase que genera y verifica los tokens de los usuarios, JWT.
+ * Jwt token util
+ *
+ * @constructor Create empty Jwt token util
  */
 @Component
 class JwtTokenUtil {
@@ -28,7 +30,12 @@ class JwtTokenUtil {
     @Value("\${jwt.token-expiration:3600}")
     private val jwtDuracionTokenEnSegundos = 0
 
-
+    /**
+     * Generate token
+     *
+     * @param user
+     * @return
+     */
     fun generateToken(user: Users): String {
         logger.info { "Generando token para el usuario: ${user.name}" }
 
@@ -48,13 +55,23 @@ class JwtTokenUtil {
             .sign(Algorithm.HMAC512(jwtSecreto)) // Lo firmamos con nuestro secreto HS512
     }
 
-    // A partir de un token obetner el UUID de usuario
+    /**
+     * Get user id from jwt
+     *
+     * @param token
+     * @return
+     */// A partir de un token obetner el UUID de usuario
     fun getUserIdFromJwt(token: String?): String {
         logger.info { "Obteniendo el ID del usuario: $token" }
         return validateToken(token!!)!!.subject
     }
 
-    // Nos idica como validar el Token
+    /**
+     * Validate token
+     *
+     * @param authToken
+     * @return
+     */// Nos idica como validar el Token
     fun validateToken(authToken: String): DecodedJWT? {
         logger.info { "Validando el token: ${authToken}" }
 
@@ -68,6 +85,12 @@ class JwtTokenUtil {
     private fun getClaimsFromJwt(token: String) =
         validateToken(token)?.claims
 
+    /**
+     * Get username from jwt
+     *
+     * @param token
+     * @return
+     */
     fun getUsernameFromJwt(token: String): String {
         logger.info { "Obteniendo el nombre de usuario del token: ${token}" }
 
@@ -75,6 +98,12 @@ class JwtTokenUtil {
         return claims!!["email"]!!.asString()
     }
 
+    /**
+     * Get roles from jwt
+     *
+     * @param token
+     * @return
+     */
     fun getRolesFromJwt(token: String): String {
         logger.info { "Obteniendo los roles del token: ${token}" }
 
@@ -82,6 +111,12 @@ class JwtTokenUtil {
         return claims!!["roles"]!!.asString()
     }
 
+    /**
+     * Is token valid
+     *
+     * @param token
+     * @return
+     */
     fun isTokenValid(token: String): Boolean {
         logger.info { "Comprobando si el token es válido: ${token}" }
 

@@ -31,6 +31,12 @@ class SecurityConfig
     private val userService: UsersServices,
     private val jwtTokenUtil: JwtTokenUtil
 ){
+    /**
+     * Auth manager
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun authManager(http:HttpSecurity):AuthenticationManager{
         val authenticationManagerBuilder=http.getSharedObject(
@@ -40,6 +46,12 @@ class SecurityConfig
         return authenticationManagerBuilder.build()
     }
 
+    /**
+     * Filter chain
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun filterChain(http:HttpSecurity):SecurityFilterChain{
         val authenticationManager=authManager(http)

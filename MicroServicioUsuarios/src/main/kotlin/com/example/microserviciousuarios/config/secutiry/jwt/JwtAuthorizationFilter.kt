@@ -26,6 +26,13 @@ class JwtAuthorizationFilter(
     authManager: AuthenticationManager,
 ) : BasicAuthenticationFilter(authManager) {
 
+    /**
+     * Do filter internal
+     *
+     * @param req
+     * @param res
+     * @param chain
+     */
     @Throws(IOException::class, ServletException::class)
     override fun doFilterInternal(
         req: HttpServletRequest,

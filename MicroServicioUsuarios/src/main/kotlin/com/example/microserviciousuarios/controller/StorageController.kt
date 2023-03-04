@@ -27,6 +27,13 @@ class StorageController
 @Autowired constructor(
     private val service: StorageService
 ){
+    /**
+     * Save storage
+     *
+     * @param user
+     * @param file
+     * @return
+     */
     @PostMapping(
         value = [""],
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
@@ -49,6 +56,13 @@ class StorageController
         }
     }
 
+    /**
+     * Load file
+     *
+     * @param filename
+     * @param request
+     * @return
+     */
     @GetMapping(value = ["{filename:.+}"])
     @ResponseBody
     fun loadFile(
