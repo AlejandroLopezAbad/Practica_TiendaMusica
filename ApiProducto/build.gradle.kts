@@ -37,6 +37,8 @@ dependencies {
 
     implementation("com.auth0:java-jwt:4.2.1")
 
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.5")
+
     // Mockk
     testImplementation("com.ninja-squad:springmockk:4.0.0")
     // Test

@@ -61,15 +61,15 @@ class ProductServiceTest {
         val find = service.findProductById(test.id!!)
         assertAll(
             { assertNotNull(find) },
-            { assertEquals(test.name, find?.name) },
-            { assertEquals(test.price, find?.price) },
-            { assertEquals(test.available, find?.available) },
-            { assertEquals(test.description, find?.description) },
-            { assertEquals(test.url, find?.url) },
-            { assertEquals(test.category, find?.category) },
-            { assertEquals(test.stock, find?.stock) },
-            { assertEquals(test.brand, find?.brand) },
-            { assertEquals(test.model, find?.model) }
+            { assertEquals(test.name, find.name) },
+            { assertEquals(test.price, find.price) },
+            { assertEquals(test.available, find.available) },
+            { assertEquals(test.description, find.description) },
+            { assertEquals(test.url, find.url) },
+            { assertEquals(test.category, find.category) },
+            { assertEquals(test.stock, find.stock) },
+            { assertEquals(test.brand, find.brand) },
+            { assertEquals(test.model, find.model) }
         )
         coVerify(exactly =1){repository.findById(test.id!!)}
     }
@@ -90,15 +90,15 @@ class ProductServiceTest {
         val find = service.findProductByUuid(test.uuid)
         assertAll(
             { assertNotNull(find) },
-            { assertEquals(test.name, find?.name) },
-            { assertEquals(test.price, find?.price) },
-            { assertEquals(test.available, find?.available) },
-            { assertEquals(test.description, find?.description) },
-            { assertEquals(test.url, find?.url) },
-            { assertEquals(test.category, find?.category) },
-            { assertEquals(test.stock, find?.stock) },
-            { assertEquals(test.brand, find?.brand) },
-            { assertEquals(test.model, find?.model) }
+            { assertEquals(test.name, find.name) },
+            { assertEquals(test.price, find.price) },
+            { assertEquals(test.available, find.available) },
+            { assertEquals(test.description, find.description) },
+            { assertEquals(test.url, find.url) },
+            { assertEquals(test.category, find.category) },
+            { assertEquals(test.stock, find.stock) },
+            { assertEquals(test.brand, find.brand) },
+            { assertEquals(test.model, find.model) }
         )
         coVerify(exactly =1){repository.findProductByUuid(test.uuid)}
     }
@@ -147,6 +147,29 @@ class ProductServiceTest {
             { assertEquals(test.model, update.model) }
         )
         coVerify(exactly =1) { repository.save(test) }
+    }
+
+    @Test
+    fun deleteTest() = runTest{
+        coEvery { repository.findProductByUuid(test.uuid) } returns flowOf(test)
+        coEvery { repository.delete(test) } returns Unit
+        val delete = service.deleteProduct(test.uuid)
+        assertTrue(delete)
+
+        coVerify(exactly =1) { repository.findProductByUuid(test.uuid) }
+        coVerify(exactly =1) { repository.delete(test) }
+    }
+
+    @Test
+    fun deleteNotFoundTest() = runTest{
+        coEvery { repository.findProductByUuid(test.uuid) } returns flowOf()
+        val exception = org.junit.jupiter.api.assertThrows<ProductNotFoundException> {
+            service.deleteProduct(test.uuid)
+        }
+
+        assertEquals("No existe el producto con uuid: ${test.uuid}", exception.message)
+
+        coVerify(exactly =1) { repository.findProductByUuid(test.uuid) }
     }
 
 }
