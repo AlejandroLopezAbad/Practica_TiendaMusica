@@ -29,8 +29,8 @@ class ServiceController
     suspend fun getAllServices(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<List<Any>> {
         return try {
             token?.let {
-                val roles = getRoles(it)
-                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                val roles = tokenService.getRoles(it)
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                     val res = service.findAllServices().toList()
                     return ResponseEntity.ok(res)
                 } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
@@ -50,8 +50,8 @@ class ServiceController
     ): ResponseEntity<Any> {
         return try {
             token?.let {
-                val roles = getRoles(token)
-                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                val roles = tokenService.getRoles(token)
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                     val res = service.findServiceByUuid(uuid)
                     ResponseEntity.ok(res)
                 } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
@@ -75,8 +75,8 @@ class ServiceController
         @RequestBody service: ServiceCreateDto,
     ): ResponseEntity<Service> {
         try {
-            val roles = getRoles(token)
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+            val roles = tokenService.getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                 service.validate()
                 val res = this.service.saveService(service.toService())
                 return ResponseEntity.status(HttpStatus.CREATED).body(res)
@@ -95,7 +95,7 @@ class ServiceController
         @RequestBody service: ServiceUpdateDto,
     ): ResponseEntity<Service> {
         try {
-            val roles = getRoles(token)
+            val roles = tokenService.getRoles(token)
             if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
                 val find = this.service.findServiceByUuid(uuid)
                 service.validate()
@@ -117,12 +117,11 @@ class ServiceController
         @PathVariable uuid: String,
     ): ResponseEntity<Service> {
         return try {
-            val roles = getRoles(token)
+            val roles = tokenService.getRoles(token)
             if (roles.contains("SUPERADMIN")) {
                 this.service.deleteService(uuid)
                 ResponseEntity.noContent().build()
             } else if (roles.contains("ADMIN")) {
-                // TODO cambiar el update
                 this.service.notAvailableService(uuid)
                 ResponseEntity.noContent().build()
             } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
@@ -131,9 +130,5 @@ class ServiceController
         } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
-    }
-
-    private fun getRoles(token: String): String {
-        return tokenService.getRoles(token)
     }
 }

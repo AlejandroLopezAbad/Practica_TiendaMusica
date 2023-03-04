@@ -3,10 +3,11 @@ package com.example.apiproducto.validators
 import com.example.apiproducto.dto.ServiceCreateDto
 import com.example.apiproducto.dto.ServiceUpdateDto
 import com.example.apiproducto.exceptions.ServiceBadRequestException
+import com.example.apiproducto.models.ServiceCategory
 
 fun ServiceCreateDto.validate(): ServiceCreateDto {
-    if (this.category.isBlank())
-        throw ServiceBadRequestException("La categoría no puede estar vacía")
+    if (!ServiceCategory.values().map { it.toString() }.contains(this.category.uppercase()))
+        throw ServiceBadRequestException("La categoría es incorrecta")
     if (this.description.isBlank())
         throw ServiceBadRequestException("La descripción no puede estar vacía")
     if (this.price <= 0)

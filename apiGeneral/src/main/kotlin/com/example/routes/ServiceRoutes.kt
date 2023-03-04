@@ -1,21 +1,17 @@
 package com.example.routes
 
-import com.auth0.jwt.JWT
 import com.example.models.ServiceCreateDto
 import com.example.models.ServiceUpdateDto
 import com.example.service.retrofit.RetroFitRest
 import io.ktor.http.*
-import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 
