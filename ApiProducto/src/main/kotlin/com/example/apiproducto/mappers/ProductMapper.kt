@@ -1,7 +1,7 @@
 package com.example.apiproducto.mappers
 
 import com.example.apiproducto.dto.ProductDto
-import com.example.apiproducto.dto.ProductUserDto
+import com.example.apiproducto.dto.ProductResponseDto
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.models.ProductCategory
 
@@ -20,10 +20,12 @@ fun ProductDto.toProduct():Product{
 }
 
 
-fun Product.toProductUserDto(): ProductUserDto{
-    return ProductUserDto(
+fun Product.toProductResponseDto(): ProductResponseDto {
+    return ProductResponseDto(
+        uuid = uuid,
         name = name,
         price = price,
+        available = available,
         description = description,
         url = url,
         category = category.name,
