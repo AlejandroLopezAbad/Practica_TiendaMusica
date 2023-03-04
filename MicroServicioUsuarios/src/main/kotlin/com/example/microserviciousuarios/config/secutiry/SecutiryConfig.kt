@@ -1,10 +1,9 @@
 package com.example.microserviciousuarios.config.secutiry
 
-
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthenticationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtAuthorizationFilter
 import com.example.microserviciousuarios.config.secutiry.jwt.JwtTokenUtil
-import com.example.microserviciousuarios.services.UsersServices
+import com.example.microserviciousuarios.services.users.UsersServices
 
 import mu.KotlinLogging
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +19,9 @@ import org.springframework.security.web.SecurityFilterChain
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Clase que configura la seguridad de Spring y aplica filtros en los END_POINTS
+ */
 @Configuration
 @EnableWebSecurity // Habilitamos la seguridad web
 // Activamos la seguridad a nivel de método, por si queremos trabajar a nivel de controlador
@@ -29,6 +31,12 @@ class SecurityConfig
     private val userService: UsersServices,
     private val jwtTokenUtil: JwtTokenUtil
 ){
+    /**
+     * Auth manager
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun authManager(http:HttpSecurity):AuthenticationManager{
         val authenticationManagerBuilder=http.getSharedObject(
@@ -38,6 +46,12 @@ class SecurityConfig
         return authenticationManagerBuilder.build()
     }
 
+    /**
+     * Filter chain
+     *
+     * @param http
+     * @return
+     */
     @Bean
     fun filterChain(http:HttpSecurity):SecurityFilterChain{
         val authenticationManager=authManager(http)
@@ -53,14 +67,15 @@ class SecurityConfig
             .authorizeHttpRequests()
             // Permiso para errores y mostrarlos
             .requestMatchers("/error/**").permitAll()
-            .requestMatchers("users/list").permitAll()
+          //  .requestMatchers("/api/**").permitAll() esto permite todas las consultas a la api
+            .requestMatchers("users/login", "users/register").permitAll()
+
+            .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
+            .requestMatchers("users/me").permitAll()
             .and()
             .addFilter(JwtAuthenticationFilter(jwtTokenUtil, authenticationManager))
             .addFilter(JwtAuthorizationFilter(jwtTokenUtil, userService, authenticationManager))
 
         return http.build()
-
     }
-
-
 }
