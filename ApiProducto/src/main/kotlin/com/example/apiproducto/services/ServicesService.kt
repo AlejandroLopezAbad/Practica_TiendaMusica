@@ -46,15 +46,15 @@ class ServicesService
         )
     }
 
-    suspend fun deleteService(id: Int): Boolean {
-        val exist = repository.findById(id)
+    suspend fun deleteService(uuid: String): Boolean {
+        val exist = repository.findServiceByUuid(uuid).firstOrNull()
         exist?.let {
-            return repository.deleteById(id).let { true }
-        } ?: throw ServiceNotFoundException("No existe el servicio con id: $id")
+            return repository.deleteById(it.id!!).let { true }
+        } ?: throw ServiceNotFoundException("No existe el servicio con id: $uuid")
     }
 
-    suspend fun notAvailableService(id: Int): Boolean {
-        val exist = repository.findById(id)
+    suspend fun notAvailableService(uuid: String): Boolean {
+        val exist = repository.findServiceByUuid(uuid).firstOrNull()
         exist?.let {
             repository.save(
                 Services(
@@ -68,6 +68,6 @@ class ServicesService
                 )
             )
             return true
-        } ?: throw ServiceNotFoundException("No existe el servicio con id: $id")
+        } ?: throw ServiceNotFoundException("No existe el servicio con id: $uuid")
     }
 }

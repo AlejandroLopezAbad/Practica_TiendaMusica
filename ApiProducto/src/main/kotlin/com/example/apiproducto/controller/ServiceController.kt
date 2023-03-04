@@ -25,52 +25,47 @@ class ServiceController
     private val service: ServicesService,
     private val tokenService: TokenService,
 ) {
-    @GetMapping("/prueba")
-    fun prueba(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String): ResponseEntity<Void> {
-        try {
-            val roles = getRoles(token)
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) println("Muestra todo por defecto")
-            else println("Muestra la otra")
-        } catch (e: InvalidTokenException) {
-            println(e.message)
-        }
-        return ResponseEntity.noContent().build()
-    }
-
     @GetMapping
-    suspend fun getAllServices(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String): ResponseEntity<List<Any>> {
+    suspend fun getAllServices(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<List<Any>> {
         return try {
-            val roles = getRoles(token)
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
-                val res = service.findAllServices().toList()
-                ResponseEntity.ok(res)
-            } else {
+            token?.let {
+                val roles = getRoles(it)
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                    val res = service.findAllServices().toList()
+                    return ResponseEntity.ok(res)
+                } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            } ?: run {
                 val res = service.findAllServices().toList().filter { it.available }.map { it.toServiceDto() }
                 ResponseEntity.ok(res)
             }
         } catch (e: InvalidTokenException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
     @GetMapping("/{uuid}")
     suspend fun findByUuid(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @PathVariable uuid: String,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?,
     ): ResponseEntity<Any> {
         return try {
-            val roles = getRoles(token)
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+            token?.let {
+                val roles = getRoles(token)
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                    val res = service.findServiceByUuid(uuid)
+                    ResponseEntity.ok(res)
+                } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            } ?: run {
                 val res = service.findServiceByUuid(uuid)
-                ResponseEntity.ok(res)
-            } else {
-                val res = service.findServiceByUuid(uuid)
-                ResponseEntity.ok(res.toServiceDto())
+                if (res.available) ResponseEntity.ok(res.toServiceDto()) else throw ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "No existe el servicio."
+                )
             }
         } catch (e: ServiceNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: InvalidTokenException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
@@ -89,20 +84,20 @@ class ServiceController
         } catch (e: ServiceBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: InvalidTokenException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{uuid}")
     suspend fun update(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
-        @PathVariable id: Int,
+        @PathVariable uuid: String,
         @RequestBody service: ServiceUpdateDto,
     ): ResponseEntity<Service> {
         try {
             val roles = getRoles(token)
             if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
-                val find = this.service.findServiceById(id)
+                val find = this.service.findServiceByUuid(uuid)
                 service.validate()
                 val res = this.service.updateService(find, service)
                 return ResponseEntity.ok(res)
@@ -112,30 +107,31 @@ class ServiceController
         } catch (e: ServiceBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: InvalidTokenException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{uuid}")
     suspend fun delete(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
-        @PathVariable id: Int,
+        @PathVariable uuid: String,
     ): ResponseEntity<Service> {
         return try {
             val roles = getRoles(token)
             if (roles.contains("SUPERADMIN")) {
-                this.service.deleteService(id)
+                this.service.deleteService(uuid)
                 ResponseEntity.noContent().build()
             } else if (roles.contains("ADMIN")) {
-                println("Soy admin")
-                this.service.notAvailableService(id)
+                // TODO cambiar el update
+                this.service.notAvailableService(uuid)
                 ResponseEntity.noContent().build()
             } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
         } catch (e: ServiceNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
-
 
     private fun getRoles(token: String): String {
         return tokenService.getRoles(token)
