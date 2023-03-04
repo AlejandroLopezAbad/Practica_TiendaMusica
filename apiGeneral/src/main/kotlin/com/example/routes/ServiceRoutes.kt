@@ -17,10 +17,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
 
 fun Application.serviciosRoutes(){
-    val client : RetroFitRest by inject()
+    val client : RetroFitRest by inject(qualifier = named("apiProduct"))
     val json = Json { prettyPrint=true }
 
     routing {
