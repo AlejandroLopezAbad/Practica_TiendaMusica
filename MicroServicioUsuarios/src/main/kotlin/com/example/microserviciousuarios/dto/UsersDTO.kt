@@ -8,7 +8,6 @@ import java.time.LocalDateTime
  * Dto de usuario, añade usuarios a la API.
  */
 data class UsersDto(
-   // val id: Int? = null,
     val uuid:String,
     val email: String,
     val name: String,

@@ -10,9 +10,9 @@ import com.example.microserviciousuarios.models.Users
 fun Users.toDto(): UsersDto {
 
     return UsersDto(
-        //  id=this.id,
+
         uuid = this.uuid,
-        email = this.email?:"",
+        email = this.email,
         name = this.name,
         telephone = this.telephone.toString(),
         url = this.url,

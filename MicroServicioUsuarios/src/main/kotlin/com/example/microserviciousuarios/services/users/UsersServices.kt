@@ -79,18 +79,12 @@ class UsersServices
         logger.info { "Guardando usuario: $user" }
 
         if (repository.findByEmail(user.email).firstOrNull() != null) {
-
-            logger.info { "El usuario ya existe con este email" }
             throw UsersBadRequestException("El usuario ya existe con este email")
         }
         if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
-
-            logger.info { "El usuario ya existe con este numero de telefono " }
             throw UsersBadRequestException("El usuario ya existe con este numero de telefono ")
         }
 
-
-        logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
             uuid = UUID.randomUUID().toString(),
             password = passwordEncoder.encode(user.password),
@@ -134,8 +128,6 @@ class UsersServices
         if (userDB != null && userDB.id != user.id) {
             throw UsersBadRequestException("El email ya existe")
         }
-
-        logger.info { "El usuario no existe, lo actualizamos" }
 
         val updtatedUser = user.copy(
             updatedAt = LocalDateTime.now()
