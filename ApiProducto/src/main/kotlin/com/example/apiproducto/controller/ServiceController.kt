@@ -30,7 +30,7 @@ class ServiceController
         return try {
             token?.let {
                 val roles = getRoles(it)
-                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                     val res = service.findAllServices().toList()
                     return ResponseEntity.ok(res)
                 } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
@@ -51,7 +51,7 @@ class ServiceController
         return try {
             token?.let {
                 val roles = getRoles(token)
-                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                     val res = service.findServiceByUuid(uuid)
                     ResponseEntity.ok(res)
                 } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
@@ -76,7 +76,7 @@ class ServiceController
     ): ResponseEntity<Service> {
         try {
             val roles = getRoles(token)
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                 service.validate()
                 val res = this.service.saveService(service.toService())
                 return ResponseEntity.status(HttpStatus.CREATED).body(res)
@@ -96,7 +96,7 @@ class ServiceController
     ): ResponseEntity<Service> {
         try {
             val roles = getRoles(token)
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
                 val find = this.service.findServiceByUuid(uuid)
                 service.validate()
                 val res = this.service.updateService(find, service)

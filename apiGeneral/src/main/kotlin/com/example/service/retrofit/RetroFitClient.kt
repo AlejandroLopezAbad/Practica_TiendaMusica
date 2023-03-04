@@ -11,13 +11,16 @@ import org.koin.core.annotation.Singleton
 import retrofit2.Retrofit
 
 class RetroFitClient {
-    private val API_URL = "http://localhost:8082"
+
+    companion object{
+        const val API_PRODUCT = "http://localhost:8082"
+    }
 
     @Single
     @OptIn(ExperimentalSerializationApi::class)
-    fun getInstance(): RetroFitRest {
+    fun getInstance(url: String): RetroFitRest {
         val contentType = MediaType.get("application/json")
-        return Retrofit.Builder().baseUrl(API_URL)
+        return Retrofit.Builder().baseUrl(url)
             .addConverterFactory(Json.asConverterFactory(contentType))
             .build()
             .create(RetroFitRest::class.java)
