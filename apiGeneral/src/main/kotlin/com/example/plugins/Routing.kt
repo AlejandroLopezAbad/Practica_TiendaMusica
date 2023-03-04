@@ -1,5 +1,6 @@
 package com.example.plugins
 
+import com.example.routes.productsRoutes
 import com.example.routes.serviciosRoutes
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
@@ -12,4 +13,5 @@ fun Application.configureRouting() {
         }
     }
     serviciosRoutes()
+    productsRoutes()
 }
