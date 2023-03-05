@@ -1,4 +1,3 @@
-
 package com.example.microserviciousuarios.config.secutiry.jwt
 
 import com.auth0.jwt.JWT
@@ -39,8 +38,6 @@ class JwtTokenUtil {
     fun generateToken(user: Users): String {
         logger.info { "Generando token para el usuario: ${user.name}" }
 
-
-
         val tokenExpirationDate = Date(System.currentTimeMillis() + jwtDuracionTokenEnSegundos * 1000)
 
         return JWT.create()
@@ -52,7 +49,7 @@ class JwtTokenUtil {
             .withClaim("name", user.name)
             .withClaim("roles", user.rol.split(",").toSet().toString())
 
-            .sign(Algorithm.HMAC512(jwtSecreto)) // Lo firmamos con nuestro secreto HS512
+            .sign(Algorithm.HMAC512(jwtSecreto))
     }
 
     /**
@@ -60,7 +57,7 @@ class JwtTokenUtil {
      *
      * @param token
      * @return
-     */// A partir de un token obetner el UUID de usuario
+     */
     fun getUserIdFromJwt(token: String?): String {
         logger.info { "Obteniendo el ID del usuario: $token" }
         return validateToken(token!!)!!.subject
@@ -71,7 +68,7 @@ class JwtTokenUtil {
      *
      * @param authToken
      * @return
-     */// Nos idica como validar el Token
+     */
     fun validateToken(authToken: String): DecodedJWT? {
         logger.info { "Validando el token: ${authToken}" }
 

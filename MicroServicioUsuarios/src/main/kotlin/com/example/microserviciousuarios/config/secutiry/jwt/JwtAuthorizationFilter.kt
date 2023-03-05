@@ -39,7 +39,6 @@ class JwtAuthorizationFilter(
         res: HttpServletResponse,
         chain: FilterChain
     ) {
-        logger.info { "Filtrando" }
         val header = req.getHeader(AUTHORIZATION.toString())
         if (header == null || !header.startsWith(JwtTokenUtil.TOKEN_PREFIX)) {
             chain.doFilter(req, res)
@@ -52,8 +51,10 @@ class JwtAuthorizationFilter(
     }
 
     /**
-     * Método que obtiene la implementación de la autenticación
+     * Get Authentication
      *
+     * @param token
+     * @return
      */
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
         logger.info { "Obteniendo autenticación" }

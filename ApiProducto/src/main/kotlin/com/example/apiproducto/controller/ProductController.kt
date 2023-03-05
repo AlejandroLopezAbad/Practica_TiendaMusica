@@ -29,14 +29,17 @@ class ProductController
 
     @GetMapping("/guitar")
     suspend fun getGuitarProducts(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<List<ProductResponseDto>> {
         return try {
-            val roles = tokenService.getRoles(token)
-            val guitars = service.findProductsByCategory(ProductCategory.GUITAR.name).map {it.toProductResponseDto()}
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
-                ResponseEntity.ok(guitars)
-            }else{
+            token?.let{
+                val roles = tokenService.getRoles(it)
+                val guitars = service.findProductsByCategory(ProductCategory.GUITAR.name).map {it.toProductResponseDto()}
+                if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
+                    ResponseEntity.ok(guitars)
+                }else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            }?: run{
+                val guitars = service.findProductsByCategory(ProductCategory.GUITAR.name).map {it.toProductResponseDto()}
                 val guitarsFilter = guitars.filter { it.available }
                 ResponseEntity.ok(guitarsFilter)
             }
@@ -48,14 +51,17 @@ class ProductController
 
     @GetMapping("/bass_guitar")
     suspend fun getBassGuitarProducts(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<List<ProductResponseDto>> {
         return try {
-            val roles = tokenService.getRoles(token)
-            val bass = service.findProductsByCategory(ProductCategory.BASS_GUITAR.name).map { it.toProductResponseDto()}
-            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
-                ResponseEntity.ok(bass)
-            }else{
+            token?.let{
+                val roles = tokenService.getRoles(it)
+                val bass = service.findProductsByCategory(ProductCategory.BASS_GUITAR.name).map {it.toProductResponseDto()}
+                if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
+                    ResponseEntity.ok(bass)
+                }else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            }?: run{
+                val bass = service.findProductsByCategory(ProductCategory.BASS_GUITAR.name).map {it.toProductResponseDto()}
                 val bassFilter = bass.filter { it.available }
                 ResponseEntity.ok(bassFilter)
             }
@@ -67,14 +73,17 @@ class ProductController
 
     @GetMapping("/booster")
     suspend fun getBoosterProducts(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<List<ProductResponseDto>> {
         return try {
-            val roles = tokenService.getRoles(token)
-            val booster = service.findProductsByCategory(ProductCategory.BOOSTER.name).map { it.toProductResponseDto()}
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
-                ResponseEntity.ok(booster)
-            }else{
+            token?.let{
+                val roles = tokenService.getRoles(it)
+                val booster = service.findProductsByCategory(ProductCategory.BOOSTER.name).map {it.toProductResponseDto()}
+                if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
+                    ResponseEntity.ok(booster)
+                }else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            }?: run{
+                val booster = service.findProductsByCategory(ProductCategory.BOOSTER.name).map {it.toProductResponseDto()}
                 val boosterFilter = booster.filter { it.available }
                 ResponseEntity.ok(boosterFilter)
             }
@@ -86,18 +95,21 @@ class ProductController
 
     @GetMapping("/accessory")
     suspend fun getAccessoryProducts(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<List<ProductResponseDto>> {
         return try {
-            val roles = tokenService.getRoles(token)
-            val accessory = service.findProductsByCategory(ProductCategory.ACCESSORY.name).map { it.toProductResponseDto() }
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
-                ResponseEntity.ok(accessory)
-            }else{
+            token?.let{
+                val roles = tokenService.getRoles(it)
+                val accessory = service.findProductsByCategory(ProductCategory.ACCESSORY.name).map {it.toProductResponseDto()}
+                if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
+                    ResponseEntity.ok(accessory)
+                }else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            }?: run{
+                val accessory = service.findProductsByCategory(ProductCategory.ACCESSORY.name).map {it.toProductResponseDto()}
                 val accessoryFilter = accessory.filter { it.available }
                 ResponseEntity.ok(accessoryFilter)
             }
-        }catch (e : InvalidTokenException){
+        }catch (e: InvalidTokenException){
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
@@ -105,16 +117,19 @@ class ProductController
 
     @GetMapping("")
     suspend fun getAllProducts(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?
     ): ResponseEntity<List<ProductResponseDto>> {
         return try {
-            val roles = tokenService.getRoles(token)
-            val all = service.findAllProducts().map { it.toProductResponseDto() }
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
-                ResponseEntity.ok(all)
-            }else{
-                val allFilter = all.filter { it.available }
-                ResponseEntity.ok(allFilter)
+            token?.let{
+                val roles = tokenService.getRoles(it)
+                val products = service.findAllProducts().map {it.toProductResponseDto()}
+                if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
+                    ResponseEntity.ok(products)
+                }else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            }?: run{
+                val products = service.findAllProducts().map {it.toProductResponseDto()}
+                val productsFilter = products.filter { it.available }
+                ResponseEntity.ok(productsFilter)
             }
         }catch (e: InvalidTokenException){
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
@@ -134,15 +149,18 @@ class ProductController
 
     @GetMapping("/{uuid}")
     suspend fun findProductByUuid(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?,
         @PathVariable uuid: String
     ): ResponseEntity<ProductResponseDto> {
         return try {
-            val roles = tokenService.getRoles(token)
-            val find = service.findProductByUuid(uuid)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
-                ResponseEntity.ok(find.toProductResponseDto())
-            }else{
+            token?.let {
+                val roles = tokenService.getRoles(it)
+                val find = service.findProductByUuid(uuid)
+                if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
+                    ResponseEntity.ok(find.toProductResponseDto())
+                }else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            }?: run{
+                val find = service.findProductByUuid(uuid)
                 if(!find.available){
                     throw ResponseStatusException(HttpStatus.NOT_FOUND,"No se ha encontrado un producto con el uuid: $uuid")
                 }else{
@@ -164,7 +182,7 @@ class ProductController
     ): ResponseEntity<ProductResponseDto> {
         return try {
             val roles = tokenService.getRoles(token)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
+            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
                 val product = dto.validate().toProduct()
                 val created = service.saveProduct(product)
                 ResponseEntity.status(HttpStatus.CREATED).body(created.toProductResponseDto())
@@ -187,7 +205,7 @@ class ProductController
     ): ResponseEntity<ProductResponseDto> {
         return try {
             val roles = tokenService.getRoles(token)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")){
+            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")){
                 val find = service.findProductByUuid(uuid)
                 val dtoProduct = dto.validate().toProduct()
                 val updated = service.updateProduct(find, dtoProduct)
