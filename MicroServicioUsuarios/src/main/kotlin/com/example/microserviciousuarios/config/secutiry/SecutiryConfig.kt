@@ -63,11 +63,11 @@ class SecurityConfig
             .authorizeHttpRequests()
             .requestMatchers("/error/**").permitAll()
 
-          //  .requestMatchers("/api/**").permitAll() //esto permite todas las consultas a la api
+            //.requestMatchers("/api/**").permitAll() //esto permite todas las consultas a la api
 
-            .requestMatchers("users/login", "users/register").permitAll()
-            .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
-            .requestMatchers("users/me").permitAll()
+            .requestMatchers("/api/users/login", "users/register").permitAll()
+            .requestMatchers("/api/users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
+            .requestMatchers("/api/users/me").permitAll()
             .and()
             .addFilter(JwtAuthenticationFilter(jwtTokenUtil, authenticationManager))
             .addFilter(JwtAuthorizationFilter(jwtTokenUtil, userService, authenticationManager))
