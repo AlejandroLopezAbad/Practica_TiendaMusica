@@ -105,28 +105,6 @@ interface RetroFitRest {
 
     @PUT("/api/product/{id}")
     suspend fun updateProduct(@Path("id") id: String, @Header("Authorization") token: String, @Body service: ProductDto): Response<ProductResponseDto>
-    /**
-     * Usuarios
-     */
-
-    @POST("/api/users/login")
-    suspend fun loginUsers(@Body loginDto: UsersLoginDto): Response<UsersWithTokenDto>
-
-    @POST("/api/users/register")
-    suspend fun registerUsers(@Body userCreateDto:UsersCreateDto):Response<UsersWithTokenDto>
-
-    @GET("api/users/list")
-    suspend fun listUsers(@Header("Authorization") token: String):Response<List<UsersDto>>
-
-    @GET("api/users/me")
-    suspend fun meInfo(@Header("Authorization") token: String):Response<UsersDto>
-
-    @PUT("/api/users/me")
-    suspend fun updateMe(@Header("Authorization") token: String,@Body updateDto:UsersUpdateDto):Response<UsersDto>
-/*
-    @PATCH("/api/users/me")
-    suspend fun updateAvatar(@Header("Authorization") token: String,@Multipart file: File)*/
-
 
 
 

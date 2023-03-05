@@ -65,7 +65,7 @@ class SecurityConfig
 
             //.requestMatchers("/api/**").permitAll() //esto permite todas las consultas a la api
 
-            .requestMatchers("/api/users/login", "users/register").permitAll()
+            .requestMatchers("/api/users/login", "/api/users/register").permitAll()
             .requestMatchers("/api/users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
             .requestMatchers("/api/users/me").permitAll()
             .and()
