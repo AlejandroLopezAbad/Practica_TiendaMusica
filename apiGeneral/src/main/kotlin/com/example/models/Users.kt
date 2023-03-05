@@ -25,10 +25,10 @@ data class MetaData(
     val deleted: Boolean = false
 )
 
-
+@Serializable
 data class UserLoginDto(
     val email:String,
-    val passwrod:String
+    val password:String
 )
 @Serializable
 
@@ -37,6 +37,7 @@ data class UserCreateDto(
     val name: String,
     val password: String,
     val telephone: String,
+    val url: String,
     val rol: Set<String> = setOf(TypeRol.USER.name)
 )
 
