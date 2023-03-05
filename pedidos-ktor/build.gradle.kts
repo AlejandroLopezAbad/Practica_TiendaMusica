@@ -51,6 +51,7 @@ dependencies {
     implementation("io.ktor:ktor-server-cors-jvm:2.2.2")
 //Validators Ktor
     implementation("io.ktor:ktor-server-request-validation:$ktor_version")
+    implementation("org.testng:testng:7.1.0")
 
     // Para testear métodos suspendidos o corrutinas
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
@@ -90,6 +91,12 @@ dependencies {
 
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
+
+    // Auth JWT
+    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
 
 }
 tasks.test {

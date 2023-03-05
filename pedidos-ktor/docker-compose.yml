@@ -7,7 +7,7 @@ services:
   servicio-pedidos:
     build: .
     ports:
-      - "8080:8080"
+      - "8083:8083"
     depends_on:
       mongodb-server:
         condition: service_healthy

@@ -26,8 +26,6 @@ fun Application.productsRoutes(){
 
     routing {
         route("/product"){
-
-
             get("/guitar", {
                 description = "Conseguir los productos con la categoría GUITAR"
                 response {
