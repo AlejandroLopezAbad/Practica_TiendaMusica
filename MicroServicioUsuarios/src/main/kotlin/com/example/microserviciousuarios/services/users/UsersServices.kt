@@ -34,6 +34,12 @@ class UsersServices
 ): UserDetailsService {
 
 
+    /**
+     * Buscar un usuario por su email.
+     * @param email email por el que buscar a el usuario.
+     * @throws UsersNotFoundException si no se ha encontrado a el usuario.
+     * @return el usuario encontrado
+     */
     override fun loadUserByUsername(email: String): UserDetails = runBlocking {
         return@runBlocking repository.findByEmail(email).firstOrNull()
             ?: throw UsersNotFoundException("Usuario no encontrado con username: $email")
@@ -41,8 +47,8 @@ class UsersServices
 
 
     /**
-     * Find all
-     *
+     * Buscar a todos los usuarios
+     * @return flow con todos los usuarios.
      */
     suspend fun findAll() = withContext(Dispatchers.IO) {
         return@withContext repository.findAll()
@@ -50,29 +56,29 @@ class UsersServices
 
 
     /**
-     * Load user by id
-     *
-     * @param userId
+     * Buscar a un usuario por su id.
+     * @param userId id del usuario a buscar
+     * @return el usuario encontrado
      */
     suspend fun loadUserById(userId: Long) = withContext(Dispatchers.IO) {
         return@withContext repository.findById(userId)
     }
 
     /**
-     * Load userby uuid
-     *
-     * @param uuid
+     * Buscar un usuario por su uuid.
+     * @param uuid uuid del usuario a buscar.
+     * @return el usuario encontrado.
      */
     suspend fun loadUserbyUuid(uuid:String)= withContext(Dispatchers.IO) {
         return@withContext repository.findByUuid(uuid).firstOrNull()
     }
 
     /**
-     * Save
-     *
-     * @param user
-     * @param isAdmin
-     * @return
+     * Guardar un usuario.
+     * @param user usuario a salvar.
+     * @param isAdmin si el usuario es administrador.
+     * @throws UsersBadRequestException si ya existe el usuario.
+     * @return el usuario guardado.
      */
     suspend fun save(user: Users, isAdmin: Boolean = false): Users = withContext(Dispatchers.IO) {
 
@@ -109,9 +115,10 @@ class UsersServices
     }
 
     /**
-     * Update
-     *
-     * @param user
+     * Actualizar usuario
+     * @param user usuario a actualizar
+     * @throws UsersBadRequestException si ya existe un usuario con los nuevos datos.
+     * @return el usuario actualizado.
      */
     suspend fun update(user: Users) = withContext(Dispatchers.IO) {
         logger.info { "Actualizando usuario: $user" }

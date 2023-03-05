@@ -17,14 +17,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 
-private val logger = KotlinLogging.logger {}
 
 /**
  * Clase que configura la seguridad de Spring y aplica filtros en los END_POINTS
  */
 @Configuration
-@EnableWebSecurity // Habilitamos la seguridad web
-// Activamos la seguridad a nivel de método, por si queremos trabajar a nivel de controlador
+@EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 class SecurityConfig
 @Autowired constructor(
@@ -32,10 +30,9 @@ class SecurityConfig
     private val jwtTokenUtil: JwtTokenUtil
 ){
     /**
-     * Auth manager
-     *
-     * @param http
-     * @return
+     * Configuración del Authentication Manager.
+     * @param http http security.
+     * @return el Authentication Manager ya creado y con el user detail service asignado.
      */
     @Bean
     fun authManager(http:HttpSecurity):AuthenticationManager{
@@ -47,10 +44,9 @@ class SecurityConfig
     }
 
     /**
-     * Filter chain
-     *
-     * @param http
-     * @return
+     * Configuracion de la cadena de filtros.
+     * @param http http security.
+     * @return cadena de filtros de la seguridad ya configurada.
      */
     @Bean
     fun filterChain(http:HttpSecurity):SecurityFilterChain{
@@ -65,11 +61,8 @@ class SecurityConfig
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeHttpRequests()
-            // Permiso para errores y mostrarlos
             .requestMatchers("/error/**").permitAll()
-          //  .requestMatchers("/api/**").permitAll() esto permite todas las consultas a la api
             .requestMatchers("users/login", "users/register").permitAll()
-
             .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
             .requestMatchers("users/me").permitAll()
             .and()
