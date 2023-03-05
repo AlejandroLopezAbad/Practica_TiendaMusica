@@ -1,5 +1,6 @@
-package com.example.microserviciousuarios.services
+package com.example.microserviciousuarios.services.users
 
+import com.example.microserviciousuarios.exceptions.UsersBadRequestException
 import com.example.microserviciousuarios.exceptions.UsersNotFoundException
 import com.example.microserviciousuarios.models.Users
 import com.example.microserviciousuarios.repositories.UsersRepository
@@ -18,52 +19,72 @@ import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * Users services
+ *
+ * @property repository
+ * @property passwordEncoder
+ * @constructor Create empty Users services
+ */
 @Service
 class UsersServices
 @Autowired constructor(
     private val repository: UsersRepository,
-    private val passwordEncoder:PasswordEncoder
-):UserDetailsService {
+    private val passwordEncoder: PasswordEncoder
+): UserDetailsService {
 
 
-    override fun loadUserByUsername(email: String): UserDetails= runBlocking {
+    override fun loadUserByUsername(email: String): UserDetails = runBlocking {
         return@runBlocking repository.findByEmail(email).firstOrNull()
             ?: throw UsersNotFoundException("Usuario no encontrado con username: $email")
     }
 
 
-
+    /**
+     * Find all
+     *
+     */
     suspend fun findAll() = withContext(Dispatchers.IO) {
         return@withContext repository.findAll()
     }
 
 
+    /**
+     * Load user by id
+     *
+     * @param userId
+     */
     suspend fun loadUserById(userId: Long) = withContext(Dispatchers.IO) {
         return@withContext repository.findById(userId)
     }
 
-    suspend fun loadUserbyUuid(uuid:String)= withContext(Dispatchers.IO){
+    /**
+     * Load userby uuid
+     *
+     * @param uuid
+     */
+    suspend fun loadUserbyUuid(uuid:String)= withContext(Dispatchers.IO) {
         return@withContext repository.findByUuid(uuid).firstOrNull()
     }
 
+    /**
+     * Save
+     *
+     * @param user
+     * @param isAdmin
+     * @return
+     */
     suspend fun save(user: Users, isAdmin: Boolean = false): Users = withContext(Dispatchers.IO) {
 
         logger.info { "Guardando usuario: $user" }
 
-       /* if (repository.findByEmail(user.email).firstOrNull() != null) {
+        if (repository.findByEmail(user.email).firstOrNull() != null) {
+            throw UsersBadRequestException("El usuario ya existe con este email")
+        }
+        if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
+            throw UsersBadRequestException("El usuario ya existe con este numero de telefono ")
+        }
 
-            logger.info { "El usuario ya existe con este email" }
-            throw Exception("EL nom")
-        }*/
-      /*  if (repository.findByTelephone(user.telephone).firstOrNull() != null) {
-
-            logger.info { "El usuario ya existe con este numero de telefono " }
-            throw Exception("EL nom")
-        }*/
-
-
-        //TODO Restriciciones
-        logger.info { "El usuario no esta registrado , lo guardamos" }
         var newUser = user.copy(
             uuid = UUID.randomUUID().toString(),
             password = passwordEncoder.encode(user.password),
@@ -71,8 +92,8 @@ class UsersServices
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
 
-            )
-        if (isAdmin) { //TODO comprobar que funciona
+        )
+        if (isAdmin) {
             newUser = newUser.copy(
                 rol = Users.TypeRol.ADMIN.name
             )
@@ -82,11 +103,16 @@ class UsersServices
         try {
             return@withContext repository.save(newUser)
         } catch (e: Exception) {
-            throw Exception("Error al crear el usuario: Nombre de usuario o email ya existen")
+            throw UsersBadRequestException("Error al crear el usuario: Nombre de usuario o email ya existen")
         }
 
     }
 
+    /**
+     * Update
+     *
+     * @param user
+     */
     suspend fun update(user: Users) = withContext(Dispatchers.IO) {
         logger.info { "Actualizando usuario: $user" }
 
@@ -94,17 +120,14 @@ class UsersServices
             .firstOrNull()
 
         if (userDB != null && userDB.id != user.id) {
-            throw Exception("El Id ya existe")//TODO cambiar excepciones
+            throw UsersBadRequestException("El Id ya existe")
         }
 
         userDB = repository.findByEmail(user.email!!)
             .firstOrNull()
-
         if (userDB != null && userDB.id != user.id) {
-            throw Exception("El email ya existe")
+            throw UsersBadRequestException("El email ya existe")
         }
-
-        logger.info { "El usuario no existe, lo actualizamos" }
 
         val updtatedUser = user.copy(
             updatedAt = LocalDateTime.now()
@@ -113,10 +136,9 @@ class UsersServices
         try {
             return@withContext repository.save(updtatedUser)
         } catch (e: Exception) {
-            throw Exception("Error al actualizar el usuario: Nombre de usuario o email ya existen")
+            println(e.message)
+            throw UsersBadRequestException("Error al actualizar el usuario: Nombre de usuario o email ya existen")
         }
 
     }
-
-
 }
