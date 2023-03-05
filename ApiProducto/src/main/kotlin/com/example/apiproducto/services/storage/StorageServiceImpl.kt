@@ -21,8 +21,8 @@ import java.nio.file.StandardCopyOption
  */
 @Service
 class StorageServiceImpl(
-    @Value("\${upload.location}") path: String
-): StorageService {
+    @Value("\${upload.location}") path: String,
+) : StorageService {
     private val productLocation: Path
     private val serviceLocation: Path
     private val rootLocation: Path
@@ -43,10 +43,10 @@ class StorageServiceImpl(
         try {
             if (!Files.exists(rootLocation))
                 Files.createDirectory(rootLocation)
-            if (!Files.exists(productLocation)){
+            if (!Files.exists(productLocation)) {
                 Files.createDirectory(productLocation)
             }
-            if (!Files.exists(serviceLocation)){
+            if (!Files.exists(serviceLocation)) {
                 Files.createDirectory(serviceLocation)
             }
         } catch (e: IOException) {
@@ -87,12 +87,12 @@ class StorageServiceImpl(
 
 
     /**
-    * Almacenar un fichero en service.
-    * @param file fichero a almacenar.
-    * @param uuidService uuid del servicio que va a tener este fichero.
-    * @throws StorageBadRequestException Si hay fallos con el almacenamiento.
-    * @return nombre del fichero y extensión almacenado.
-    */
+     * Almacenar un fichero en service.
+     * @param file fichero a almacenar.
+     * @param uuidService uuid del servicio que va a tener este fichero.
+     * @throws StorageBadRequestException Si hay fallos con el almacenamiento.
+     * @return nombre del fichero y extensión almacenado.
+     */
     override fun storeService(file: MultipartFile, uuidService: String): String {
         val filename = StringUtils.cleanPath(file.originalFilename.toString())
         val extension = StringUtils.getFilenameExtension(filename).toString()
@@ -125,20 +125,20 @@ class StorageServiceImpl(
      */
     override fun loadAsResource(filename: String, type: String): Resource {
         return try {
-            if(type == "PRODUCT"){
+            if (type == "PRODUCT") {
                 val file = productLocation.resolve(filename)
                 val resource = UrlResource(file.toUri())
-                if(resource.exists() || resource.isReadable){
+                if (resource.exists() || resource.isReadable) {
                     resource
-                }else{
+                } else {
                     throw StorageFileNotFoundException("No se puede leer el fichero de productos: $filename")
                 }
-            }else {
+            } else {
                 val file = serviceLocation.resolve(filename)
                 val resource = UrlResource(file.toUri())
-                if(resource.exists() || resource.isReadable){
+                if (resource.exists() || resource.isReadable) {
                     resource
-                }else{
+                } else {
                     throw StorageFileNotFoundException("No se puede leer el fichero de servicios: $filename")
                 }
             }

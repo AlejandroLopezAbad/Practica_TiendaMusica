@@ -17,4 +17,4 @@ jwt:
   secret: "PracticaTiendaMusica?$"
   expiration: "3600"
 server:
-  baseUrl: "http://localhost:8080"
+  baseUrl: "https://localhost:8080"
