@@ -82,7 +82,12 @@ class ServicesService
         )
     }
 
-
+    /**
+     * Eliminar un servicio.
+     * @param uuid uuid del servicio a eliminar.
+     * @throws ServiceNotFoundException si no se encuentra el servicio a eliminar.
+     * @return boolean si se ha eliminado correctamente.
+     */
     suspend fun deleteService(uuid: String): Boolean {
         val exist = repository.findServiceByUuid(uuid).firstOrNull()
         exist?.let {
@@ -90,7 +95,12 @@ class ServicesService
         } ?: throw ServiceNotFoundException("No existe el servicio con id: $uuid")
     }
 
-
+    /**
+     * Actualizar la disponibilidad de un servicio.
+     * @param uuid uuid del servicio a actualizar la disponibilidad.
+     * @throws ServiceNotFoundException si no se encuentra el servicio a actualizar.
+     * @return boolean dependiendo de si se ha actualizado correctamente.
+     */
     suspend fun notAvailableService(uuid: String): Boolean {
         val exist = repository.findServiceByUuid(uuid).firstOrNull()
         exist?.let {

@@ -39,7 +39,7 @@ data class Users(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
     val updatedAt: LocalDateTime = LocalDateTime.now(),
-    val deleted: Boolean = false, // Para el borrado lógico si es necesario
+    val deleted: Boolean = false,
     ): UserDetails {
 
 

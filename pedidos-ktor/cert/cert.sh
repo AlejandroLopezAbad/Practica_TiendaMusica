@@ -1,0 +1,2 @@
+keytool -genkeypair -alias tiendaMusicaKeyPair -keyalg RSA -keysize 4096 -validity 365 -storetype PKCS12  -keystore tiendaMusica_keystore.jks -storepass 1234567
+keytool -genkeypair -alias tiendaMusicaKeyPair -keyalg RSA -keysize 4096 -validity 365 -storetype JKS -keystore tiendaMusica_keystore.jks -storepass 1234567
