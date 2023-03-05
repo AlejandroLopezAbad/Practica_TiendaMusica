@@ -1,1 +1,1 @@
-rootProject.name = "apiGeneral"
+rootProject.name = "ApiGeneral"
