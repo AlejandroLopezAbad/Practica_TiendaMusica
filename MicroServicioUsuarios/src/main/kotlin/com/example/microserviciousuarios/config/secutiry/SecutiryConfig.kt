@@ -67,7 +67,7 @@ class SecurityConfig
             .authorizeHttpRequests()
             // Permiso para errores y mostrarlos
             .requestMatchers("/error/**").permitAll()
-          //  .requestMatchers("/api/**").permitAll() esto permite todas las consultas a la api
+            .requestMatchers("/api/**").permitAll() //esto permite todas las consultas a la api
             .requestMatchers("users/login", "users/register").permitAll()
 
             .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
