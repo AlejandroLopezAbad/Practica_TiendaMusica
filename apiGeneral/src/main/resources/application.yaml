@@ -3,11 +3,18 @@ ktor:
     modules:
       - com.example.ApplicationKt.module
   deployment:
-    port: 8080
+    sslPort: 8080
+
+  security:
+    ssl:
+      keyStore: cert/tiendaMusica_keystore.p12
+      keyAlias: tiendaMusicaKeyPair
+      keyStorePassword: 1234567
+      privateKeyPassword: 1234567
 jwt:
   audience: "jwt-audience"
   realm: "ktor sample app"
   secret: "PracticaTiendaMusica?$"
   expiration: "3600"
 server:
-  baseUrl: "http://localhost:8080"
+  baseUrl: "https://localhost:8080"

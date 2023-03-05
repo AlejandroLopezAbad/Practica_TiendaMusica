@@ -29,8 +29,8 @@ class StorageController
     private val storageService: StorageService,
     private val productService: ProductService,
     private val servicesService: ServicesService,
-    private val tokenService: TokenService
-){
+    private val tokenService: TokenService,
+) {
 
     @PostMapping(
         value = ["/product/{uuid}"],
@@ -39,11 +39,11 @@ class StorageController
     fun storeProduct(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @RequestPart("file") file: MultipartFile,
-        @PathVariable uuid: String
+        @PathVariable uuid: String,
     ): ResponseEntity<Map<String, String>> = runBlocking {
-        return@runBlocking try{
+        return@runBlocking try {
             val roles = tokenService.getRoles(token)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
                 productService.findProductByUuid(uuid)
                 if (!file.isEmpty) {
                     val saved = storageService.storeProduct(file, uuid)
@@ -52,14 +52,14 @@ class StorageController
                 } else {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede almacenar un fichero vacío")
                 }
-            }else{
+            } else {
                 throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tienes permisos para realizar esta acción")
             }
-        }catch (e: StorageBadRequestException){
+        } catch (e: StorageBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
-        }catch (e: ProductNotFoundException){
+        } catch (e: ProductNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-        }catch (e: InvalidTokenException){
+        } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
@@ -72,12 +72,12 @@ class StorageController
     fun storeService(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @RequestPart("file") file: MultipartFile,
-        @PathVariable uuid: String
+        @PathVariable uuid: String,
     ): ResponseEntity<Map<String, String>> = runBlocking {
-        return@runBlocking try{
+        return@runBlocking try {
             val roles = tokenService.getRoles(token)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
-                servicesService.findServiceByUuid(uuid)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
+                val service = servicesService.findServiceByUuid(uuid)
                 if (!file.isEmpty) {
                     val saved = storageService.storeService(file, uuid)
                     val response = mapOf("name" to saved, "created_at" to LocalDateTime.now().toString())
@@ -85,27 +85,27 @@ class StorageController
                 } else {
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede almacenar un fichero vacío")
                 }
-            }else{
+            } else {
                 throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tienes permisos para realizar esta acción")
             }
-        }catch (e: StorageBadRequestException){
+        } catch (e: StorageBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
-        }catch (e: ServiceNotFoundException){
+        } catch (e: ServiceNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-        }catch (e: InvalidTokenException){
+        } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
 
-    @GetMapping(value = ["/product/{filename:.+}"])
+    @GetMapping(value = ["/product/{filename}"])
     @ResponseBody
     fun getProductResource(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @PathVariable filename: String?,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): ResponseEntity<Resource> = runBlocking {
-        val file: Resource = storageService.loadAsResource(filename.toString(),"PRODUCT")
+        val file: Resource = storageService.loadAsResource(filename.toString(), "PRODUCT")
         var contentType: String?
         contentType = try {
             request.servletContext.getMimeType(file.file.absolutePath)
@@ -121,14 +121,14 @@ class StorageController
     }
 
 
-    @GetMapping(value = ["/service/{filename:.+}"])
+    @GetMapping(value = ["/service/{filename}"])
     @ResponseBody
     fun getServiceResource(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @PathVariable filename: String?,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): ResponseEntity<Resource> = runBlocking {
-        val file: Resource = storageService.loadAsResource(filename.toString(),"SERVICE")
+        val file: Resource = storageService.loadAsResource(filename.toString(), "SERVICE")
         var contentType: String?
         contentType = try {
             request.servletContext.getMimeType(file.file.absolutePath)
@@ -144,48 +144,47 @@ class StorageController
     }
 
 
-
-    @DeleteMapping(value = ["/product/{filename:.+}"])
+    @DeleteMapping(value = ["/product/{filename}"])
     @ResponseBody
     fun deleteProductFile(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @PathVariable filename: String?,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): ResponseEntity<Resource> = runBlocking {
         return@runBlocking try {
             val roles = tokenService.getRoles(token)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
                 storageService.deleteProduct(filename.toString())
                 ResponseEntity(HttpStatus.NO_CONTENT)
-            }else{
+            } else {
                 throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tienes permisos para realizar esta acción")
             }
         } catch (e: StorageBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
-        } catch (e: InvalidTokenException){
+        } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 
 
-    @DeleteMapping(value = ["/service/{filename:.+}"])
+    @DeleteMapping(value = ["/service/{filename}"])
     @ResponseBody
     fun deleteServiceFile(
         @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
         @PathVariable filename: String?,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): ResponseEntity<Resource> = runBlocking {
         return@runBlocking try {
             val roles = tokenService.getRoles(token)
-            if(roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
                 storageService.deleteService(filename.toString())
                 ResponseEntity(HttpStatus.NO_CONTENT)
-            }else{
+            } else {
                 throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tienes permisos para realizar esta acción")
             }
         } catch (e: StorageBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
-        } catch (e: InvalidTokenException){
+        } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }

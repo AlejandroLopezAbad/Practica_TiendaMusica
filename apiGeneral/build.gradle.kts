@@ -5,6 +5,8 @@ val koin_ktor_version: String by project
 val koin_ksp_version: String by project
 
 val ktor_swagger_ui_version: String by project
+val micrologging_version: String by project
+val logbackclassic_version: String by project
 
 
 plugins {
@@ -38,14 +40,15 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
-    //implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("ch.qos.logback:logback-classic:$logbackclassic_version")
+    implementation("io.github.microutils:kotlin-logging-jvm:$micrologging_version")
     implementation("io.ktor:ktor-server-config-yaml:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
 
     implementation("io.insert-koin:koin-ktor:$koin_ktor_version")
-    //implementation("io.insert-koin:koin-logger-slf4j:$koin_ktor_version")
+    implementation("io.insert-koin:koin-logger-slf4j:$koin_ktor_version")
     implementation("io.insert-koin:koin-annotations:$koin_ksp_version")
     implementation("io.ktor:ktor-client-auth:2.2.3")
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version")
