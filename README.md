@@ -60,15 +60,12 @@ Después de esto comenzará la instalación de todo lo necesario para usar nuest
 <br>
 
 ### GitHub Personal:
-Rocío:<p align="left"> <a href="https://www.github.com/Rochiio" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a>
-<br>
-Mohamed:<p align="left"> <a href="https://www.github.com/loopedmoha" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a></p>
-Daniel:<p align="left"> <a href="https://github.com/Kassius10" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a>
-<br>
-Jeremy:<p align="left"> <a href="https://github.com/JeremyRamos01" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a></p>
-Alejandro:<p align="left"> <a href="https://github.com/AlejandroLopezAbad" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a>
-<br>
-Fran:<p align="left"> <a href="https://github.com/frantoribio" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a></p>
+- [Rocío](https://www.github.com/Rochiio)
+- [Mohamed](https://www.github.com/loopedmoha)
+- [Daniel](https://github.com/Kassius10)
+- [Jeremy](https://github.com/JeremyRamos01)
+- [Alejandro](https://github.com/AlejandroLopezAbad)
+- [Fran](https://github.com/frantoribio)
 
 
 
