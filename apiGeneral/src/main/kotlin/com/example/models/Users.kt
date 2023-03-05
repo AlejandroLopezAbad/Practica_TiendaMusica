@@ -50,4 +50,3 @@ data class UserTokenDto(
 enum class TypeRol {
     USER, EMPLOYEE, ADMIN, SUPERADMIN
 }
-
