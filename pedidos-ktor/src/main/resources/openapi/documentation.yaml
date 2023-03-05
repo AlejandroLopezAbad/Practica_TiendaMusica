@@ -1,0 +1,278 @@
+openapi: "3.0.3"
+info:
+  title: "pedidos_ktor API"
+  description: "pedidos_ktor API"
+  version: "1.0.0"
+servers:
+- url: "https://pedidos_ktor"
+paths:
+  /:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "ProbandoApi!"
+  /pedidos:
+    get:
+      description: "--------- GETS -------------"
+      parameters:
+      - name: "page"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      - name: "perPage"
+        in: "query"
+        required: false
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      description: "--------------------------- <br> -------- POST -------------"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDto"
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /pedidos/{id}:
+    delete:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Not found"
+    get:
+      description: "GET BY ID"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrderDto"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Not found"
+    patch:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Not found"
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /pedidos/user/{user_id}:
+    get:
+      description: "GET BY USER"
+      parameters:
+      - name: "user_id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Order"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+components:
+  schemas:
+    Map:
+      type: "object"
+      properties: {}
+    UserDto:
+      type: "object"
+      properties:
+        uuid:
+          type: "string"
+          format: "uuid"
+    OrderDto:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        uuid:
+          type: "string"
+          format: "uuid"
+        price:
+          type: "number"
+          format: "double"
+        user:
+          $ref: "#/components/schemas/UserDto"
+        status:
+          type: "string"
+          enum:
+          - "Companion"
+          - "status"
+          - "RECEIVED"
+          - "PROCESSING"
+          - "FINISHED"
+        createdAt:
+          type: "string"
+          format: "date"
+        deliveredAt:
+          type: "string"
+          format: "date"
+    OrderPageDto:
+      type: "object"
+      properties:
+        page:
+          type: "integer"
+          format: "int32"
+        perPage:
+          type: "integer"
+          format: "int32"
+        orders:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/OrderDto"
+    SellLine:
+      type: "object"
+      properties:
+        idItem:
+          type: "string"
+        price:
+          type: "number"
+          format: "double"
+        quantity:
+          type: "integer"
+          format: "int32"
+    Order:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        uuid:
+          type: "string"
+        price:
+          type: "number"
+          format: "double"
+        userId:
+          type: "string"
+        status:
+          type: "string"
+          enum:
+          - "Companion"
+          - "status"
+          - "RECEIVED"
+          - "PROCESSING"
+          - "FINISHED"
+        createdAt:
+          type: "string"
+          format: "date"
+        deliveredAt:
+          type: "string"
+          format: "date"
+        productos:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/SellLine"

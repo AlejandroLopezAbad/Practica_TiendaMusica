@@ -15,12 +15,15 @@ data class ProductDto(
     var model: String
 )
 
+
 /**
- * Dto de respuesta con el usuario es de tipo user
+ * Dto de respuesta
  */
-data class ProductUserDto(
+data class ProductResponseDto(
+    var uuid: String,
     var name: String,
     var price: Double,
+    var available: Boolean,
     var description: String,
     var url: String,
     var category: String,

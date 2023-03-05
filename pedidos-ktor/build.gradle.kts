@@ -28,6 +28,12 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
+ktor {
+    fatJar {
+        archiveFileName.set("servicio-pedidos.jar")
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -97,4 +103,21 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
+
+ktor {
+    docker {
+        localImageName.set("servicio-pedidos")
+        jreVersion.set(io.ktor.plugin.features.JreVersion.JRE_17)
+        portMappings.set(
+            listOf(
+                io.ktor.plugin.features.DockerPortMapping(
+                    8080,
+                    8080,
+                    io.ktor.plugin.features.DockerPortMappingProtocol.TCP
+                )
+            )
+        )
+    }
+}
+
 
