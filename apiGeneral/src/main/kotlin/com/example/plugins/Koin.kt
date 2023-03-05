@@ -18,4 +18,6 @@ fun Application.configureKoin() {
 
 val moduleApp = module {
     single<RetroFitRest>(named("apiProduct")) { RetroFitClient().getInstance(RetroFitClient.API_PRODUCT) }
+    single<RetroFitRest>(named("apiUsuarios")) { RetroFitClient().getInstance(RetroFitClient.API_USERS) }
+
 }

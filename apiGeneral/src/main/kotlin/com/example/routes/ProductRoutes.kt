@@ -8,6 +8,7 @@ import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -17,8 +18,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
+import retrofit2.HttpException
 
 fun Application.productsRoutes(){
     val client : RetroFitRest by inject(qualifier = named("apiProduct"))
@@ -26,8 +31,6 @@ fun Application.productsRoutes(){
 
     routing {
         route("/product"){
-
-
             get("/guitar", {
                 description = "Conseguir los productos con la categoría GUITAR"
                 response {
@@ -253,8 +256,6 @@ fun Application.productsRoutes(){
 
 
             authenticate {
-
-
                 post({
                     description = "Insertar un Producto"
                     request {
@@ -355,6 +356,50 @@ fun Application.productsRoutes(){
                     val body = res.body()
                     if (res.isSuccessful && body != null){
                         call.respond(HttpStatusCode.OK,body)
+                    }else call.respond(HttpStatusCode.fromValue(res.code()), json.parseToJsonElement(res.errorBody()?.string()!!))
+                }
+            }
+        }
+        route("/storage/product"){
+            authenticate {
+                post("/{uuid}") {
+                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+                    val multipart = call.receiveMultipart().readPart() as PartData.FileItem
+                    val uuid = call.parameters["uuid"].toString()
+
+                    val requestBody = RequestBody.create(MediaType.parse(multipart.contentType.toString()),multipart.streamProvider().readBytes())
+                    val multipartBody = MultipartBody.Part.createFormData("file",multipart.originalFileName,requestBody)
+
+                    val myScope = CoroutineScope(Dispatchers.IO)
+
+                    val res = myScope.async { client.saveFileProduct(uuid,token,multipartBody)}.await()
+                    val body = res.body()
+                    if (res.isSuccessful && body != null){
+                        call.respond(HttpStatusCode.Created,body)
+                    }else call.respond(HttpStatusCode.fromValue(res.code()), json.parseToJsonElement(res.errorBody()?.string()!!))
+                }
+                get("/{filename}") {
+                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+                    val filename = call.parameters["filename"].toString()
+
+                    val myScope = CoroutineScope(Dispatchers.IO)
+                    try {
+                        val res = myScope.async { client.getFileProduct(filename,token)}.await()
+                        call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=$filename")
+                        call.respondBytes(res.bytes())
+                    }catch (e: HttpException){
+                        call.respond(HttpStatusCode.fromValue(e.code()), json.parseToJsonElement(e.response()?.errorBody()?.string()!!))
+                    }
+
+                }
+                delete("/{filename}") {
+                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+                    val filename = call.parameters["filename"].toString()
+
+                    val myScope = CoroutineScope(Dispatchers.IO)
+                    val res = myScope.async { client.deleteFileProduct(filename,token)}.await()
+                    if (res.isSuccessful){
+                        call.respond(HttpStatusCode.NoContent)
                     }else call.respond(HttpStatusCode.fromValue(res.code()), json.parseToJsonElement(res.errorBody()?.string()!!))
                 }
             }

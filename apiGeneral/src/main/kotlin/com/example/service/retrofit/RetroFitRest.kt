@@ -1,9 +1,28 @@
 package com.example.service.retrofit
 import com.example.models.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
 interface RetroFitRest {
+    /**
+     * Usuarios
+     */
+
+    @POST("/api/users/register")
+    suspend fun registerUser(@Body user : UserCreateDto) : Response<UserTokenDto>
+    @POST("/api/users/login")
+    suspend fun loginUser(@Body user : UserLoginDto) : Response<UserTokenDto>
+
+
+    @GET("/api/users/list")
+    suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserDto>>
+
+    @GET("/api/users")
+    suspend fun getUserMe(@Header("Authorization") token : String) : Response<UserDto>
     /**
      * Servicios
      */
@@ -27,6 +46,16 @@ interface RetroFitRest {
 
     @PUT("/api/service/{id}")
     suspend fun updateService(@Path("id") id: String, @Header("Authorization") token: String, @Body service: ServiceUpdateDto): Response<Service>
+
+    @Multipart
+    @POST("/api/storage/service/{id}")
+    suspend fun saveFileService(@Path("id") id: String, @Header("Authorization") token: String, @Part file: MultipartBody.Part): Response<Map<String, String>>
+
+    @GET("/api/storage/service/{filename}")
+    suspend fun getFileService(@Path("filename") filename: String, @Header("Authorization") token: String): ResponseBody
+
+    @DELETE("/api/storage/service/{filename}")
+    suspend fun deleteFileService(@Path("filename") filename: String, @Header("Authorization") token: String): Response<Void>
 
     /**
      * Productos
@@ -76,4 +105,18 @@ interface RetroFitRest {
     @PUT("/api/product/{id}")
     suspend fun updateProduct(@Path("id") id: String, @Header("Authorization") token: String, @Body service: ProductDto): Response<ProductResponseDto>
 
+    @Multipart
+    @POST("/api/storage/product/{id}")
+    suspend fun saveFileProduct(@Path("id") id: String, @Header("Authorization") token: String, @Part file: MultipartBody.Part): Response<Map<String, String>>
+
+    @GET("/api/storage/product/{filename}")
+    suspend fun getFileProduct(@Path("filename") filename: String, @Header("Authorization") token: String): ResponseBody
+
+    @DELETE("/api/storage/product/{filename}")
+    suspend fun deleteFileProduct(@Path("filename") filename: String, @Header("Authorization") token: String): Response<Void>
+
+
+    /*
+    Usuarios
+     */
 }
