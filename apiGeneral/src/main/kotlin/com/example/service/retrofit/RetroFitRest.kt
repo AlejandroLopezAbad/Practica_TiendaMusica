@@ -9,6 +9,21 @@ import retrofit2.http.*
 
 interface RetroFitRest {
     /**
+     * Usuarios
+     */
+
+    @POST("/api/users/register")
+    suspend fun registerUser(@Body user : UserCreateDto) : Response<UserTokenDto>
+    @POST("/api/users/login")
+    suspend fun loginUser(@Body user : UserLoginDto) : Response<UserTokenDto>
+
+
+    @GET("/api/users/list")
+    suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserDto>>
+
+    @GET("/api/users")
+    suspend fun getUserMe(@Header("Authorization") token : String) : Response<UserDto>
+    /**
      * Servicios
      */
     @GET("api/service")
@@ -100,4 +115,8 @@ interface RetroFitRest {
     @DELETE("/api/storage/product/{filename}")
     suspend fun deleteFileProduct(@Path("filename") filename: String, @Header("Authorization") token: String): Response<Void>
 
+
+    /*
+    Usuarios
+     */
 }

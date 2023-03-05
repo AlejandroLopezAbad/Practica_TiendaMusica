@@ -7,20 +7,18 @@ services:
       - "6969:8080"
     depends_on:
       - servicio-productos
-      - servicio-usuarios
-      - servicio-pedidos
+      #- servicio-usuarios
+      #- servicio-pedidos
 
   servicio-productos:
     build: ./ApiProducto
-    ports:
-      - "8082:8082"
 
-  servicio-usuarios:
-    build: ./MicroServicioUsuarios
-    ports:
-      - "8083:8083"
+  # servicio-usuarios:
+  #   build: ./MicroServicioUsuarios
+  #   ports:
+  #     - "8083:8083"
 
-  servicio-pedidos:
-    build: ./pedidos-ktor
-    ports:
-      - "8080:8080"
+  # servicio-pedidos:
+  #   build: ./pedidos-ktor
+  #   ports:
+  #     - "8080:8080"
