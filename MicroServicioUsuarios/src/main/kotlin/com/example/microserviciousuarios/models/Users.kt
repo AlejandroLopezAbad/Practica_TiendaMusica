@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
 import java.util.*
 
+/**
+ * Users model
+ */
 @Table(name = "users")
 data class Users(
     @Id
@@ -17,7 +20,7 @@ data class Users(
     @Column("uuid")
     val uuid:String= UUID.randomUUID().toString(),
     @Column("email")
-    val email:String?,
+    val email:String,
     @Column("name")
     val name:String,
     @get:JvmName("userPassword")
@@ -25,7 +28,7 @@ data class Users(
     val password:String,
 
     @Column("telephone")
-    val telephone:Int?,
+    val telephone:Int = 787744741,
     @Column("rol")
     val rol :String=TypeRol.USER.name,
     @Column("avaliable")
@@ -36,12 +39,12 @@ data class Users(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
     val updatedAt: LocalDateTime = LocalDateTime.now(),
-    val deleted: Boolean = false, // Para el borrado lógico si es necesario
+    val deleted: Boolean = false,
     ): UserDetails {
 
 
     enum class TypeRol() {
-        USER,EMPLOYE,ADMIN,SUPERADMIN
+        USER,EMPLOYEE,ADMIN,SUPERADMIN
     }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
@@ -72,6 +75,8 @@ data class Users(
     override fun isEnabled(): Boolean {
         return true
     }
+
+
 }
 
 
