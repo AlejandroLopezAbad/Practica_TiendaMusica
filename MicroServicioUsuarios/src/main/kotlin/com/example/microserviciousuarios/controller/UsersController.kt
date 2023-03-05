@@ -57,7 +57,7 @@ class UsuarioController
     @PostMapping("/login")
     fun login(@Valid @RequestBody logingDto: UsersLoginDto): ResponseEntity<UsersWithTokenDto> {
 
-        logger.info { "Login de usuario: ${logingDto.email}" }
+        logger.info { "Login:${logingDto.email}" }
 
 
         val authentication: Authentication = authenticationManager.authenticate(
@@ -73,7 +73,7 @@ class UsuarioController
 
         val jwtToken: String = jwtTokenUtil.generateToken(user)
 
-        logger.info { "Token de usuario: ${jwtToken}" }
+        logger.info { "Token: ${jwtToken}" }
 
         val userWithToken = UsersWithTokenDto(user.toDto(), jwtToken)
 
@@ -88,7 +88,7 @@ class UsuarioController
      */
     @PostMapping("/register")
     suspend fun register(@RequestBody usersCreateDto: UsersCreateDto): ResponseEntity<UsersWithTokenDto> {
-        logger.info { "Registro de usuario: ${usersCreateDto.name}" }
+        logger.info { "Registrando al usuario: ${usersCreateDto.name}" }
         try {
             val user = usersCreateDto.validate().toModel()
 
@@ -97,7 +97,7 @@ class UsuarioController
 
 
             val jwtToken: String = jwtTokenUtil.generateToken(userSaved)
-            logger.info { "Token de users : ${jwtToken} " }
+            logger.info { "Token del usuario : ${jwtToken} " }
 
             return ResponseEntity.ok(UsersWithTokenDto(userSaved.toDto(), jwtToken))
 
@@ -132,7 +132,7 @@ class UsuarioController
     @GetMapping("/me")
     fun meInfo(@AuthenticationPrincipal user: Users): ResponseEntity<UsersDto> {
 
-        logger.info { "Obteniendo usuario: ${user.name}" }
+        logger.info { "Obteniendo la informacíon  del usuario : ${user.name}" }
 
         return ResponseEntity.ok(user.toDto())
     }
@@ -189,7 +189,7 @@ class UsuarioController
         @RequestPart("file") file: MultipartFile
     ): ResponseEntity<UsersDto> {
 
-        logger.info { "Actualizando avatar de usuario: ${user.username}" }
+        logger.info { "Actualizando avatar ${user.username}" }
 
         try {
             var urlImagen = user.url

@@ -1,17 +1,18 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ServiceCreateDto
-import com.example.apiproducto.dto.ServiceDto
 import com.example.apiproducto.dto.ServiceUpdateDto
+import com.example.apiproducto.exceptions.InvalidTokenException
 import com.example.apiproducto.exceptions.ServiceBadRequestException
-import com.example.apiproducto.exceptions.ServiceException
+import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.mappers.toService
 import com.example.apiproducto.mappers.toServiceDto
 import com.example.apiproducto.models.Service
 import com.example.apiproducto.services.ServicesService
+import com.example.apiproducto.services.TokenService
 import com.example.apiproducto.validators.validate
-import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,67 +23,112 @@ import org.springframework.web.server.ResponseStatusException
 class ServiceController
 @Autowired constructor(
     private val service: ServicesService,
+    private val tokenService: TokenService,
 ) {
-    @GetMapping("")
-    suspend fun findAll(): ResponseEntity<List<ServiceDto>> {
-        val res = service.findAllServices().toList().map { it.toServiceDto() }
-        return ResponseEntity.ok(res)
-    }
-
-    @PostMapping("")
-    suspend fun create(@RequestBody service: ServiceCreateDto): ResponseEntity<Service> {
-        try {
-            service.validate()
-            val res = this.service.saveService(service.toService())
-            return ResponseEntity.status(HttpStatus.CREATED).body(res)
-        } catch (e: ServiceBadRequestException) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+    @GetMapping
+    suspend fun getAllServices(@RequestHeader(HttpHeaders.AUTHORIZATION) token: String?): ResponseEntity<List<Any>> {
+        return try {
+            token?.let {
+                val roles = tokenService.getRoles(it)
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
+                    val res = service.findAllServices().toList()
+                    return ResponseEntity.ok(res)
+                } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
+            } ?: run {
+                val res = service.findAllServices().toList().filter { it.available }.map { it.toServiceDto() }
+                ResponseEntity.ok(res)
+            }
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
-
-//    @GetMapping("/{id}")
-//    suspend fun findById(@PathVariable id: Int): ResponseEntity<Service> {
-//        val res = service.findById(id)
-//        res?.let {
-//            return ResponseEntity.ok(it)
-//        } ?: run {
-//            return ResponseEntity.notFound().build()
-//        }
-//    }
 
     @GetMapping("/{uuid}")
-    suspend fun findByUuid(@PathVariable uuid: String): ResponseEntity<Service> {
-        val res = service.findByUuid(uuid)
-        res?.let {
-            return ResponseEntity.ok(it)
-        } ?: run {
-            return ResponseEntity.notFound().build()
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    suspend fun delete(@PathVariable id: Int): ResponseEntity<Service> {
-        try {
-            this.service.deleteService(id)
-            return ResponseEntity.noContent().build()
-        } catch (e: ServiceException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-        }
-    }
-
-    @PutMapping("/{id}")
-    suspend fun update(@PathVariable id: Int, @RequestBody service: ServiceUpdateDto): ResponseEntity<Service> {
-        try {
-            service.validate()
-            val find = this.service.findById(id)
-            find?.let {
-                val res = this.service.updateService(it, service)
-                return ResponseEntity.ok(res)
+    suspend fun findByUuid(
+        @PathVariable uuid: String,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String?,
+    ): ResponseEntity<Any> {
+        return try {
+            token?.let {
+                val roles = tokenService.getRoles(token)
+                if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
+                    val res = service.findServiceByUuid(uuid)
+                    ResponseEntity.ok(res)
+                } else throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "El token no es válido.")
             } ?: run {
-                return ResponseEntity.notFound().build()
+                val res = service.findServiceByUuid(uuid)
+                if (res.available) ResponseEntity.ok(res.toServiceDto()) else throw ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "No existe el servicio."
+                )
             }
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        }
+    }
+
+    @PostMapping
+    suspend fun saveService(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @RequestBody service: ServiceCreateDto,
+    ): ResponseEntity<Service> {
+        try {
+            val roles = tokenService.getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLOYEE")) {
+                service.validate()
+                val res = this.service.saveService(service.toService())
+                return ResponseEntity.status(HttpStatus.CREATED).body(res)
+            } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
         } catch (e: ServiceBadRequestException) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        }
+    }
+
+    @PutMapping("/{uuid}")
+    suspend fun update(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @PathVariable uuid: String,
+        @RequestBody service: ServiceUpdateDto,
+    ): ResponseEntity<Service> {
+        try {
+            val roles = tokenService.getRoles(token)
+            if (roles.contains("ADMIN") || roles.contains("SUPERADMIN")) {
+                val find = this.service.findServiceByUuid(uuid)
+                service.validate()
+                val res = this.service.updateService(find, service)
+                return ResponseEntity.ok(res)
+            } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: ServiceBadRequestException) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        }
+    }
+
+    @DeleteMapping("/{uuid}")
+    suspend fun delete(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) token: String,
+        @PathVariable uuid: String,
+    ): ResponseEntity<Service> {
+        return try {
+            val roles = tokenService.getRoles(token)
+            if (roles.contains("SUPERADMIN")) {
+                this.service.deleteService(uuid)
+                ResponseEntity.noContent().build()
+            } else if (roles.contains("ADMIN")) {
+                this.service.notAvailableService(uuid)
+                ResponseEntity.noContent().build()
+            } else throw ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para realizar esto.")
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
+        } catch (e: InvalidTokenException) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
         }
     }
 }
