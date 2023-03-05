@@ -7,11 +7,10 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.ksp.generated.defaultModule
 import org.koin.ktor.plugin.Koin
-import org.koin.logger.slf4jLogger
 
 fun Application.configureKoin() {
     install(Koin) {
-        slf4jLogger()
+        //slf4jLogger()
         defaultModule()
         modules(moduleApp)
     }

@@ -9,3 +9,5 @@ jwt:
   realm: "ktor sample app"
   secret: "PracticaTiendaMusica?$"
   expiration: "3600"
+server:
+  baseUrl: "http://localhost:8080"
