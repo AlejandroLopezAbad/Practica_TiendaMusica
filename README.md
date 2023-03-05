@@ -4,10 +4,6 @@
 
 <br>
 
-![GitHub last commit](https://img.shields.io/github/last-commit/AlejandroLopezAbad/Practica_TiendaMusica?label=%C3%9Altimo%20Commit&logo=github&style=for-the-badge)
-
-<br>
-
 ## Autores 🙋🏻‍♀️🙋🏻‍♂️
     - Rocío Palao.
     - Mohamed Asidah.
@@ -37,8 +33,39 @@ Creando y consumiendo APIs realizada con BDD SQL y NoSQL.
 
 ## Primeros Pasos
 ### Instalación
+<br>
 
+<blockquote align=center>❗Necesario tener docker instalado en el ordenador</blockquote>
 
+<br>
+
+Para utilizar el proyecto, en la carpeta principal, deberemos abrir un terminal:
+```sh
+   docker-compose up
+   ```
+Después de esto comenzará la instalación de todo lo necesario para usar nuestra aplicación (***Puede tardar un tiempo en realizar la instalación al completo y puede ocupar bastante espacio***).
+
+### Rutas
+- La ruta principal de nuestra API es :
+    https://localhost:8080
+- La ruta con toda la información de nuestra API es:
+    https://localhost:8080/swagger
+
+<br>
+
+## Links del Proyecto:
+### GitHub Proyecto
+<a href="https://github.com/AlejandroLopezAbad/Practica_TiendaMusica" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/socials/github.svg" width="32" height="32" /></a>
+
+<br>
+
+### GitHub Personal:
+- [Rocío](https://www.github.com/Rochiio)
+- [Mohamed](https://www.github.com/loopedmoha)
+- [Daniel](https://github.com/Kassius10)
+- [Jeremy](https://github.com/JeremyRamos01)
+- [Alejandro](https://github.com/AlejandroLopezAbad)
+- [Fran](https://github.com/frantoribio)
 
 
 

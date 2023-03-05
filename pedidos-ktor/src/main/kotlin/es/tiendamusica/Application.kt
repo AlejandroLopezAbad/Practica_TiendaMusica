@@ -19,7 +19,10 @@ import org.koin.logger.slf4jLogger
 import java.time.LocalDate
 import java.util.*
 
-fun main(args: Array<String>): Unit = EngineMain.main(args)
+fun main(args: Array<String>): Unit {
+    println("Hola")
+    EngineMain.main(args)
+}
 
 @Suppress("unused")
 fun Application.module() = runBlocking {

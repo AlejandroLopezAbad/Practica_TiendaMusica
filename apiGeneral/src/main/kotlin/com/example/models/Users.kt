@@ -1,96 +1,52 @@
 package com.example.models
 
-
+import com.example.utils.LocalDateTimeSerializer
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
-import java.util.*
 
-/**
- *
- *
- * @property id
- * @property uuid
- * @property email
- * @property name
- * @property password
- * @property telephone
- * @property rol
- * @property avaliable
- * @property url
- * @property createdAt
- * @property updatedAt
- * @property deleted
- */
-data class Users(
-
-    val id :Int?=null,
-    val uuid:String= UUID.randomUUID().toString(),
-    val email:String,
-    val name:String,
-    val password:String,
-    val telephone:Int = 787744741,
-    val rol :String=TypeRol.USER.name,
-    val avaliable:Boolean=true,
-    val url:String="",
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
-    val deleted: Boolean = false,
-){
-
-    enum class TypeRol() {
-    USER,EMPLOYEE,ADMIN,SUPERADMIN }
-}
-
-
-
-data class UsersDto(
-    val uuid:String,
+@Serializable
+data class UserDto(
+    val uuid: String,
     val email: String,
     val name: String,
     val telephone: String,
     val url: String,
-    val rol: Set<String> = setOf(Users.TypeRol.USER.name),
-    val metadata: MetaData? = null,
-) {
-    data class MetaData(
-        val createdAt: LocalDateTime? = LocalDateTime.now(),
-        val updatedAt: LocalDateTime? = LocalDateTime.now(),
-        val deleted: Boolean = false
-    )
+    val rol: Set<String> = setOf(TypeRol.USER.name),
+    val metadata: MetaData? = null
+)
 
-}
-/**
- * Dto que crea un usuario.
- */
-data class UsersCreateDto(
+@Serializable
+
+data class MetaData(
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val createdAt: LocalDateTime? = LocalDateTime.now(),
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val updatedAt: LocalDateTime? = LocalDateTime.now(),
+    val deleted: Boolean = false
+)
+
+
+data class UserLoginDto(
+    val email:String,
+    val passwrod:String
+)
+@Serializable
+
+data class UserCreateDto(
     val email: String,
     val name: String,
     val password: String,
-    val telephone:String,
-    val rol:Set<String> = setOf(Users.TypeRol.USER.name),
-    val url:String?=null
+    val telephone: String,
+    val rol: Set<String> = setOf(TypeRol.USER.name)
 )
-/**
- * Dto que actualiza un usuario.
- */
-data class UsersUpdateDto(
-    val email:String,
-    val name:String,
-    val telephone:String,
 
-    )
-/**
- * Dto para el token de usuario.
- */
-data class UsersWithTokenDto(
-    val user: UsersDto,
+@Serializable
+
+data class UserTokenDto(
+    val user: UserDto,
     val token: String
 )
-/**
- * dto para el login de usuario.
- */
-data class UsersLoginDto(
-    val email: String,
-    val password: String
-)
 
-
+enum class TypeRol {
+    USER, EMPLOYEE, ADMIN, SUPERADMIN
+}
