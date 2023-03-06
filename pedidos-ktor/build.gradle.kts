@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val mockk_version: String by project
+
 
 //KOIN
 val koin_ktor_version: String by project
@@ -49,9 +51,15 @@ dependencies {
     implementation("io.ktor:ktor-server-cors-jvm:2.2.2")
 //Validators Ktor
     implementation("io.ktor:ktor-server-request-validation:$ktor_version")
+    implementation("org.testng:testng:7.1.0")
 
     // Para testear métodos suspendidos o corrutinas
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
+    // Para testear
+    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version") // Usar deps de JUNIT 5 y no estas!
+
 
     //Kmongo
     implementation("org.litote.kmongo:kmongo-async:4.7.2")
@@ -68,6 +76,11 @@ dependencies {
     implementation("io.insert-koin:koin-annotations:$koin_ksp_version")
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version")
 
+    // Para testear con content negotiation
+    testImplementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+
+    // MockK para testear Mockito con Kotlin
+    testImplementation("io.mockk:mockk:$mockk_version")
 
     //MockK
     testImplementation("io.mockk:mockk:1.12.0")
@@ -78,6 +91,12 @@ dependencies {
 
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
+
+
+    // Auth JWT
+    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
 
 }
 tasks.test {
