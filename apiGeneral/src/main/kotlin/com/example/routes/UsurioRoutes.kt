@@ -51,50 +51,55 @@ fun Application.usuariosRoutes() {
                     )
             }
 
+
+            get("/list") {
+                val token = call.request.headers["Authorization"]//?.replace("Bearer ", "")
+                token?.let {
+                    val res = async(Dispatchers.IO) {
+                        client.getAllUsers(token)
+                    }.await()
+                    val body = res.body()
+
+                    if (res.isSuccessful && body != null) {
+                        call.respond(HttpStatusCode.OK, body)
+                    } else
+                        call.respond(
+                            HttpStatusCode.fromValue(res.code()),
+                            json.parseToJsonElement(res.errorBody()?.string()!!)
+                        )
+                } ?: run {
+                    call.respond(
+                        HttpStatusCode.Unauthorized
+                    )
+                }
+            }
+
+            get("/me") {
+            val token = call.request.headers["Authorization"]//?.replace("Bearer ", "")
+            token?.let {
+                val res = async(Dispatchers.IO) {
+                    client.getUserMe(token)
+                }.await()
+                val body = res.body()
+
+                if (res.isSuccessful && body != null) {
+                    call.respond(HttpStatusCode.OK, body)
+                } else
+                    call.respond(
+                        HttpStatusCode.fromValue(res.code()),
+                        json.parseToJsonElement(res.errorBody()?.string()!!)
+                    )
+            } ?: run {
+                call.respond(
+                    HttpStatusCode.Unauthorized
+                )
+            }
+        }
+            
             authenticate {
-                get("/list") {
-                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "")
-                    token?.let {
-                        val res = async(Dispatchers.IO) {
-                            client.getAllUsers(token)
-                        }.await()
-                        val body = res.body()
 
-                        if (res.isSuccessful && body != null) {
-                            call.respond(HttpStatusCode.OK, body)
-                        } else
-                            call.respond(
-                                HttpStatusCode.fromValue(res.code()),
-                                json.parseToJsonElement(res.errorBody()?.string()!!)
-                            )
-                    } ?: run {
-                        call.respond(
-                            HttpStatusCode.Unauthorized
-                        )
-                    }
-                }
 
-                get("/me") {
-                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "")
-                    token?.let {
-                        val res = async(Dispatchers.IO) {
-                            client.getUserMe(token)
-                        }.await()
-                        val body = res.body()
 
-                        if (res.isSuccessful && body != null) {
-                            call.respond(HttpStatusCode.OK, body)
-                        } else
-                            call.respond(
-                                HttpStatusCode.fromValue(res.code()),
-                                json.parseToJsonElement(res.errorBody()?.string()!!)
-                            )
-                    } ?: run {
-                        call.respond(
-                            HttpStatusCode.Unauthorized
-                        )
-                    }
-                }
             }
         }
     }

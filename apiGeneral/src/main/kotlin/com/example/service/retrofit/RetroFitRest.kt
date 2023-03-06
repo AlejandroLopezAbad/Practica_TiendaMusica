@@ -22,7 +22,7 @@ interface RetroFitRest {
     @GET("/api/users/list")
     suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserDto>>
 
-    @GET("/api/users")
+    @GET("/api/users/me")
     suspend fun getUserMe(@Header("Authorization") token : String) : Response<UserDto>
     /**
      * Servicios
