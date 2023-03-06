@@ -50,7 +50,7 @@ class StorageServiceFileSystemImpl(
     /**
      * Almacenar un fichero en usuario.
      * @param file fichero a almacenar.
-     * @param extension extensión del fichero.
+     * @param username nombre del usuario.
      * @throws StorageBadRequestException si falla el almacenamiento.
      * @return el nombre del archivo.
      */
@@ -80,7 +80,7 @@ class StorageServiceFileSystemImpl(
 
     /**
      * Carga los ficheros.
-     * @param fichero nombre del fichero a buscar.
+     * @param filename nombre del fichero a buscar.
      * @throws StorageFileNotFoundException si no puede leer los ficheros.
      * @return el fichero como recurso.
      */
