@@ -11,16 +11,16 @@ interface RetroFitRest {
     /**
      * Servicios
      */
-    @GET("api/service")
+    @GET("/api/service")
     suspend fun getAll(@Header("Authorization") token: String): Response<List<Service>>
 
-    @GET("api/service")
+    @GET("/api/service")
     suspend fun getAllByUser(): Response<List<ServiceDto>>
 
-    @GET("api/service/{id}")
+    @GET("/api/service/{id}")
     suspend fun getById(@Path("id") id:String, @Header("Authorization") token: String):Response<Service>
 
-    @GET("api/service/{id}")
+    @GET("/api/service/{id}")
     suspend fun getByIdByUser(@Path("id") id:String):Response<ServiceDto>
 
     @POST("/api/service")
@@ -45,40 +45,40 @@ interface RetroFitRest {
     /**
      * Productos
      */
-    @GET("api/product/guitar")
+    @GET("/api/product/guitar")
     suspend fun getAllGuitars(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
-    @GET("api/product/guitar")
+    @GET("/api/product/guitar")
     suspend fun getAllGuitarsByUser(): Response<List<ProductResponseDto>>
 
-    @GET("api/product/bass_guitar")
+    @GET("/api/product/bass_guitar")
     suspend fun getAllBassGuitar(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
-    @GET("api/product/bass_guitar")
+    @GET("/api/product/bass_guitar")
     suspend fun getAllBassGuitarByUser(): Response<List<ProductResponseDto>>
 
-    @GET("api/product/booster")
+    @GET("/api/product/booster")
     suspend fun getAllBoosters(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
-    @GET("api/product/booster")
+    @GET("/api/product/booster")
     suspend fun getAllBoostersByUser(): Response<List<ProductResponseDto>>
 
-    @GET("api/product/accessory")
+    @GET("/api/product/accessory")
     suspend fun getAllAccessory(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
-    @GET("api/product/accessory")
+    @GET("/api/product/accessory")
     suspend fun getAllAccessoryByUser(): Response<List<ProductResponseDto>>
 
-    @GET("api/product")
+    @GET("/api/product")
     suspend fun getAllProducts(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
-    @GET("api/product")
+    @GET("/api/product")
     suspend fun getAllProductsByUser(): Response<List<ProductResponseDto>>
 
-    @GET("api/product/{id}")
+    @GET("/api/product/{id}")
     suspend fun getProductById(@Path("id") id:String, @Header("Authorization") token: String):Response<ProductResponseDto>
 
-    @GET("api/product/{id}")
+    @GET("/api/product/{id}")
     suspend fun getProductByIdByUser(@Path("id") id:String):Response<ProductResponseDto>
 
     @POST("/api/product")
