@@ -2,6 +2,7 @@ version: '3'
 services:
 
   api-general:
+    container_name: api-general
     build: ./apiGeneral
     ports:
       - "8080:8080"
@@ -9,24 +10,24 @@ services:
       - servicio-productos
       # - servicio-usuarios
       # - servicio-pedidos
-    
     networks:
       - red
     
-
-
   servicio-productos:
     container_name: api-productos
-    # build:
-    #   context: ./ApiProducto
-    networks:
-      - red
+    build: ./ApiProducto
     ports:
       - "8082:8082"
-      - "3306:3306"
+    networks:
+      - red
+
+  mariaDb:
+    container_name: mariaDb
     extends:
-      file: ./ApiProducto/docker-compose.yml
-      service: api-productos
+      file: ./ApiProducto/docker/docker-compose.yml
+      service: mariaDb
+    networks:
+      - red
 
 
 networks:

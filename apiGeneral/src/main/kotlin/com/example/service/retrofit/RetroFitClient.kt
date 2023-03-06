@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 class RetroFitClient {
 
     companion object{
-        const val API_PRODUCT = "http://localhost:8082"
+        const val API_PRODUCT = "http://api-productos:8082"
         const val API_USERS = "http://localhost:8083"
     }
 
