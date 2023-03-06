@@ -17,6 +17,7 @@ fun Application.configureKoin() {
         defaultModule()
         modules(moduleApp)
         modules(moduleApp2)
+        modules(moduleApp3)
     }
 }
 
@@ -27,5 +28,10 @@ val moduleApp = module {
 
 val moduleApp2 = module {
     single<RetroFitRestPedidos>(named("apiOrder")) { RetroFitClientOrder().getInstance(RetroFitClientOrder.API_ORDER) }
+
+}
+
+val moduleApp3 = module {
+    single<RetroFitRest>(named("apiUsuarios")) { RetroFitClient().getInstance(RetroFitClient.API_USERS) }
 
 }

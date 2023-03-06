@@ -17,4 +17,5 @@ fun Application.configureRouting() {
     serviciosRoutes()
     productsRoutes()
     orderRoutes()
+    usuariosRoutes()
 }
