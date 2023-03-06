@@ -29,7 +29,6 @@ fun Application.serviciosRoutes(){
         route("/service"){
             get {
                 val token = call.request.headers["Authorization"]
-
                 val myScope = CoroutineScope(Dispatchers.IO)
                 if (token != null){
                     val res = myScope.async { client.getAll(token.toString())}.await()

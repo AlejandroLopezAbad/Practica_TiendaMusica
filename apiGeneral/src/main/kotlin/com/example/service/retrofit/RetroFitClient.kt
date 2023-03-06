@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 class RetroFitClient {
 
     companion object{
-        const val API_PRODUCT = "http://localhost:8082"
+        const val API_PRODUCT = "http://api-productos:8082"
     }
 
     @Single
@@ -26,9 +26,4 @@ class RetroFitClient {
             .create(RetroFitRest::class.java)
     }
 
-//    suspend fun login(login: UserLogin): String = withContext(Dispatchers.IO) {
-//        val response = getInstance().login(login)
-//        val token = response.body()?.token ?: return@withContext "No existe"
-//        return@withContext token
-//    }
 }

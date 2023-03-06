@@ -12,8 +12,10 @@ object MongoDbManager {
 
     init {
         val property= Property("mongo.properties")
+        println(property.getKey("mongoDb.uri"))
         mongoClient = KMongo.createClient(property.getKey("mongoDb.uri"))
             .coroutine
+        println("Conectado")
         mongoDatabase = mongoClient.getDatabase(property.getKey("mongoDb.databaseName"))
     }
 }

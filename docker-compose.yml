@@ -1,0 +1,43 @@
+version: '3'
+services:
+
+  api-general:
+    build: ./apiGeneral
+    ports:
+      - "8080:8080"
+    depends_on:
+      - servicio-productos
+      # - servicio-usuarios
+      # - servicio-pedidos
+    
+    networks:
+      - red
+    
+
+
+  servicio-productos:
+    container_name: api-productos
+    # build:
+    #   context: ./ApiProducto
+    networks:
+      - red
+    ports:
+      - "8082:8082"
+      - "3306:3306"
+    extends:
+      file: ./ApiProducto/docker-compose.yml
+      service: api-productos
+
+
+networks:
+  red:
+    driver: bridge
+  # servicio-usuarios:
+  #   build: ./MicroServicioUsuarios
+  #   ports:
+  #     - "8081:8081"
+
+  # servicio-pedidos:
+  #   build: ./pedidos-ktor
+  #   ports:
+  #     - "8083:8083"

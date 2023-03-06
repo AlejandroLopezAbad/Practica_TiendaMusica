@@ -61,3 +61,8 @@ dependencies {
 sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
 }
+ktor {
+    fatJar {
+        archiveFileName.set("apiGeneral.jar")
+    }
+}
