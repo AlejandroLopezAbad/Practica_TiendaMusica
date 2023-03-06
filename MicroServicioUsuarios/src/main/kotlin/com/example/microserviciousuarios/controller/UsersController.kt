@@ -129,6 +129,7 @@ class UsuarioController
      * @param user
      * @return
      */
+    @PreAuthorize("hasAnyRole('USER','EMPLOYEE','ADMIN','SUPERADMIN')")
     @GetMapping("/me")
     fun meInfo(@AuthenticationPrincipal user: Users): ResponseEntity<UsersDto> {
 
