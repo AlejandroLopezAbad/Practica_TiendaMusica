@@ -12,7 +12,7 @@ class RetroFitClient {
 
     companion object{
         const val API_PRODUCT = "http://api-productos:8082"
-        const val API_USERS = "http://localhost:8083"
+        const val API_USERS = "http://api-usuarios:8081"
     }
 
     @Single

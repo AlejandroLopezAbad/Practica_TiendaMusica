@@ -7,6 +7,8 @@ interface RetroFitRestPedidos {
     /**
      * Productos
      */
+    @GET("/")
+    suspend fun tryApiConnection() : Response<String>
     @GET("/pedidos")
     suspend fun getAllOrders(@Header("Authorization") token: String): Response<List<Order>>
 

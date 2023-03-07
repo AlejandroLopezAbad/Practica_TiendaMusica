@@ -10,7 +10,7 @@ import retrofit2.Retrofit
 class RetroFitClientOrder {
 
     companion object{
-        const val API_ORDER = "http://127.0.0.1:8083"
+        const val API_ORDER = "http://api-pedidos:8083"
     }
 
     @Single
