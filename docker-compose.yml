@@ -1,0 +1,121 @@
+version: '3'
+services:
+
+  api-general:
+    container_name: api-general
+    build: ./apiGeneral
+    ports:
+      - "8080:8080"
+    depends_on:
+      - servicio-productos
+      - servicio-usuarios
+      - servicio-pedidos
+    networks:
+      - red
+    
+  servicio-productos:
+    container_name: api-productos
+    build: ./ApiProducto
+    ports:
+      - "8082:8082"
+    
+    
+    networks:
+      - red
+
+  servicio-usuarios:
+    container_name: api-usuarios
+    build: ./MicroServicioUsuarios
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mariaDb
+    networks:
+      - red
+    
+  servicio-pedidos:
+    build: ./pedidos-ktor
+    container_name: api-pedidos
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mongo-express
+      - mongodb-server
+    networks:
+      - red
+
+    # MONGO DB
+  mongodb-server:
+    image: mongo
+    container_name: mongodb-server
+
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongopass
+      MONGO_INITDB_DATABASE: tiendaMusica
+      #ME_CONFIG_MONGODB_URL: mongodb://root:pedidos@mongo:27017/
+    command: --auth
+    # Monto la unidad y le cargo unos datos
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - mongo-vol:/data/db
+    networks:
+      - mongo-network
+    restart: always
+
+#  # MONGO EXPRESS
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    ports:
+      - "8084:8084"
+    networks:
+      - mongo-network
+    depends_on:
+      - mongodb-server
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mongoadmin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mongopass
+      ME_CONFIG_MONGODB_SERVER: mongodb-server
+    restart: unless-stopped
+
+  mariaDb:
+    image: mariadb:latest
+    container_name: mariaDb
+    extends:
+      file: ./ApiProducto/docker/docker-compose.yml
+      service: mariaDb
+    networks:
+      - red
+
+  mariaDb2:
+    image: mariadb:latest
+    
+    extends:
+      file: ./MicroServicioUsuarios/docker/docker-compose.yml
+      service: mariaDb
+    networks:
+      - red
+
+# Mi volumenes de datos compartidos
+volumes:
+  mongo-vol:
+
+# Si queremos que tengan una red propia a otros contenedores
+networks:
+  mongo-network:
+    #external: true
+    driver: bridge
+
+  red:
+    driver: bridge
+  
+
+  
+
+
+
+
+
