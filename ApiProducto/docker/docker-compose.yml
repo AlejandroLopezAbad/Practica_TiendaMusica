@@ -9,7 +9,5 @@ services:
       MARIADB_USER: admin
       MARIADB_PASSWORD: 1234
       MARIADB_DATABASE : tienda
-    ports:
-      - "3306:3306"
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
