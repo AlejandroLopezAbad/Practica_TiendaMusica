@@ -4,7 +4,7 @@ WORKDIR /home/gradle/src
 RUN gradle bootJar --no-daemon
 
 FROM openjdk:17-jdk-slim-buster
-EXPOSE 8083:8083
+EXPOSE 8081:8081
 RUN mkdir /app
 RUN mkdir /cert
 COPY --from=build /home/gradle/src/cert/* /cert/

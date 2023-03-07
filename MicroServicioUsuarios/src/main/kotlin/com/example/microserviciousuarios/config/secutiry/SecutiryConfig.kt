@@ -62,9 +62,12 @@ class SecurityConfig
             .and()
             .authorizeHttpRequests()
             .requestMatchers("/error/**").permitAll()
-            .requestMatchers("users/login", "users/register").permitAll()
-            .requestMatchers("users/list").hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
-            .requestMatchers("users/me").permitAll()
+
+            //.requestMatchers("/api/**").permitAll() //esto permite todas las consultas a la api
+
+            .requestMatchers("/api/users/login", "/api/users/register").permitAll()
+            .requestMatchers("/api/users/list").permitAll()//.hasAnyRole("EMPLOYEE","ADMIN","SUPERADMIN")
+            .requestMatchers("/api/users/me").permitAll()//.hasAnyRole("USER","EMPLOYEE","ADMIN","SUPERADMIN")
             .and()
             .addFilter(JwtAuthenticationFilter(jwtTokenUtil, authenticationManager))
             .addFilter(JwtAuthorizationFilter(jwtTokenUtil, userService, authenticationManager))

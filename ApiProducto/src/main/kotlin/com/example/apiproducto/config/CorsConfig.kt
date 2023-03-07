@@ -12,7 +12,7 @@ class CorsConfig {
         return object : WebMvcConfigurer {
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry.addMapping("/**")
-                    .allowedOrigins("https://localhost:8080")
+                    .allowedOrigins("*")
                     .allowedHeaders("*")
                     .allowedMethods("*")
                     .maxAge(3600)

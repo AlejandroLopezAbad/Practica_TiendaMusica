@@ -12,6 +12,8 @@ fun Application.configureSerialization() {
         json(Json {
             prettyPrint = true
             isLenient = true
+            ignoreUnknownKeys = true
+            coerceInputValues = true
         })
     }
 }

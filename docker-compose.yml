@@ -2,23 +2,43 @@ version: '3'
 services:
 
   api-general:
+    container_name: api-general
     build: ./apiGeneral
     ports:
-      - "6969:8080"
+      - "8080:8080"
     depends_on:
       - servicio-productos
-      #- servicio-usuarios
-      #- servicio-pedidos
-
+      # - servicio-usuarios
+      # - servicio-pedidos
+    networks:
+      - red
+    
   servicio-productos:
+    container_name: api-productos
     build: ./ApiProducto
+    ports:
+      - "8082:8082"
+    networks:
+      - red
 
+  mariaDb:
+    container_name: mariaDb
+    extends:
+      file: ./ApiProducto/docker/docker-compose.yml
+      service: mariaDb
+    networks:
+      - red
+
+
+networks:
+  red:
+    driver: bridge
   # servicio-usuarios:
   #   build: ./MicroServicioUsuarios
   #   ports:
-  #     - "8083:8083"
+  #     - "8081:8081"
 
   # servicio-pedidos:
   #   build: ./pedidos-ktor
   #   ports:
-  #     - "8080:8080"
+  #     - "8083:8083"

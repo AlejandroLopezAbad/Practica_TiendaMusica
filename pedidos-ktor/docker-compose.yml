@@ -6,9 +6,9 @@ services:
     build: .
     container_name: servicio-pedidos
     ports:
-      - "8080:8080"
+      - "8083:8083"
     expose:
-      - 8081:8081
+      - 8083:8083
     depends_on:
       - mongo-express
       - mongodb-server
