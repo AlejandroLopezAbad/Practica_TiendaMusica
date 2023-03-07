@@ -70,37 +70,37 @@ interface RetroFitRest {
     suspend fun getAllGuitars(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
     @GET("/api/product/guitar")
-    suspend fun getAllGuitarsByUser(): Response<List<ProductResponseDto>>
+    suspend fun getAllGuitarsByUser(): Response<List<ProductUserResponseDto>>
 
     @GET("/api/product/bass_guitar")
     suspend fun getAllBassGuitar(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
     @GET("/api/product/bass_guitar")
-    suspend fun getAllBassGuitarByUser(): Response<List<ProductResponseDto>>
+    suspend fun getAllBassGuitarByUser(): Response<List<ProductUserResponseDto>>
 
     @GET("/api/product/booster")
     suspend fun getAllBoosters(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
     @GET("/api/product/booster")
-    suspend fun getAllBoostersByUser(): Response<List<ProductResponseDto>>
+    suspend fun getAllBoostersByUser(): Response<List<ProductUserResponseDto>>
 
     @GET("/api/product/accessory")
     suspend fun getAllAccessory(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
     @GET("/api/product/accessory")
-    suspend fun getAllAccessoryByUser(): Response<List<ProductResponseDto>>
+    suspend fun getAllAccessoryByUser(): Response<List<ProductUserResponseDto>>
 
     @GET("/api/product")
     suspend fun getAllProducts(@Header("Authorization") token: String): Response<List<ProductResponseDto>>
 
     @GET("/api/product")
-    suspend fun getAllProductsByUser(): Response<List<ProductResponseDto>>
+    suspend fun getAllProductsByUser(): Response<List<ProductUserResponseDto>>
 
     @GET("/api/product/{id}")
     suspend fun getProductById(@Path("id") id:String, @Header("Authorization") token: String):Response<ProductResponseDto>
 
     @GET("/api/product/{id}")
-    suspend fun getProductByIdByUser(@Path("id") id:String):Response<ProductResponseDto>
+    suspend fun getProductByIdByUser(@Path("id") id:String):Response<ProductUserResponseDto>
 
     @POST("/api/product")
     suspend fun creteProduct(@Header("Authorization") token: String,@Body service : ProductDto): Response<ProductResponseDto>
