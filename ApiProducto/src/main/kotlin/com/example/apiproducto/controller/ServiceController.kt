@@ -5,6 +5,7 @@ import com.example.apiproducto.dto.ServiceUpdateDto
 import com.example.apiproducto.exceptions.InvalidTokenException
 import com.example.apiproducto.exceptions.ServiceBadRequestException
 import com.example.apiproducto.exceptions.ServiceNotFoundException
+import com.example.apiproducto.exceptions.StorageBadRequestException
 import com.example.apiproducto.mappers.toService
 import com.example.apiproducto.mappers.toServiceDto
 import com.example.apiproducto.models.Service
@@ -129,6 +130,8 @@ class ServiceController
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        } catch (e: StorageBadRequestException){
+            throw  ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 }

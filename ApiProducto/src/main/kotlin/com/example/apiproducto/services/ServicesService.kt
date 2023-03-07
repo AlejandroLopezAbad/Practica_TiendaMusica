@@ -5,6 +5,7 @@ import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.exceptions.ServiceNotFoundException
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.repositories.ServiceRepository
+import com.example.apiproducto.services.storage.StorageService
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +20,7 @@ import com.example.apiproducto.models.Service as Services
 class ServicesService
 @Autowired constructor(
     private val repository: ServiceRepository,
+    private val storage: StorageService
 ) {
 
     /**
@@ -93,6 +95,9 @@ class ServicesService
     suspend fun deleteService(uuid: String): Boolean {
         val exist = repository.findServiceByUuid(uuid).firstOrNull()
         exist?.let {
+            if(it.url != "placeholder.jpg"){
+                storage.deleteService(it.url)
+            }
             return repository.deleteById(it.id!!).let { true }
         } ?: throw ServiceNotFoundException("No existe el servicio con id: $uuid")
     }
