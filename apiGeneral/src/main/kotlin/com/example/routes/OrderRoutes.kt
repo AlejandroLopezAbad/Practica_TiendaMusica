@@ -2,6 +2,7 @@ package com.example.routes
 
 import com.example.models.OrderCreateDto
 import com.example.models.OrderUpdateDto
+import com.example.service.retrofit.RetroFitRest
 import com.example.service.retrofitOrder.RetroFitRestPedidos
 import es.tiendamusica.exceptions.OrderBadRequest
 import es.tiendamusica.exceptions.OrderNotFoundException
@@ -17,14 +18,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
+import org.koin.core.qualifier.qualifier
 import org.koin.ktor.ext.inject
 
 fun Application.orderRoutes() {
     val client: RetroFitRestPedidos by inject(qualifier = named("apiOrder"))
+    val clientProducts: RetroFitRest by inject(qualifier = named("apiProduct"))
     val json = Json { ignoreUnknownKeys = true }
 
     routing {
         route("/pedidos") {
+            //TODO(BORRA ESTO DESTPUÉS DE EXPLICARLO)
+            /*get("/hello") {
+                val res = client.tryApiConnection()
+                call.respond(HttpStatusCode.OK, res.message())
+            }*/
             get {
                 print("ENTRA")
                 val token = call.request.headers["Authorization"]
@@ -48,11 +56,11 @@ fun Application.orderRoutes() {
                 if (token != null) {
                     val res = myScope.async { client.getOrderById(uuid, token.toString()) }.await()
                     val body = res.body()
-                    try{
+                    try {
                         if (res.isSuccessful && body != null) {
                             call.respond(HttpStatusCode.OK, body)
                         }
-                    }catch (e: OrderNotFoundException) {
+                    } catch (e: OrderNotFoundException) {
                         call.respond(HttpStatusCode.NotFound, e.message.toString())
                     }
                 }
@@ -69,7 +77,7 @@ fun Application.orderRoutes() {
                         if (res.isSuccessful && res.body()!!.size > 0) {
                             call.respond(HttpStatusCode.OK, res.body()!!)
                         }
-                    }catch (e: OrderNotFoundException) {
+                    } catch (e: OrderNotFoundException) {
                         call.respond(HttpStatusCode.NotFound, e.message.toString())
                     }
                 }
@@ -83,43 +91,47 @@ fun Application.orderRoutes() {
                     val res = myScope.async { client.creteOrder(service, token!!) }.await()
                     val body = res.body()
                     try {
+                        service.products.forEach {
+                            if (!clientProducts.getProductById(it.idItem, token).isSuccessful)
+                                call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
+                        }
                         if (res.isSuccessful && body != null) {
                             call.respond(HttpStatusCode.Created, body)
                         }
-                        } catch (e: OrderBadRequest) {
-                            call.respond(HttpStatusCode.BadRequest, e.message.toString())
-                        }
+                    } catch (e: OrderBadRequest) {
+                        call.respond(HttpStatusCode.BadRequest, e.message.toString())
                     }
                 }
+            }
 
-                delete("/{id}") {
-                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
-                    val id = call.parameters["id"].toString()
+            delete("/{id}") {
+                val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+                val id = call.parameters["id"].toString()
 
-                    val myScope = CoroutineScope(Dispatchers.IO)
-                    val res = myScope.async { client.deleteProduct(id, token) }.await()
-                    try {
-                        if (res.isSuccessful) {
-                            call.respond(HttpStatusCode.NoContent)
-                        }
-                    }catch (e: OrderUnauthorized) {
-                        call.respond(HttpStatusCode.Unauthorized, e.message.toString())
-                    }
-                }
-
-                patch("/{id}") {
-                    val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
-                    val id = call.parameters["id"].toString()
-                    val updated = call.receive<OrderUpdateDto>()
-                    val myScope = CoroutineScope(Dispatchers.IO)
-                    val res = myScope.async { client.updateProduct(id, token, updated)}.await()
+                val myScope = CoroutineScope(Dispatchers.IO)
+                val res = myScope.async { client.deleteProduct(id, token) }.await()
+                try {
                     if (res.isSuccessful) {
-                        call.respond(HttpStatusCode.OK)
-                    } else call.respond(
-                        HttpStatusCode.fromValue(res.code()),
-                        json.parseToJsonElement(res.errorBody()?.string()!!)
-                    )
+                        call.respond(HttpStatusCode.NoContent)
+                    }
+                } catch (e: OrderUnauthorized) {
+                    call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 }
+            }
+
+            patch("/{id}") {
+                val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+                val id = call.parameters["id"].toString()
+                val updated = call.receive<OrderUpdateDto>()
+                val myScope = CoroutineScope(Dispatchers.IO)
+                val res = myScope.async { client.updateProduct(id, token, updated) }.await()
+                if (res.isSuccessful) {
+                    call.respond(HttpStatusCode.OK)
+                } else call.respond(
+                    HttpStatusCode.fromValue(res.code()),
+                    json.parseToJsonElement(res.errorBody()?.string()!!)
+                )
             }
         }
     }
+}
