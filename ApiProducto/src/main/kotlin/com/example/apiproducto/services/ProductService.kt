@@ -133,6 +133,66 @@ class ProductService
 
 
     /**
+     * Cambiar la url del producto.
+     * @param uuid uuid del producto.
+     * @param url url nueva del producto.
+     * @throws ProductNotFoundException si no se encuentra el producto con ese uuid.
+     * @return boolean si ha sido cambiado correctamente
+     */
+    @CachePut("products")
+    suspend fun changeUrlProduct(uuid:String, url: String): Boolean{
+        val exist = repository.findProductByUuid(uuid).firstOrNull()
+        exist?.let {
+            val product = Product(
+                id = exist.id,
+                uuid = exist.uuid,
+                name = exist.name,
+                price = exist.price,
+                available = exist.available ,
+                description = exist.description,
+                url = url,
+                category = exist.category,
+                stock = exist.stock,
+                brand = exist.brand,
+                model = exist.model
+            )
+            repository.save(product)
+            return true
+        } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
+    }
+
+
+    /**
+     * Cambiar la url del producto.
+     * @param filename filename almacenado en el producto de la BDD.
+     * @param url url nueva del producto.
+     * @throws ProductNotFoundException si no se encuentra el producto con ese uuid.
+     * @return boolean si ha sido cambiado correctamente
+     */
+    @CachePut("products")
+    suspend fun deleteUrlProduct(filename:String, url: String): Boolean{
+        val exist = repository.findProductByUrl(filename).firstOrNull()
+        exist?.let {
+            val product = Product(
+                id = exist.id,
+                uuid = exist.uuid,
+                name = exist.name,
+                price = exist.price,
+                available = exist.available ,
+                description = exist.description,
+                url = url,
+                category = exist.category,
+                stock = exist.stock,
+                brand = exist.brand,
+                model = exist.model
+            )
+            repository.save(product)
+            return true
+        } ?: throw ProductNotFoundException("No existe el producto con url: $url")
+    }
+
+
+    /**
      * Eliminar un producto.
      * @param uuid uuid del producto a eliminar.
      * @throws ProductNotFoundException si no se encuentra el producto a eliminar.
