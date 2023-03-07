@@ -1,6 +1,6 @@
 # Práctica - Tienda de Música
 
-<p  align="center" ><img src="./img/imagen.png" width="600px"></p>
+<p align="center" ><img src="./img/imagen.png" width="600px"></p>
 
 <br>
 
@@ -10,7 +10,6 @@
     - Daniel Carmona.
     - Jeremy Ramos.
     - Alejandro López.
-    - Fran Toribio.
 
 
 ### Sobre el Proyecto
@@ -65,8 +64,6 @@ Después de esto comenzará la instalación de todo lo necesario para usar nuest
 - [Daniel](https://github.com/Kassius10)
 - [Jeremy](https://github.com/JeremyRamos01)
 - [Alejandro](https://github.com/AlejandroLopezAbad)
-- [Fran](https://github.com/frantoribio)
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
