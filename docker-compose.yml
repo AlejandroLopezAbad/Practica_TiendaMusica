@@ -16,8 +16,6 @@ services:
   servicio-productos:
     container_name: api-productos
     build: ./ApiProducto
-    ports:
-      - "8082:8082"
     networks:
       - red
 
