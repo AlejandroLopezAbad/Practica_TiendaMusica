@@ -1,7 +1,9 @@
 package com.example.apiproducto.services
 
 import com.example.apiproducto.dto.ServiceUpdateDto
+import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.exceptions.ServiceNotFoundException
+import com.example.apiproducto.models.Product
 import com.example.apiproducto.repositories.ServiceRepository
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -117,5 +119,54 @@ class ServicesService
             )
             return true
         } ?: throw ServiceNotFoundException("No existe el servicio con id: $uuid")
+    }
+
+    /**
+     * Cambiar la url del servicio.
+     * @param uuid uuid del servicio.
+     * @param url url nueva del servicio.
+     * @throws ProductNotFoundException si no se encuentra el servicio con ese uuid.
+     * @return boolean si ha sido cambiado correctamente
+     */
+    suspend fun changeUrlService(uuid:String, url: String): Boolean{
+        val exist = repository.findServiceByUuid(uuid).firstOrNull()
+        exist?.let {
+            val service = Services(
+                id = exist.id,
+                uuid = exist.uuid,
+                price = exist.price,
+                available = exist.available ,
+                description = exist.description,
+                url = url,
+                category = exist.category
+            )
+            repository.save(service)
+            return true
+        } ?: throw ServiceNotFoundException("No existe el servicio con uuid: $uuid")
+    }
+
+
+    /**
+     * Cambiar la url del producto.
+     * @param filename filename almacenado en el servicio de la BDD.
+     * @param url url nueva del servicio.
+     * @throws ProductNotFoundException si no se encuentra el servicio con ese uuid.
+     * @return boolean si ha sido cambiado correctamente
+     */
+    suspend fun deleteUrlService(filename:String, url: String): Boolean{
+        val exist = repository.findServiceByUrl(filename).firstOrNull()
+        exist?.let {
+            val service = Services(
+                id = exist.id,
+                uuid = exist.uuid,
+                price = exist.price,
+                available = exist.available ,
+                description = exist.description,
+                url = url,
+                category = exist.category
+            )
+            repository.save(service)
+            return true
+        } ?: throw ServiceNotFoundException("No existe el servicio con url: $url")
     }
 }
