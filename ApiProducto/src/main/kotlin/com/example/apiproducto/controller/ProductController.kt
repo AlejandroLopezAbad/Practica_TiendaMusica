@@ -138,15 +138,6 @@ class ProductController
         }
     }
 
-//    @GetMapping("/{id}")
-//    suspend fun findProductById(@PathVariable id: Int): ResponseEntity<Product> {
-//        try {
-//            val find = service.findProductById(id)
-//            return ResponseEntity.ok(find)
-//        } catch (e: ProductNotFoundException) {
-//            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
-//        }
-//    }
 
 
     @GetMapping("/{uuid}")
