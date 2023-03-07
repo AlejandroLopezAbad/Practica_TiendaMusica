@@ -4,6 +4,7 @@ package com.example.apiproducto.services
 import com.example.apiproducto.exceptions.*
 import com.example.apiproducto.models.Product
 import com.example.apiproducto.repositories.ProductRepository
+import com.example.apiproducto.services.storage.StorageServiceImpl
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service
 class ProductService
 @Autowired constructor(
     private val repository: ProductRepository,
+    private val storage: StorageServiceImpl
 ) {
 
     /**
@@ -202,6 +204,11 @@ class ProductService
     suspend fun deleteProduct(uuid: String): Boolean {
         val exist = repository.findProductByUuid(uuid).firstOrNull()
         exist?.let {
+            println(it.url)
+           if(it.url != "placeholder.jpg"){
+               println("Product")
+               storage.deleteProduct(it.url)
+           }
             return repository.delete(it).let { true }
         } ?: throw ProductNotFoundException("No existe el producto con uuid: $uuid")
 

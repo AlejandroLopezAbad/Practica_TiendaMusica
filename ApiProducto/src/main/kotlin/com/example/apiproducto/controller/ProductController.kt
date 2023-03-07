@@ -5,6 +5,7 @@ import com.example.apiproducto.dto.ProductResponseDto
 import com.example.apiproducto.exceptions.InvalidTokenException
 import com.example.apiproducto.exceptions.ProductBadRequestException
 import com.example.apiproducto.exceptions.ProductNotFoundException
+import com.example.apiproducto.exceptions.StorageBadRequestException
 import com.example.apiproducto.mappers.toProduct
 import com.example.apiproducto.mappers.toProductResponseDto
 import com.example.apiproducto.mappers.toProductUserResponseDto
@@ -244,6 +245,8 @@ class ProductController
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         } catch (e: InvalidTokenException){
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        } catch (e: StorageBadRequestException){
+            throw  ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         }
     }
 }
