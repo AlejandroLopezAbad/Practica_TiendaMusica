@@ -18,12 +18,17 @@ interface RetroFitRest {
     @POST("/api/users/login")
     suspend fun loginUser(@Body user : UserLoginDto) : Response<UserTokenDto>
 
-
     @GET("/api/users/list")
     suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserDto>>
-
     @GET("/api/users/me")
     suspend fun getUserMe(@Header("Authorization") token : String) : Response<UserDto>
+    @Multipart
+    @PATCH("/api/users/me")
+    suspend fun updateAvatarUsuario(@Header("Authorization") token: String, @Part file: MultipartBody.Part): Response<UserDto>
+
+
+
+
     /**
      * Servicios
      */
