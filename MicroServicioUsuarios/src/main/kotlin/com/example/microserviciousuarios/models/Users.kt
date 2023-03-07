@@ -26,7 +26,6 @@ data class Users(
     @get:JvmName("userPassword")
     @Column("password")
     val password:String,
-
     @Column("telephone")
     val telephone:Int = 787744741,
     @Column("rol")
@@ -39,6 +38,7 @@ data class Users(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column("updated_at")
     val updatedAt: LocalDateTime = LocalDateTime.now(),
+
     val deleted: Boolean = false,
     ): UserDetails {
 

@@ -58,11 +58,8 @@ class JwtAuthorizationFilter(
      */
     private fun getAuthentication(token: String): UsernamePasswordAuthenticationToken? = runBlocking {
         logger.info { "Obteniendo autenticación" }
-
         if (!jwtTokenUtil.isTokenValid(token)) return@runBlocking null
-        // val username = jwtTokenUtil.getUsernameFromJwt(token)
         val userId = jwtTokenUtil.getUserIdFromJwt(token)
-        // val roles = jwtTokenUtil.getRolesFromJwt(token)
         val user = service.loadUserbyUuid(userId)
         return@runBlocking UsernamePasswordAuthenticationToken(
             user,

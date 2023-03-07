@@ -41,7 +41,6 @@ data class UsersUpdateDto(
     val email:String,
     val name:String,
     val telephone:String,
-
 )
 /**
  * Dto para el token de usuario.
