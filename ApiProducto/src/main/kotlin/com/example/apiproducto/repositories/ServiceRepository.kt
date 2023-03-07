@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ServiceRepository : CoroutineCrudRepository<Service, Int> {
     fun findServiceByUuid(uuid: String): Flow<Service>
+    fun findServiceByUrl(url: String): Flow<Service>
 }

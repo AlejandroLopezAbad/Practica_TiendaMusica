@@ -44,9 +44,9 @@ class StorageController
         return@runBlocking try {
             val roles = tokenService.getRoles(token)
             if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
-                productService.findProductByUuid(uuid)
                 if (!file.isEmpty) {
                     val saved = storageService.storeProduct(file, uuid)
+                    productService.changeUrlProduct(uuid, saved)
                     val response = mapOf("name" to saved, "created_at" to LocalDateTime.now().toString())
                     ResponseEntity.status(HttpStatus.CREATED).body(response)
                 } else {
@@ -77,9 +77,9 @@ class StorageController
         return@runBlocking try {
             val roles = tokenService.getRoles(token)
             if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
-                val service = servicesService.findServiceByUuid(uuid)
                 if (!file.isEmpty) {
                     val saved = storageService.storeService(file, uuid)
+                    servicesService.changeUrlService(uuid, saved)
                     val response = mapOf("name" to saved, "created_at" to LocalDateTime.now().toString())
                     ResponseEntity.status(HttpStatus.CREATED).body(response)
                 } else {
@@ -155,6 +155,7 @@ class StorageController
             val roles = tokenService.getRoles(token)
             if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
                 storageService.deleteProduct(filename.toString())
+                productService.deleteUrlProduct(filename.toString(), "placeholder.jpg")
                 ResponseEntity(HttpStatus.NO_CONTENT)
             } else {
                 throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tienes permisos para realizar esta acción")
@@ -163,6 +164,8 @@ class StorageController
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        } catch (e: ProductNotFoundException){
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
@@ -178,6 +181,7 @@ class StorageController
             val roles = tokenService.getRoles(token)
             if (roles.contains("ADMIN") || roles.contains("SUPERADMIN") || roles.contains("EMPLEADO")) {
                 storageService.deleteService(filename.toString())
+                servicesService.deleteUrlService(filename.toString(), "placeholder.jpg")
                 ResponseEntity(HttpStatus.NO_CONTENT)
             } else {
                 throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "No tienes permisos para realizar esta acción")
@@ -186,6 +190,8 @@ class StorageController
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, e.message)
         } catch (e: InvalidTokenException) {
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
+        } catch (e: ServiceNotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
     }
 
