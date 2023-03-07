@@ -146,6 +146,7 @@ class UsuarioController
      * @param usersDto
      * @return
      */
+    @PreAuthorize("hasAnyRole('USER','EMPLOYEE','ADMIN','SUPERADMIN')")
     @PutMapping("/me")
     suspend fun updateMe(
         @AuthenticationPrincipal
@@ -181,6 +182,7 @@ class UsuarioController
      * @param file
      * @return
      */
+    @PreAuthorize("hasAnyRole('USER','EMPLOYEE','ADMIN','SUPERADMIN')")
     @PatchMapping(
         value = ["/me"],
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]

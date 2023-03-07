@@ -21,7 +21,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest
 
 
-//TODO(No se si esto va a funcionar supongamos que no)
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository
  *
  * @constructor Create empty Users repository
  */
+
 @Repository
 interface UsersRepository : CoroutineCrudRepository<Users, Long> {
 
