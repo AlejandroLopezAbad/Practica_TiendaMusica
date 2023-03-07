@@ -31,6 +31,7 @@ fun Application.productsRoutes(){
 
     routing {
         route("/product"){
+
             get("/guitar", {
                 description = "Conseguir los productos con la categoría GUITAR"
                 response {
@@ -360,12 +361,39 @@ fun Application.productsRoutes(){
                 }
             }
         }
+
         route("/storage/product"){
             authenticate {
-                post("/{uuid}") {
+
+                post("/{id}", {
+                    description = "Insertar una imagen a un producto"
+                    request {
+                        pathParameter<String>("id") {
+                            description = "UUID del producto a actualizar la imagen"
+                            required = true
+                        }
+                        multipartBody {
+                            description = "Imagen a poner en el producto"
+                        }
+                    }
+                    response {
+                        HttpStatusCode.Created to{
+                            description = "Imagen creada correctamente"
+                        }
+                        HttpStatusCode.NotFound to {
+                            description= "No se ha encontrado el producto con el id indicado"
+                        }
+                        HttpStatusCode.BadRequest to{
+                            description ="No se puede almacenar ficheros vacios"
+                        }
+                        HttpStatusCode.Unauthorized to {
+                            description = "No tienes permisos para realizar la acción"
+                        }
+                    }
+                }) {
                     val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
                     val multipart = call.receiveMultipart().readPart() as PartData.FileItem
-                    val uuid = call.parameters["uuid"].toString()
+                    val uuid = call.parameters["id"].toString()
 
                     val requestBody = RequestBody.create(MediaType.parse(multipart.contentType.toString()),multipart.streamProvider().readBytes())
                     val multipartBody = MultipartBody.Part.createFormData("file",multipart.originalFileName,requestBody)
@@ -378,7 +406,28 @@ fun Application.productsRoutes(){
                         call.respond(HttpStatusCode.Created,body)
                     }else call.respond(HttpStatusCode.fromValue(res.code()), json.parseToJsonElement(res.errorBody()?.string()!!))
                 }
-                get("/{filename}") {
+
+
+                get("/{filename}", {
+                    description = "Pedir una imagen a un producto"
+                    request {
+                        pathParameter<String>("filename") {
+                            description = "nombre y extensión de la imagen que buscamos"
+                            required = true
+                        }
+                    }
+                    response {
+                        HttpStatusCode.OK to{
+                            description = "Imagen encontrada correctamente"
+                        }
+                        HttpStatusCode.BadRequest to{
+                            description ="No se puede determinar el tipo del fichero"
+                        }
+                        HttpStatusCode.Unauthorized to {
+                            description = "No tienes permisos para realizar la acción"
+                        }
+                    }
+                }) {
                     val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
                     val filename = call.parameters["filename"].toString()
 
@@ -392,7 +441,28 @@ fun Application.productsRoutes(){
                     }
 
                 }
-                delete("/{filename}") {
+
+
+                delete("/{filename}", {
+                    description = "Eliminar una imagen"
+                    request {
+                        pathParameter<String>("filename") {
+                            description = "nombre y extensión de la imagen que buscamos"
+                            required = true
+                        }
+                    }
+                    response {
+                        HttpStatusCode.NoContent to{
+                            description = "Imagen eliminada correctamente"
+                        }
+                        HttpStatusCode.BadRequest to{
+                            description ="Problemas con el storage"
+                        }
+                        HttpStatusCode.Unauthorized to {
+                            description = "No tienes permisos para realizar la acción"
+                        }
+                    }
+                }) {
                     val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
                     val filename = call.parameters["filename"].toString()
 
