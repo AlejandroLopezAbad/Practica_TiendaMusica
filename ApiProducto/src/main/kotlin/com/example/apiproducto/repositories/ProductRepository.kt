@@ -10,4 +10,5 @@ import reactor.core.publisher.Mono
 interface ProductRepository: CoroutineCrudRepository<Product, Int> {
     fun findProductsByCategory(category: String): Flow<Product>
     fun findProductByUuid(uuid: String): Flow<Product>
+    fun findProductByUrl(url: String): Flow<Product>
 }
