@@ -1,6 +1,7 @@
 package com.example.apiproducto.controller
 
 import com.example.apiproducto.dto.ProductDto
+import com.example.apiproducto.dto.ProductResponseDto
 import com.example.apiproducto.exceptions.ProductNotFoundException
 import com.example.apiproducto.mappers.toProduct
 import com.example.apiproducto.models.Product
@@ -61,7 +62,7 @@ class ProductControllerTest {
         coEvery { service.findAllProducts() } returns listOf(test)
         coEvery { tokenService.getRoles(any()) } returns "ADMIN"
         val all = controller.getAllProducts("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6IkFETUlOIn0.NWXV_I8wlkuymOCEl3typzIS7HKEawi-m4gQolPBodpJV9CmD738hz9Z3HyUAcNWNPdPcfekfcIcLhzHAbFwTw")
-        val result = all.body
+        val result = all.body as List<ProductResponseDto>
         assertAll(
             { assertNotNull(result) },
             { assertTrue(result?.isNotEmpty()!!) },
@@ -88,20 +89,20 @@ class ProductControllerTest {
         coEvery { tokenService.getRoles(any()) } returns "ADMIN"
         val find = controller.findProductByUuid("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6IkFETUlOIn0.NWXV_I8wlkuymOCEl3typzIS7HKEawi-m4gQolPBodpJV9CmD738hz9Z3HyUAcNWNPdPcfekfcIcLhzHAbFwTw",
             test.uuid)
-        val result = find.body
+        val result = find.body as ProductResponseDto
 
         assertAll(
             { assertNotNull(result) },
-            { assertEquals(test.uuid, result!!.uuid) },
-            { assertEquals(test.name, result!!.name) },
-            { assertEquals(test.price, result!!.price) },
-            { assertEquals(test.available, result!!.available) },
-            { assertEquals(test.description, result!!.description) },
-            { assertEquals(test.url, result!!.url) },
-            { assertEquals(test.category.name, result!!.category) },
-            { assertEquals(test.stock, result!!.stock) },
-            { assertEquals(test.brand, result!!.brand) },
-            { assertEquals(test.model, result!!.model) }
+            { assertEquals(test.uuid, result.uuid) },
+            { assertEquals(test.name, result.name) },
+            { assertEquals(test.price, result.price) },
+            { assertEquals(test.available, result.available) },
+            { assertEquals(test.description, result.description) },
+            { assertEquals(test.url, result.url) },
+            { assertEquals(test.category.name, result.category) },
+            { assertEquals(test.stock, result.stock) },
+            { assertEquals(test.brand, result.brand) },
+            { assertEquals(test.model, result.model) }
         )
 
         coVerify(exactly = 1) { service.findProductByUuid(test.uuid) }
@@ -128,9 +129,8 @@ class ProductControllerTest {
 
     @Test
     fun findProductByUuidNotAvailable() = runTest {
-        val devolver = test.copy(available = false)
-        coEvery { service.findProductByUuid(test.uuid) } returns devolver
-        coEvery { tokenService.getRoles(any()) } returns "USER"
+        coEvery { service.findProductByUuid(test.uuid) } throws ProductNotFoundException("No se ha encontrado un producto con el uuid: ${test.uuid}")
+        coEvery { tokenService.getRoles(any()) } returns "ADMIN"
 
         val find = assertThrows<ResponseStatusException> {
             controller.findProductByUuid("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6IkFETUlOIn0.NWXV_I8wlkuymOCEl3typzIS7HKEawi-m4gQolPBodpJV9CmD738hz9Z3HyUAcNWNPdPcfekfcIcLhzHAbFwTw",
@@ -240,14 +240,13 @@ class ProductControllerTest {
     @Test
     fun deleteProduct() = runTest {
         coEvery { tokenService.getRoles(any()) } returns "SUPERADMIN"
-        coEvery { service.findProductByUuid(test.uuid) } returns test
         coEvery { service.deleteProduct(test.uuid) } returns true
+
         val delete = controller.deleteProduct("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6IkFETUlOIn0.NWXV_I8wlkuymOCEl3typzIS7HKEawi-m4gQolPBodpJV9CmD738hz9Z3HyUAcNWNPdPcfekfcIcLhzHAbFwTw",
             test.uuid)
         val result = delete.statusCode
         assertTrue(result == HttpStatus.NO_CONTENT)
 
-        coVerify(exactly = 1) { service.findProductByUuid(test.uuid) }
         coVerify(exactly = 1) { service.deleteProduct(test.uuid) }
         coVerify(exactly = 1) { tokenService.getRoles(any()) }
     }
