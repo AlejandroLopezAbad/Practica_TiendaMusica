@@ -206,7 +206,6 @@ class ProductService
         exist?.let {
             println(it.url)
            if(it.url != "placeholder.jpg"){
-               println("Product")
                storage.deleteProduct(it.url)
            }
             return repository.delete(it).let { true }
