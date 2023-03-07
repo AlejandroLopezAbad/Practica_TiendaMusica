@@ -88,7 +88,6 @@ fun Application.ordersRoutes() {
                             val id = call.parameters["user_id"]
                             val res =
                                 ordersService.getByUserId(id!!).toList().let { res ->
-                                    println("------------ $res---------")
                                     call.respond(HttpStatusCode.OK, res)
                                 }
                         } catch (e: OrderNotFoundException) {

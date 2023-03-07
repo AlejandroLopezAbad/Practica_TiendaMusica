@@ -29,6 +29,9 @@ class JwtTokenUtil {
     @Value("\${jwt.token-expiration:3600}")
     private val jwtDuracionTokenEnSegundos = 0
 
+    @Value("\${jwt.audience}")
+    private val audience = ""
+
     /**
      * Generate token
      *
@@ -41,6 +44,7 @@ class JwtTokenUtil {
         val tokenExpirationDate = Date(System.currentTimeMillis() + jwtDuracionTokenEnSegundos * 1000)
 
         return JWT.create()
+            .withAudience(audience)
             .withSubject(user.uuid)
             .withHeader(mapOf("typ" to TOKEN_TYPE))
             .withIssuedAt(Date())

@@ -2,6 +2,8 @@ package com.example.routes
 
 import com.example.models.OrderCreateDto
 import com.example.models.OrderUpdateDto
+import com.example.models.ProductDto
+import com.example.models.ProductResponseDto
 import com.example.service.retrofit.RetroFitRest
 import com.example.service.retrofitOrder.RetroFitRestPedidos
 import es.tiendamusica.exceptions.OrderBadRequest
@@ -92,10 +94,37 @@ fun Application.orderRoutes() {
                     val body = res.body()
                     try {
                         service.products.forEach {
-                            if (!clientProducts.getProductById(it.idItem, token).isSuccessful)
-                                call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
+                            val res = myScope.async {
+                                clientProducts.getProductById(it.idItem, token)
+                            }.await()
+                            println(res.code())
+                            if (!res.isSuccessful || body == null)
+                                println(it)
+                            call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
+                            val product = res.body()
+                            if (product?.stock!! < it.quantity)
+                                call.respond(HttpStatusCode.BadRequest)
                         }
                         if (res.isSuccessful && body != null) {
+                            service.products.forEach {
+                                val res = myScope.async {
+                                    clientProducts.getProductById(it.idItem, token)
+                                }.await()
+                                clientProducts.updateProduct(
+                                    it.idItem,
+                                    token,
+                                    ProductDto(
+                                        res.body()?.name!!,
+                                        res.body()?.price!!,
+                                        res.body()?.available!!,
+                                        res.body()?.description!!,
+                                        res.body()?.url!!,
+                                        res.body()?.category!!,
+                                        res.body()?.stock!! - it.quantity,
+                                        res.body()?.brand!!, res.body()?.model!!
+                                    )
+                                )
+                            }
                             call.respond(HttpStatusCode.Created, body)
                         }
                     } catch (e: OrderBadRequest) {
