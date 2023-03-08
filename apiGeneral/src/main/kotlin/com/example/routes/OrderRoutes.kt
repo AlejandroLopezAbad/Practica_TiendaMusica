@@ -10,6 +10,7 @@ import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.patch
 import io.github.smiley4.ktorswaggerui.dsl.post
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -22,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.inject
+import java.nio.file.Files.delete
 
 fun Application.orderRoutes() {
     val client: RetroFitRestPedidos by inject(qualifier = named("apiOrder"))
@@ -131,6 +133,8 @@ fun Application.orderRoutes() {
                     } catch (e: OrderNotFoundException) {
                         call.respond(HttpStatusCode.NotFound, e.message.toString())
                     }
+                }else{
+                    call.respond(HttpStatusCode.Unauthorized,"Token no válido.")
                 }
             }
 
@@ -173,6 +177,7 @@ fun Application.orderRoutes() {
                             val product = checkProduct.body()
                             if (product?.stock!! < it.quantity)
                                 call.respond(HttpStatusCode.BadRequest)
+                            else call.respond(HttpStatusCode.BadRequest,"No hay stock suficiente.")
                         }
                         if (res.isSuccessful) {
                             client.creteOrder(service, token)
@@ -190,10 +195,12 @@ fun Application.orderRoutes() {
                                         checkProd.body()?.brand!!,
                                         checkProd.body()?.model!!
                                     ))
-
+                                }
                             }
                             call.respond(HttpStatusCode.Created,service)
                         }
+                            call.respond(HttpStatusCode.Created, body)
+                        }else call.respond(HttpStatusCode.BadRequest, "No ha sido posible crear el pedido.")
                     } catch (e: OrderBadRequest) {
                         call.respond(HttpStatusCode.BadRequest, e.message.toString())
                     }
