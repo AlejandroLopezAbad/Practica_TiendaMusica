@@ -166,6 +166,18 @@ fun Application.orderRoutes() {
                     val res = myScope.async { client.creteOrder(service, token) }.await()
                     val body = res.body()
                     try {
+                        service.products.forEach {
+                            val res = myScope.async {
+                                clientProducts.getProductById(it.idItem, token)
+                            }.await()
+                            println(res.code())
+                            if (!res.isSuccessful || body == null)
+                                println(it)
+                            call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
+                            val product = res.body()
+                            if (product?.stock!! < it.quantity)
+                                call.respond(HttpStatusCode.BadRequest)
+                        }
                         if (res.isSuccessful && body != null) {
                             client.creteOrder(service, token)
                             service.products.forEach {
@@ -199,6 +211,8 @@ fun Application.orderRoutes() {
                         description = "Id del pedido "
                         required = true
                     }
+                } catch (e: OrderUnauthorized) {
+                    call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 }
                 response {
                     default {
