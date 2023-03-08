@@ -138,6 +138,8 @@ fun Application.orderRoutes() {
                     } catch (e: OrderNotFoundException) {
                         call.respond(HttpStatusCode.NotFound, e.message.toString())
                     }
+                }else{
+                    call.respond(HttpStatusCode.Unauthorized,"Token no válido.")
                 }
             }
 
@@ -175,15 +177,16 @@ fun Application.orderRoutes() {
                             println(res.code())
                             if (!res.isSuccessful || body == null)
                                 println(it)
-                            call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
+                            else call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
                             val product = res.body()
                             if (product?.stock!! < it.quantity)
                                 call.respond(HttpStatusCode.BadRequest)
+                            else call.respond(HttpStatusCode.BadRequest,"No hay stock suficiente.")
                         }
                         if (res.isSuccessful && body != null) {
                             client.creteOrder(service, token)
                             call.respond(HttpStatusCode.Created, body)
-                        }
+                        }else call.respond(HttpStatusCode.BadRequest, "No ha sido posible crear el pedido.")
                     } catch (e: OrderBadRequest) {
                         call.respond(HttpStatusCode.BadRequest, e.message.toString())
                     }
@@ -197,8 +200,6 @@ fun Application.orderRoutes() {
                         description = "Id del pedido "
                         required = true
                     }
-                } catch (e: OrderUnauthorized) {
-                    call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 }
                 response {
                     default {
