@@ -13,7 +13,6 @@ import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -22,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
-import org.koin.core.qualifier.qualifier
 import org.koin.ktor.ext.inject
 
 fun Application.orderRoutes() {
@@ -167,36 +165,34 @@ fun Application.orderRoutes() {
                     val body = res.body()
                     try {
                         service.products.forEach {
-                            val res = myScope.async {
+                            val checkProduct = myScope.async {
                                 clientProducts.getProductById(it.idItem, token)
                             }.await()
-                            println(res.code())
-                            if (!res.isSuccessful || body == null)
-                                println(it)
-                            call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
-                            val product = res.body()
+                            if (!checkProduct.isSuccessful)
+                                call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
+                            val product = checkProduct.body()
                             if (product?.stock!! < it.quantity)
                                 call.respond(HttpStatusCode.BadRequest)
                         }
-                        if (res.isSuccessful && body != null) {
+                        if (res.isSuccessful) {
                             client.creteOrder(service, token)
                             service.products.forEach {
-                                val prod = async {  clientProducts.getProductById(it.idItem, token)}.await()
-                                if(prod.isSuccessful){
+                                val checkProd = async {  clientProducts.getProductById(it.idItem, token)}.await()
+
                                     clientProducts.updateProduct(it.idItem, token, ProductDto(
-                                        prod.body()?.name!!,
-                                        prod.body()?.price!!,
-                                        prod.body()?.available!!,
-                                        prod.body()?.description!!,
-                                        prod.body()?.url!!,
-                                        prod.body()?.category!!,
-                                        prod.body()?.stock!! - it.quantity,
-                                        prod.body()?.brand!!,
-                                        prod.body()?.model!!
+                                        checkProd.body()?.name!!,
+                                        checkProd.body()?.price!!,
+                                        checkProd.body()?.available!!,
+                                        checkProd.body()?.description!!,
+                                        checkProd.body()?.url!!,
+                                        checkProd.body()?.category!!,
+                                        checkProd.body()?.stock!! - it.quantity,
+                                        checkProd.body()?.brand!!,
+                                        checkProd.body()?.model!!
                                     ))
-                                }
+
                             }
-                            call.respond(HttpStatusCode.Created, body)
+                            call.respond(HttpStatusCode.Created,service)
                         }
                     } catch (e: OrderBadRequest) {
                         call.respond(HttpStatusCode.BadRequest, e.message.toString())
@@ -211,8 +207,6 @@ fun Application.orderRoutes() {
                         description = "Id del pedido "
                         required = true
                     }
-                } catch (e: OrderUnauthorized) {
-                    call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                 }
                 response {
                     default {
