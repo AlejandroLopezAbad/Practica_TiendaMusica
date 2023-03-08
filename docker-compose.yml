@@ -44,7 +44,6 @@ services:
     networks:
       - red
 
-    # MONGO DB
   mongodb-server:
     image: mongo
     container_name: mongodb-server
@@ -55,9 +54,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: mongoadmin
       MONGO_INITDB_ROOT_PASSWORD: mongopass
       MONGO_INITDB_DATABASE: tiendaMusica
-      #ME_CONFIG_MONGODB_URL: mongodb://root:pedidos@mongo:27017/
     command: --auth
-    # Monto la unidad y le cargo unos datos
     volumes:
       - ./init:/docker-entrypoint-initdb.d
       - mongo-vol:/data/db
@@ -65,7 +62,6 @@ services:
       - mongo-network
     restart: always
 
-#  # MONGO EXPRESS
   mongo-express:
     image: mongo-express
     container_name: mongo-express
@@ -99,14 +95,13 @@ services:
     networks:
       - red
 
-# Mi volumenes de datos compartidos
+
 volumes:
   mongo-vol:
 
-# Si queremos que tengan una red propia a otros contenedores
+
 networks:
   mongo-network:
-    #external: true
     driver: bridge
 
   red:

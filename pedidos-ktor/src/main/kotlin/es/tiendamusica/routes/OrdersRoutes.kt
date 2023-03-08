@@ -117,6 +117,7 @@ fun Application.ordersRoutes() {
                         }
 
                     }
+                    call.respond(HttpStatusCode.BadRequest)
                 }
             }
 
@@ -126,15 +127,33 @@ fun Application.ordersRoutes() {
             patch("{id}") {
                 logger.debug { "PATCH ORDER : $ENDPOINT/{id}" }
                 val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+                println("1")
+
                 token?.let {
+                    println("1")
+
                     val roles = tokensService.getRoles(token)
-                    if (roles.contains("SUPERADMIN")) {
+                    println("1")
+
+                    if (roles.contains("SUPERADMIN") || roles.contains("ADMIN") || roles.contains("EMPLOYEE")) {
                         try {
+                            println("1")
+
                             val dto = call.receive<OrderUpdateDto>()
+                            println("1")
+
                             val id = call.parameters["id"]
+                            println("1")
+
                             val pedido = ordersService.getById(id!!)
+                            println("1")
+
                             pedido?.let {
+                                println("1")
+
                                 ordersService.patchOrder(pedido, dto)
+                                println("1")
+
                                 call.respond(HttpStatusCode.OK)
                             } ?: run {
                                 call.respond(HttpStatusCode.NotFound, "Not found")
@@ -145,6 +164,8 @@ fun Application.ordersRoutes() {
                             call.respond(HttpStatusCode.Conflict, e.message.toString())
                         }
                     }
+                    call.respond(HttpStatusCode.BadRequest)
+
                 }
             }
 

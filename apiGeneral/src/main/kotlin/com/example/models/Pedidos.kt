@@ -59,7 +59,8 @@ data class OrderCreateDto(
 @Serializable
 data class OrderUpdateDto(
     val price: Double? = null,
-    val status: Status? = null
+
+    val status: String? = null
 )
 
 

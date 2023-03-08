@@ -1,17 +1,19 @@
 package com.example.routes
 
-import com.example.models.OrderCreateDto
-import com.example.models.OrderUpdateDto
-import com.example.models.ProductDto
-import com.example.models.ProductResponseDto
+import com.example.models.*
 import com.example.service.retrofit.RetroFitRest
 import com.example.service.retrofitOrder.RetroFitRestPedidos
 import es.tiendamusica.exceptions.OrderBadRequest
 import es.tiendamusica.exceptions.OrderNotFoundException
 import es.tiendamusica.exceptions.OrderUnauthorized
+import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.patch
+import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -35,8 +37,22 @@ fun Application.orderRoutes() {
                 val res = client.tryApiConnection()
                 call.respond(HttpStatusCode.OK, res.message())
             }*/
-            get {
-                print("ENTRA")
+
+            get({
+                description = "Muestra todos los pedidos"
+                response {
+                    default {
+                        description = "Muestra una lista con todos los pedidos que hay en el sistema"
+                    }
+                    HttpStatusCode.OK to {
+                        description = "Lista de pedidos"
+                        body<List<OrderDto>> { description = "Lista de todos los pedidos" }
+                    }
+                    HttpStatusCode.Unauthorized to {
+                        description = "Token inválido"
+                    }
+                }
+            }) {
                 val token = call.request.headers["Authorization"]
                 val myScope = CoroutineScope(Dispatchers.IO)
                 if (token != null) {
@@ -50,7 +66,27 @@ fun Application.orderRoutes() {
                     )
                 }
             }
-            get("/{id}") {
+            get("/{id}", {
+                description = "Busca un pedido por su ID"
+                request {
+                    pathParameter<String>("id") {
+                        description = "Id del pedido "
+                        required = true
+                    }
+                }
+                response {
+                    default {
+                        description = "Muestra un pedido buscado por el id."
+                    }
+                    HttpStatusCode.OK to {
+                        description = "El pedido con el id indicado"
+                        body<OrderDto> { description = "Pedido encontrado" }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Pedido no encotnrado"
+                    }
+                }
+            }) {
                 val token = call.request.headers["Authorization"]
                 val uuid = call.parameters["id"].toString()
 
@@ -68,7 +104,27 @@ fun Application.orderRoutes() {
                 }
             }
 
-            get("/user/{user_id}") {
+            get("/user/{user_id}", {
+                description = "Busca los pedidos de un usuario"
+                request {
+                    pathParameter<String>("id") {
+                        description = "Id del usuario "
+                        required = true
+                    }
+                }
+                response {
+                    default {
+                        description = "Muestra los pedidos que pertenecen al usuario con el id dado ."
+                    }
+                    HttpStatusCode.OK to {
+                        description = "Los pedidos de un usuario"
+                        body<List<OrderDto>> { description = "Pedidos encontrados" }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Pedidos no encotnrado"
+                    }
+                }
+            }) {
                 val token = call.request.headers["Authorization"]
                 val id = call.parameters["user_id"]
 
@@ -86,45 +142,34 @@ fun Application.orderRoutes() {
             }
 
             authenticate {
-                post {
+                post({
+                    description = "Crea un pedido"
+                    request {
+                        body<OrderCreateDto> {
+                            description = "Datos del pedido a crear"
+                        }
+                    }
+                    response {
+                        default {
+                            description = "Crea un pedido con los datos dados"
+                        }
+                        HttpStatusCode.Created to {
+                            description = "Se ha creado el pedido"
+                        }
+                        HttpStatusCode.BadRequest to {
+                            description = "Pedidos no creado"
+                        }
+                    }
+                }) {
                     val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+
                     val service = call.receive<OrderCreateDto>()
                     val myScope = CoroutineScope(Dispatchers.IO)
-                    val res = myScope.async { client.creteOrder(service, token!!) }.await()
+                    val res = myScope.async { client.creteOrder(service, token) }.await()
                     val body = res.body()
                     try {
-                        service.products.forEach {
-                            val res = myScope.async {
-                                clientProducts.getProductById(it.idItem, token)
-                            }.await()
-                            println(res.code())
-                            if (!res.isSuccessful || body == null)
-                                println(it)
-                            call.respond(HttpStatusCode.NotFound, "Productos no encontrados")
-                            val product = res.body()
-                            if (product?.stock!! < it.quantity)
-                                call.respond(HttpStatusCode.BadRequest)
-                        }
                         if (res.isSuccessful && body != null) {
-                            service.products.forEach {
-                                val res = myScope.async {
-                                    clientProducts.getProductById(it.idItem, token)
-                                }.await()
-                                clientProducts.updateProduct(
-                                    it.idItem,
-                                    token,
-                                    ProductDto(
-                                        res.body()?.name!!,
-                                        res.body()?.price!!,
-                                        res.body()?.available!!,
-                                        res.body()?.description!!,
-                                        res.body()?.url!!,
-                                        res.body()?.category!!,
-                                        res.body()?.stock!! - it.quantity,
-                                        res.body()?.brand!!, res.body()?.model!!
-                                    )
-                                )
-                            }
+                            client.creteOrder(service, token)
                             call.respond(HttpStatusCode.Created, body)
                         }
                     } catch (e: OrderBadRequest) {
@@ -133,7 +178,26 @@ fun Application.orderRoutes() {
                 }
             }
 
-            delete("/{id}") {
+            delete("/{id}", {
+                description = "Elimina un pedido"
+                request {
+                    pathParameter<String>("id") {
+                        description = "Id del pedido "
+                        required = true
+                    }
+                }
+                response {
+                    default {
+                        description = "El pedido se elimna"
+                    }
+                    HttpStatusCode.NoContent to {
+                        description = "Se ha eliminado el pedido"
+                    }
+                    HttpStatusCode.Unauthorized to {
+                        description = "Token no valido"
+                    }
+                }
+            }) {
                 val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
                 val id = call.parameters["id"].toString()
 
@@ -148,12 +212,40 @@ fun Application.orderRoutes() {
                 }
             }
 
-            patch("/{id}") {
+            patch("/{id}", {
+                description = "Actualiza un pedido"
+                request {
+                    pathParameter<String>("id") {
+                        description = "Id del pedido "
+                        required = true
+                    }
+                    body<OrderUpdateDto> {
+                        description = "Datos del pedido a actualizar"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to{
+                        description = "Pedido actualizado correctamente"
+                        body<OrderDto> {description = "Pedido actualizado"}
+                    }
+                    HttpStatusCode.Unauthorized to {
+                        description= "Token invalido"
+                    }
+                    HttpStatusCode.BadRequest to{
+                        description ="Peiddo no actualizado"
+                    }
+                }
+            }) {
                 val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
+
                 val id = call.parameters["id"].toString()
+
                 val updated = call.receive<OrderUpdateDto>()
+
                 val myScope = CoroutineScope(Dispatchers.IO)
+
                 val res = myScope.async { client.updateProduct(id, token, updated) }.await()
+
                 if (res.isSuccessful) {
                     call.respond(HttpStatusCode.OK)
                 } else call.respond(
