@@ -32,11 +32,6 @@ fun Application.orderRoutes() {
 
     routing {
         route("/pedidos") {
-            //TODO(BORRA ESTO DESTPUÉS DE EXPLICARLO)
-            /*get("/hello") {
-                val res = client.tryApiConnection()
-                call.respond(HttpStatusCode.OK, res.message())
-            }*/
 
             get({
                 description = "Muestra todos los pedidos"
@@ -165,11 +160,30 @@ fun Application.orderRoutes() {
 
                     val service = call.receive<OrderCreateDto>()
                     val myScope = CoroutineScope(Dispatchers.IO)
+
+
+
                     val res = myScope.async { client.creteOrder(service, token) }.await()
                     val body = res.body()
                     try {
                         if (res.isSuccessful && body != null) {
                             client.creteOrder(service, token)
+                            service.products.forEach {
+                                val prod = async {  clientProducts.getProductById(it.idItem, token)}.await()
+                                if(prod.isSuccessful){
+                                    clientProducts.updateProduct(it.idItem, token, ProductDto(
+                                        prod.body()?.name!!,
+                                        prod.body()?.price!!,
+                                        prod.body()?.available!!,
+                                        prod.body()?.description!!,
+                                        prod.body()?.url!!,
+                                        prod.body()?.category!!,
+                                        prod.body()?.stock!! - it.quantity,
+                                        prod.body()?.brand!!,
+                                        prod.body()?.model!!
+                                    ))
+                                }
+                            }
                             call.respond(HttpStatusCode.Created, body)
                         }
                     } catch (e: OrderBadRequest) {
