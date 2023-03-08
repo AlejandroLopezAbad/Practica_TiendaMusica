@@ -175,10 +175,11 @@ fun Application.ordersRoutes() {
                 val token = call.request.headers["Authorization"]?.replace("Bearer ", "").toString()
                 token?.let {
                     val roles = tokensService.getRoles(token)
-                    if (roles.contains("SUPERADMIN")) {
+                    if (roles.contains("SUPERADMIN") || roles.contains("ADMIN") || roles.contains("EMPLOYEE")) {
                         try {
                             val id = call.parameters["id"]
                             val pedido = ordersService.getById(id!!)
+                            logger.debug { "Eliminando pedido $pedido" }
                             pedido?.let {
                                 val res = ordersService.deleteOrder(pedido)
                                 if (res) {
@@ -195,6 +196,7 @@ fun Application.ordersRoutes() {
                             call.respond(HttpStatusCode.Unauthorized, e.message.toString())
                         }
                     }
+                    call.respond(HttpStatusCode.Unauthorized, "Token invalido")
                 }
             }
 
