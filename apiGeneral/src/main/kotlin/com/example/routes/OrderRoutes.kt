@@ -197,10 +197,9 @@ fun Application.orderRoutes() {
                                     ))
                                 }
                             }
+                        else
+                            call.respond(HttpStatusCode.BadRequest, "No ha sido posible crear el pedido.")
                             call.respond(HttpStatusCode.Created,service)
-                        }
-                            call.respond(HttpStatusCode.Created, body)
-                        }else call.respond(HttpStatusCode.BadRequest, "No ha sido posible crear el pedido.")
                     } catch (e: OrderBadRequest) {
                         call.respond(HttpStatusCode.BadRequest, e.message.toString())
                     }
